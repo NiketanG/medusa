@@ -1,0 +1,136 @@
+---
+sidebar_label: "Module Options"
+---
+
+import { Table } from "docs-ui"
+
+export const metadata = {
+  title: `Payment Module Options`,
+}
+
+# {metadata.title}
+
+In this document, you'll learn about the options of the Payment Module.
+
+## All Module Options
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell className="w-1/4">Option</Table.HeaderCell>
+      <Table.HeaderCell className="w-2/4">Description</Table.HeaderCell>
+      <Table.HeaderCell>Required</Table.HeaderCell>
+      <Table.HeaderCell>Default</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+      
+      `webhook_delay`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      A number indicating the delay in milliseconds before processing a webhook event.
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      No
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `5000`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `webhook_retries`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      The number of times to retry the webhook event processing in case of an error.
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      No
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `3`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `providers`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      An array of payment providers to install and register. Learn more [in this section](#providers).
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      No
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      \-
+      
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## providers Option
+
+The `providers` option is an array of payment module providers.
+
+When the Medusa application starts, these providers are registered and can be used to process payments.
+
+For example:
+
+```ts title="medusa-config.ts"
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/payment-stripe",
+            id: "stripe",
+            options: {
+              // ...
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+```
+
+The `providers` option is an array of objects that accept the following properties:
+
+- `resolve`: A string indicating the package name of the module provider or the path to it relative to the `src` directory.
+- `id`: A string indicating the provider's unique name or ID.
+- `options`: An optional object of the module provider's options.

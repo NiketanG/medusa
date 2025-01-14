@@ -1,0 +1,2734 @@
+{
+	"id": 40888,
+	"name": "medusa-config",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 40889,
+			"name": "AdminOptions",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "Admin dashboard configurations."
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 40890,
+					"name": "disable",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Whether to disable the admin dashboard. If set to "
+							},
+							{
+								"kind": "code",
+								"text": "`true`"
+							},
+							{
+								"kind": "text",
+								"text": ", the admin dashboard is disabled,\nin both development and production environments. The default value is "
+							},
+							{
+								"kind": "code",
+								"text": "`false`"
+							},
+							{
+								"kind": "text",
+								"text": "."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  admin: {\n    disable: process.env.ADMIN_DISABLED === \"true\" ||\n      false\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 40891,
+					"name": "path",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The path to the admin dashboard. The default value is "
+							},
+							{
+								"kind": "code",
+								"text": "`/app`"
+							},
+							{
+								"kind": "text",
+								"text": ".\n\nThe value cannot be one of the reserved paths:\n- "
+							},
+							{
+								"kind": "code",
+								"text": "`/admin`"
+							},
+							{
+								"kind": "text",
+								"text": "\n- "
+							},
+							{
+								"kind": "code",
+								"text": "`/store`"
+							},
+							{
+								"kind": "text",
+								"text": "\n- "
+							},
+							{
+								"kind": "code",
+								"text": "`/auth`"
+							},
+							{
+								"kind": "text",
+								"text": "\n- "
+							},
+							{
+								"kind": "code",
+								"text": "`/`"
+							},
+							{
+								"kind": "text",
+								"text": "\n\n:::note\n\nWhen using Docker, make sure that the root path of the Docker image doesn't path the admin's "
+							},
+							{
+								"kind": "code",
+								"text": "`path`"
+							},
+							{
+								"kind": "text",
+								"text": ". For example, if the Docker image's root path is "
+							},
+							{
+								"kind": "code",
+								"text": "`/app`"
+							},
+							{
+								"kind": "text",
+								"text": ", change\nthe value of the "
+							},
+							{
+								"kind": "code",
+								"text": "`path`"
+							},
+							{
+								"kind": "text",
+								"text": " configuration, as it's "
+							},
+							{
+								"kind": "code",
+								"text": "`/app`"
+							},
+							{
+								"kind": "text",
+								"text": " by default.\n\n:::"
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  admin: {\n    path: process.env.ADMIN_PATH || `/app`,\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "templateLiteral",
+						"head": "/",
+						"tail": [
+							[
+								{
+									"type": "intrinsic",
+									"name": "string"
+								},
+								""
+							]
+						]
+					}
+				},
+				{
+					"id": 40892,
+					"name": "outDir",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The directory where the admin build is outputted when you run the "
+							},
+							{
+								"kind": "code",
+								"text": "`build`"
+							},
+							{
+								"kind": "text",
+								"text": " command.\nThe default value is "
+							},
+							{
+								"kind": "code",
+								"text": "`./build`"
+							},
+							{
+								"kind": "text",
+								"text": "."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  admin: {\n    outDir: process.env.ADMIN_BUILD_DIR || `./build`,\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 40893,
+					"name": "backendUrl",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The URL of your Medusa application. Defaults to the browser origin. This is useful to set when running the admin on a separate domain."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  admin: {\n    backendUrl: process.env.MEDUSA_BACKEND_URL ||\n      \"http://localhost:9000\"\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 40894,
+					"name": "vite",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Configure the Vite configuration for the admin dashboard. This function receives the default Vite configuration\nand returns the modified configuration. The default value is "
+							},
+							{
+								"kind": "code",
+								"text": "`undefined`"
+							},
+							{
+								"kind": "text",
+								"text": "."
+							}
+						]
+					},
+					"type": {
+						"type": "reflection",
+						"declaration": {
+							"id": 40895,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"signatures": [
+								{
+									"id": 40896,
+									"name": "__type",
+									"variant": "signature",
+									"kind": 4096,
+									"flags": {},
+									"parameters": [
+										{
+											"id": 40897,
+											"name": "config",
+											"variant": "param",
+											"kind": 32768,
+											"flags": {},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "",
+													"qualifiedName": "InlineConfig"
+												},
+												"name": "InlineConfig"
+											}
+										}
+									],
+									"type": {
+										"type": "reference",
+										"target": {
+											"sourceFileName": "",
+											"qualifiedName": "InlineConfig"
+										},
+										"name": "InlineConfig"
+									}
+								}
+							]
+						}
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						40890,
+						40891,
+						40892,
+						40893,
+						40894
+					]
+				}
+			]
+		},
+		{
+			"id": 40898,
+			"name": "HttpCompressionOptions",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "HTTP compression configurations."
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 40899,
+					"name": "enabled",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Whether HTTP compression is enabled. By default, it's "
+							},
+							{
+								"kind": "code",
+								"text": "`false`"
+							},
+							{
+								"kind": "text",
+								"text": "."
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 40900,
+					"name": "level",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The level of zlib compression to apply to responses. A higher level will result in better compression but will take longer to complete.\nA lower level will result in less compression but will be much faster. The default value is "
+							},
+							{
+								"kind": "code",
+								"text": "`6`"
+							},
+							{
+								"kind": "text",
+								"text": "."
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 40901,
+					"name": "memLevel",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "How much memory should be allocated to the internal compression state. It's an integer in the range of 1 (minimum level) and 9 (maximum level).\nThe default value is "
+							},
+							{
+								"kind": "code",
+								"text": "`8`"
+							},
+							{
+								"kind": "text",
+								"text": "."
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					}
+				},
+				{
+					"id": 40902,
+					"name": "threshold",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The minimum response body size that compression is applied on. Its value can be the number of bytes or any string accepted by the\n[bytes](https://www.npmjs.com/package/bytes) module. The default value is "
+							},
+							{
+								"kind": "code",
+								"text": "`1024`"
+							},
+							{
+								"kind": "text",
+								"text": "."
+							}
+						]
+					},
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "intrinsic",
+								"name": "number"
+							}
+						]
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						40899,
+						40900,
+						40901,
+						40902
+					]
+				}
+			]
+		},
+		{
+			"id": 40903,
+			"name": "ProjectConfigOptions",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "Essential configurations related to the Medusa application, such as database and CORS configurations."
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 40904,
+					"name": "databaseName",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The name of the database to connect to. If the name is specified in "
+							},
+							{
+								"kind": "code",
+								"text": "`databaseUrl`"
+							},
+							{
+								"kind": "text",
+								"text": ", then you don't have to use this configuration.\n\nMake sure to create the PostgreSQL database before using it. You can check how to create a database in\n[PostgreSQL's documentation](https://www.postgresql.org/docs/current/sql-createdatabase.html)."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    databaseName: process.env.DATABASE_NAME ||\n      \"medusa-store\",\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 40905,
+					"name": "databaseUrl",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The PostgreSQL connection URL of the database, which is of the following format:\n\n"
+							},
+							{
+								"kind": "code",
+								"text": "```bash\npostgres://[user][:password]@[host][:port]/[dbname]\n```"
+							},
+							{
+								"kind": "text",
+								"text": "\n\nWhere:\n\n- "
+							},
+							{
+								"kind": "code",
+								"text": "`[user]`"
+							},
+							{
+								"kind": "text",
+								"text": ": (required) your PostgreSQL username. If not specified, the system's username is used by default. The database user that you use must have create privileges. If you're using the "
+							},
+							{
+								"kind": "code",
+								"text": "`postgres`"
+							},
+							{
+								"kind": "text",
+								"text": " superuser, then it should have these privileges by default. Otherwise, make sure to grant your user create privileges. You can learn how to do that in [PostgreSQL's documentation](https://www.postgresql.org/docs/current/ddl-priv.html).\n- "
+							},
+							{
+								"kind": "code",
+								"text": "`[:password]`"
+							},
+							{
+								"kind": "text",
+								"text": ": an optional password for the user. When provided, make sure to put "
+							},
+							{
+								"kind": "code",
+								"text": "`:`"
+							},
+							{
+								"kind": "text",
+								"text": " before the password.\n- "
+							},
+							{
+								"kind": "code",
+								"text": "`[host]`"
+							},
+							{
+								"kind": "text",
+								"text": ": (required) your PostgreSQL host. When run locally, it should be "
+							},
+							{
+								"kind": "code",
+								"text": "`localhost`"
+							},
+							{
+								"kind": "text",
+								"text": ".\n- "
+							},
+							{
+								"kind": "code",
+								"text": "`[:port]`"
+							},
+							{
+								"kind": "text",
+								"text": ": an optional port that the PostgreSQL server is listening on. By default, it's "
+							},
+							{
+								"kind": "code",
+								"text": "`5432`"
+							},
+							{
+								"kind": "text",
+								"text": ". When provided, make sure to put "
+							},
+							{
+								"kind": "code",
+								"text": "`:`"
+							},
+							{
+								"kind": "text",
+								"text": " before the port.\n- "
+							},
+							{
+								"kind": "code",
+								"text": "`[dbname]`"
+							},
+							{
+								"kind": "text",
+								"text": ": (required) the name of the database.\n\nYou can learn more about the connection URL format in [PostgreSQL’s documentation](https://www.postgresql.org/docs/current/libpq-connect.html)."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "text",
+										"text": "For example, set the following database URL in your environment variables:\n\n"
+									},
+									{
+										"kind": "code",
+										"text": "```bash\nDATABASE_URL=postgres://postgres@localhost/medusa-store\n```"
+									},
+									{
+										"kind": "text",
+										"text": "\n\nThen, use the value in "
+									},
+									{
+										"kind": "code",
+										"text": "`medusa-config.ts`"
+									},
+									{
+										"kind": "text",
+										"text": ":\n\n"
+									},
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    databaseUrl: process.env.DATABASE_URL,\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 40906,
+					"name": "databaseSchema",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The database schema to connect to. This is not required to provide if you’re using the default schema, which is "
+							},
+							{
+								"kind": "code",
+								"text": "`public`"
+							},
+							{
+								"kind": "text",
+								"text": ".\n\n"
+							},
+							{
+								"kind": "code",
+								"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    databaseSchema: process.env.DATABASE_SCHEMA ||\n      \"custom\",\n    // ...\n  },\n  // ...\n})\n```"
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 40907,
+					"name": "databaseLogging",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This configuration specifies whether database messages should be logged."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    databaseLogging: false\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					}
+				},
+				{
+					"id": 40908,
+					"name": "databaseDriverOptions",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This configuration is used to pass additional options to the database connection. You can pass any configuration. For example, pass the\n"
+							},
+							{
+								"kind": "code",
+								"text": "`ssl`"
+							},
+							{
+								"kind": "text",
+								"text": " property that enables support for TLS/SSL connections.\n\nThis is useful for production databases, which can be supported by setting the "
+							},
+							{
+								"kind": "code",
+								"text": "`rejectUnauthorized`"
+							},
+							{
+								"kind": "text",
+								"text": " attribute of "
+							},
+							{
+								"kind": "code",
+								"text": "`ssl`"
+							},
+							{
+								"kind": "text",
+								"text": " object to "
+							},
+							{
+								"kind": "code",
+								"text": "`false`"
+							},
+							{
+								"kind": "text",
+								"text": ".\nDuring development, it’s recommended not to pass this option.\n\n:::note\n\nMake sure to add to the end of the database URL "
+							},
+							{
+								"kind": "code",
+								"text": "`?ssl_mode=disable`"
+							},
+							{
+								"kind": "text",
+								"text": " as well when disabling "
+							},
+							{
+								"kind": "code",
+								"text": "`rejectUnauthorized`"
+							},
+							{
+								"kind": "text",
+								"text": ".\n\n:::"
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    databaseDriverOptions: process.env.NODE_ENV !== \"development\" ?\n      { connection: { ssl: { rejectUnauthorized: false } } } : {}\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+									"qualifiedName": "Record"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "any"
+									}
+								],
+								"name": "Record",
+								"package": "typescript"
+							},
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 40909,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 40910,
+											"name": "connection",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"type": {
+												"type": "reflection",
+												"declaration": {
+													"id": 40911,
+													"name": "__type",
+													"variant": "declaration",
+													"kind": 65536,
+													"flags": {},
+													"children": [
+														{
+															"id": 40912,
+															"name": "ssl",
+															"variant": "declaration",
+															"kind": 1024,
+															"flags": {
+																"isOptional": true
+															},
+															"comment": {
+																"summary": [
+																	{
+																		"kind": "text",
+																		"text": "Configure support for TLS/SSL connection"
+																	}
+																]
+															},
+															"type": {
+																"type": "reflection",
+																"declaration": {
+																	"id": 40913,
+																	"name": "__type",
+																	"variant": "declaration",
+																	"kind": 65536,
+																	"flags": {},
+																	"children": [
+																		{
+																			"id": 40914,
+																			"name": "rejectUnauthorized",
+																			"variant": "declaration",
+																			"kind": 1024,
+																			"flags": {
+																				"isOptional": true
+																			},
+																			"comment": {
+																				"summary": [
+																					{
+																						"kind": "text",
+																						"text": "Whether to fail connection if the server certificate is verified against the list of supplied CAs and the hostname and no match is found."
+																					}
+																				]
+																			},
+																			"type": {
+																				"type": "literal",
+																				"value": false
+																			}
+																		}
+																	],
+																	"groups": [
+																		{
+																			"title": "Properties",
+																			"children": [
+																				40914
+																			]
+																		}
+																	]
+																}
+															}
+														}
+													],
+													"groups": [
+														{
+															"title": "Properties",
+															"children": [
+																40912
+															]
+														}
+													]
+												}
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												40910
+											]
+										}
+									]
+								}
+							}
+						]
+					}
+				},
+				{
+					"id": 40915,
+					"name": "redisUrl",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This configuration specifies the connection URL to Redis to store the Medusa server's session.\n\n:::note\n\nYou must first have Redis installed. You can refer to [Redis's installation guide](https://redis.io/docs/getting-started/installation/).\n\n:::\n\nThe Redis connection URL has the following format:\n\n"
+							},
+							{
+								"kind": "code",
+								"text": "```bash\nredis[s]://[[username][:password]@][host][:port][/db-number]\n```"
+							},
+							{
+								"kind": "text",
+								"text": "\n\nFor a local Redis installation, the connection URL should be "
+							},
+							{
+								"kind": "code",
+								"text": "`redis://localhost:6379`"
+							},
+							{
+								"kind": "text",
+								"text": " unless you’ve made any changes to the Redis configuration during installation."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    redisUrl: process.env.REDIS_URL ||\n      \"redis://localhost:6379\",\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 40916,
+					"name": "redisPrefix",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This configuration defines a prefix on all keys stored in Redis for the Medusa server's session. The default value is "
+							},
+							{
+								"kind": "code",
+								"text": "`sess:`"
+							},
+							{
+								"kind": "text",
+								"text": ".\n\nIf this configuration option is provided, it is prepended to "
+							},
+							{
+								"kind": "code",
+								"text": "`sess:`"
+							},
+							{
+								"kind": "text",
+								"text": "."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    redisPrefix: process.env.REDIS_URL || \"medusa:\",\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					}
+				},
+				{
+					"id": 40917,
+					"name": "redisOptions",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This configuration defines options to pass ioredis for the Redis connection used to store the Medusa server's session. Refer to [ioredis’s RedisOptions documentation](https://redis.github.io/ioredis/index.html#RedisOptions)\nfor the list of available options."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    redisOptions: {\n      connectionName: process.env.REDIS_CONNECTION_NAME ||\n        \"medusa\",\n    }\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../node_modules/ioredis/built/redis/RedisOptions.d.ts",
+							"qualifiedName": "RedisOptions"
+						},
+						"name": "RedisOptions",
+						"package": "ioredis"
+					}
+				},
+				{
+					"id": 40918,
+					"name": "sessionOptions",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This configuration defines additional options to pass to [express-session](https://www.npmjs.com/package/express-session), which is used to store the Medusa server's session."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    sessionOptions: {\n      name: process.env.SESSION_NAME || \"custom\",\n    }\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+							"qualifiedName": "SessionOptions"
+						},
+						"name": "SessionOptions",
+						"package": "@medusajs/framework"
+					}
+				},
+				{
+					"id": 40920,
+					"name": "workerMode",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Configure the application's worker mode.\n\nWorkers are processes running separately from the main application. They're useful for executing long-running or resource-heavy tasks in the background, such as importing products.\n\nWith a worker, these tasks are offloaded to a separate process. So, they won't affect the performance of the main application.\n\n![Diagram showcasing how the server and worker work together](https://res.cloudinary.com/dza7lstvk/image/upload/fl_lossy/f_auto/r_16/ar_16:9,c_pad/v1/Medusa%20Book/medusa-worker_klkbch.jpg?_a=BATFJtAA0)\n\nMedusa has three runtime modes:\n\n- Use "
+							},
+							{
+								"kind": "code",
+								"text": "`shared`"
+							},
+							{
+								"kind": "text",
+								"text": " to run the application in a single process.\n- Use "
+							},
+							{
+								"kind": "code",
+								"text": "`worker`"
+							},
+							{
+								"kind": "text",
+								"text": " to run the a worker process only.\n- Use "
+							},
+							{
+								"kind": "code",
+								"text": "`server`"
+							},
+							{
+								"kind": "text",
+								"text": " to run the application server only.\n\nIn production, it's recommended to deploy two instances:\n\n1. One having the "
+							},
+							{
+								"kind": "code",
+								"text": "`workerMode`"
+							},
+							{
+								"kind": "text",
+								"text": " configuration set to "
+							},
+							{
+								"kind": "code",
+								"text": "`server`"
+							},
+							{
+								"kind": "text",
+								"text": ".\n2. Another having the "
+							},
+							{
+								"kind": "code",
+								"text": "`workerMode`"
+							},
+							{
+								"kind": "text",
+								"text": " configuration set to "
+							},
+							{
+								"kind": "code",
+								"text": "`worker`"
+							},
+							{
+								"kind": "text",
+								"text": "."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    workerMode: process.env.WORKER_MODE || \"shared\"\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "union",
+						"types": [
+							{
+								"type": "literal",
+								"value": "shared"
+							},
+							{
+								"type": "literal",
+								"value": "worker"
+							},
+							{
+								"type": "literal",
+								"value": "server"
+							}
+						]
+					}
+				},
+				{
+					"id": 40921,
+					"name": "http",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This property configures the application's http-specific settings."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      cookieSecret: \"supersecret\",\n      compression: {\n        // ...\n      }\n    }\n    // ...\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "reflection",
+						"declaration": {
+							"id": 40922,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 40923,
+									"name": "jwtSecret",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "A random string used to create authentication tokens in the http layer. Although this configuration option is not required, it’s highly recommended to set it for better security.\n\nIn a development environment, if this option is not set the default secret is "
+											},
+											{
+												"kind": "code",
+												"text": "`supersecret`"
+											},
+											{
+												"kind": "text",
+												"text": ". However, in production, if this configuration is not set, an\nerror is thrown and the application crashes."
+											}
+										],
+										"blockTags": [
+											{
+												"tag": "@example",
+												"content": [
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      jwtSecret: \"supersecret\",\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													}
+												]
+											}
+										]
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 40924,
+									"name": "jwtExpiresIn",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The expiration time for the JWT token. Its format is based off the [ms package](https://github.com/vercel/ms).\n\nIf not provided, the default value is "
+											},
+											{
+												"kind": "code",
+												"text": "`24h`"
+											},
+											{
+												"kind": "text",
+												"text": "."
+											}
+										],
+										"blockTags": [
+											{
+												"tag": "@example",
+												"content": [
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      jwtExpiresIn: \"2d\"\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													}
+												]
+											}
+										]
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 40925,
+									"name": "cookieSecret",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "A random string used to create cookie tokens in the http layer. Although this configuration option is not required, it’s highly recommended to set it for better security.\n\nIn a development environment, if this option is not set, the default secret is "
+											},
+											{
+												"kind": "code",
+												"text": "`supersecret`"
+											},
+											{
+												"kind": "text",
+												"text": ". However, in production, if this configuration is not set, an error is thrown and\nthe application crashes."
+											}
+										],
+										"blockTags": [
+											{
+												"tag": "@example",
+												"content": [
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      cookieSecret: \"supersecret\"\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													}
+												]
+											}
+										]
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 40926,
+									"name": "authCors",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The Medusa application's API Routes are protected by Cross-Origin Resource Sharing (CORS). So, only allowed URLs or URLs matching a specified pattern can send requests to the backend’s API Routes.\n\n"
+											},
+											{
+												"kind": "code",
+												"text": "`cors`"
+											},
+											{
+												"kind": "text",
+												"text": " is a string used to specify the accepted URLs or patterns for API Routes starting with "
+											},
+											{
+												"kind": "code",
+												"text": "`/auth`"
+											},
+											{
+												"kind": "text",
+												"text": ". It can either be one accepted origin, or a comma-separated list of accepted origins.\n\nEvery origin in that list must either be:\n\n1. A URL. For example, "
+											},
+											{
+												"kind": "code",
+												"text": "`http://localhost:7001`"
+											},
+											{
+												"kind": "text",
+												"text": ". The URL must not end with a backslash;\n2. Or a regular expression pattern that can match more than one origin. For example, "
+											},
+											{
+												"kind": "code",
+												"text": "`.example.com`"
+											},
+											{
+												"kind": "text",
+												"text": ". The regex pattern that Medusa tests for is "
+											},
+											{
+												"kind": "code",
+												"text": "`^([/~@;%#'])(.*?)\\1([gimsuy]*)$`"
+											},
+											{
+												"kind": "text",
+												"text": "."
+											}
+										],
+										"blockTags": [
+											{
+												"tag": "@example",
+												"content": [
+													{
+														"kind": "text",
+														"text": "Some example values of common use cases:\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```bash\n# Allow different ports locally starting with 700\nAUTH_CORS=/http://localhost:700\\d+$/\n\n# Allow any origin ending with vercel.app. For example, admin.vercel.app\nAUTH_CORS=/vercel\\.app$/\n\n# Allow all HTTP requests\nAUTH_CORS=/http://.+/\n```"
+													},
+													{
+														"kind": "text",
+														"text": "\n\nThen, set the configuration in "
+													},
+													{
+														"kind": "code",
+														"text": "`medusa-config.ts`"
+													},
+													{
+														"kind": "text",
+														"text": ":\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      authCors: process.env.AUTH_CORS\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													},
+													{
+														"kind": "text",
+														"text": "\n\nIf you’re adding the value directly within "
+													},
+													{
+														"kind": "code",
+														"text": "`medusa-config.ts`"
+													},
+													{
+														"kind": "text",
+														"text": ", make sure to add an extra escaping "
+													},
+													{
+														"kind": "code",
+														"text": "`/`"
+													},
+													{
+														"kind": "text",
+														"text": " for every backslash in the pattern. For example:\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      authCors: \"/http:\\\\/\\\\/localhost:700\\\\d+$/\",\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													}
+												]
+											}
+										]
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 40927,
+									"name": "compression",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "Configure HTTP compression from the application layer. If you have access to the HTTP server, the recommended approach would be to enable it there.\nHowever, some platforms don't offer access to the HTTP layer and in those cases, this is a good alternative.\n\nIf you enable HTTP compression and you want to disable it for specific API Routes, you can pass in the request header "
+											},
+											{
+												"kind": "code",
+												"text": "`\"x-no-compression\": true`"
+											},
+											{
+												"kind": "text",
+												"text": ".\nLearn more in the [API Reference](https://docs.medusajs.com/api/store#http-compression)."
+											}
+										],
+										"blockTags": [
+											{
+												"tag": "@example",
+												"content": [
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      compression: {\n        enabled: true,\n        level: 6,\n        memLevel: 8,\n        threshold: 1024\n      }\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													}
+												]
+											}
+										]
+									},
+									"type": {
+										"type": "reference",
+										"target": 40898,
+										"name": "HttpCompressionOptions",
+										"package": "@medusajs/framework"
+									}
+								},
+								{
+									"id": 40928,
+									"name": "storeCors",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The Medusa application's API Routes are protected by Cross-Origin Resource Sharing (CORS). So, only allowed URLs or URLs matching a specified pattern can send requests to the backend’s API Routes.\n\n"
+											},
+											{
+												"kind": "code",
+												"text": "`store_cors`"
+											},
+											{
+												"kind": "text",
+												"text": " is a string used to specify the accepted URLs or patterns for store API Routes. It can either be one accepted origin, or a comma-separated list of accepted origins.\n\nEvery origin in that list must either be:\n\n1. A URL. For example, "
+											},
+											{
+												"kind": "code",
+												"text": "`http://localhost:8000`"
+											},
+											{
+												"kind": "text",
+												"text": ". The URL must not end with a backslash;\n2. Or a regular expression pattern that can match more than one origin. For example, "
+											},
+											{
+												"kind": "code",
+												"text": "`.example.com`"
+											},
+											{
+												"kind": "text",
+												"text": ". The regex pattern that the backend tests for is "
+											},
+											{
+												"kind": "code",
+												"text": "`^([/~@;%#'])(.*?)\\1([gimsuy]*)$`"
+											},
+											{
+												"kind": "text",
+												"text": "."
+											}
+										],
+										"blockTags": [
+											{
+												"tag": "@example",
+												"content": [
+													{
+														"kind": "text",
+														"text": "Some example values of common use cases:\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```bash\n# Allow different ports locally starting with 800\nSTORE_CORS=/http://localhost:800\\d+$/\n\n# Allow any origin ending with vercel.app. For example, storefront.vercel.app\nSTORE_CORS=/vercel\\.app$/\n\n# Allow all HTTP requests\nSTORE_CORS=/http://.+/\n```"
+													},
+													{
+														"kind": "text",
+														"text": "\n\nThen, set the configuration in "
+													},
+													{
+														"kind": "code",
+														"text": "`medusa-config.ts`"
+													},
+													{
+														"kind": "text",
+														"text": ":\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      storeCors: process.env.STORE_CORS,\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													},
+													{
+														"kind": "text",
+														"text": "\n\nIf you’re adding the value directly within "
+													},
+													{
+														"kind": "code",
+														"text": "`medusa-config.ts`"
+													},
+													{
+														"kind": "text",
+														"text": ", make sure to add an extra escaping "
+													},
+													{
+														"kind": "code",
+														"text": "`/`"
+													},
+													{
+														"kind": "text",
+														"text": " for every backslash in the pattern. For example:\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      storeCors: \"/vercel\\\\.app$/\",\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													}
+												]
+											}
+										]
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 40929,
+									"name": "adminCors",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The Medusa application's API Routes are protected by Cross-Origin Resource Sharing (CORS). So, only allowed URLs or URLs matching a specified pattern can send requests to the backend’s API Routes.\n\n"
+											},
+											{
+												"kind": "code",
+												"text": "`admin_cors`"
+											},
+											{
+												"kind": "text",
+												"text": " is a string used to specify the accepted URLs or patterns for admin API Routes. It can either be one accepted origin, or a comma-separated list of accepted origins.\n\nEvery origin in that list must either be:\n\n1. A URL. For example, "
+											},
+											{
+												"kind": "code",
+												"text": "`http://localhost:7001`"
+											},
+											{
+												"kind": "text",
+												"text": ". The URL must not end with a backslash;\n2. Or a regular expression pattern that can match more than one origin. For example, "
+											},
+											{
+												"kind": "code",
+												"text": "`.example.com`"
+											},
+											{
+												"kind": "text",
+												"text": ". The regex pattern that the backend tests for is "
+											},
+											{
+												"kind": "code",
+												"text": "`^([/~@;%#'])(.*?)\\1([gimsuy]*)$`"
+											},
+											{
+												"kind": "text",
+												"text": "."
+											}
+										],
+										"blockTags": [
+											{
+												"tag": "@example",
+												"content": [
+													{
+														"kind": "text",
+														"text": "Some example values of common use cases:\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```bash\n# Allow different ports locally starting with 700\nADMIN_CORS=/http://localhost:700\\d+$/\n\n# Allow any origin ending with vercel.app. For example, admin.vercel.app\nADMIN_CORS=/vercel\\.app$/\n\n# Allow all HTTP requests\nADMIN_CORS=/http://.+/\n```"
+													},
+													{
+														"kind": "text",
+														"text": "\n\nThen, set the configuration in "
+													},
+													{
+														"kind": "code",
+														"text": "`medusa-config.ts`"
+													},
+													{
+														"kind": "text",
+														"text": ":\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      adminCors: process.env.ADMIN_CORS,\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													},
+													{
+														"kind": "text",
+														"text": "\n\nIf you’re adding the value directly within "
+													},
+													{
+														"kind": "code",
+														"text": "`medusa-config.ts`"
+													},
+													{
+														"kind": "text",
+														"text": ", make sure to add an extra escaping "
+													},
+													{
+														"kind": "code",
+														"text": "`/`"
+													},
+													{
+														"kind": "text",
+														"text": " for every backslash in the pattern. For example:\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      adminCors: \"/vercel\\\\.app$/\",\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													}
+												]
+											}
+										]
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 40930,
+									"name": "authMethodsPerActor",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "This configuration specifies the supported authentication providers per actor type (such as "
+											},
+											{
+												"kind": "code",
+												"text": "`user`"
+											},
+											{
+												"kind": "text",
+												"text": ", "
+											},
+											{
+												"kind": "code",
+												"text": "`customer`"
+											},
+											{
+												"kind": "text",
+												"text": ", or any custom actors).\nFor example, you only want to allow SSO logins for "
+											},
+											{
+												"kind": "code",
+												"text": "`users`"
+											},
+											{
+												"kind": "text",
+												"text": ", while you want to allow email/password logins for "
+											},
+											{
+												"kind": "code",
+												"text": "`customers`"
+											},
+											{
+												"kind": "text",
+												"text": " to the storefront.\n\n"
+											},
+											{
+												"kind": "code",
+												"text": "`authMethodsPerActor`"
+											},
+											{
+												"kind": "text",
+												"text": " is a a map where the actor type (eg. 'user') is the key, and the value is an array of supported auth provider IDs."
+											}
+										],
+										"blockTags": [
+											{
+												"tag": "@example",
+												"content": [
+													{
+														"kind": "text",
+														"text": "Some example values of common use cases:\n\nThen, set the configuration in "
+													},
+													{
+														"kind": "code",
+														"text": "`medusa-config.ts`"
+													},
+													{
+														"kind": "text",
+														"text": ":\n\n"
+													},
+													{
+														"kind": "code",
+														"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      authMethodsPerActor: {\n        user: [\"email\"],\n        customer: [\"emailpass\", \"google\"]\n      }\n    }\n    // ...\n  },\n  // ...\n})\n```"
+													}
+												]
+											}
+										]
+									},
+									"type": {
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+											"qualifiedName": "Record"
+										},
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "string"
+											},
+											{
+												"type": "array",
+												"elementType": {
+													"type": "intrinsic",
+													"name": "string"
+												}
+											}
+										],
+										"name": "Record",
+										"package": "typescript"
+									}
+								},
+								{
+									"id": 40931,
+									"name": "restrictedFields",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isOptional": true
+									},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "Specifies the fields that can't be selected in the response unless specified in the allowed query config.\nThis is useful to restrict sensitive fields from being exposed in the API."
+											}
+										],
+										"blockTags": [
+											{
+												"tag": "@example",
+												"content": [
+													{
+														"kind": "code",
+														"text": "```js title=\"medusa-config.js\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    http: {\n      restrictedFields: {\n        store: [\"order\", \"orders\"],\n      }\n    }\n```"
+													}
+												]
+											}
+										]
+									},
+									"type": {
+										"type": "reflection",
+										"declaration": {
+											"id": 40932,
+											"name": "__type",
+											"variant": "declaration",
+											"kind": 65536,
+											"flags": {},
+											"children": [
+												{
+													"id": 40933,
+													"name": "store",
+													"variant": "declaration",
+													"kind": 1024,
+													"flags": {
+														"isOptional": true
+													},
+													"type": {
+														"type": "array",
+														"elementType": {
+															"type": "intrinsic",
+															"name": "string"
+														}
+													}
+												}
+											],
+											"groups": [
+												{
+													"title": "Properties",
+													"children": [
+														40933
+													]
+												}
+											]
+										}
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										40923,
+										40924,
+										40925,
+										40926,
+										40927,
+										40928,
+										40929,
+										40930,
+										40931
+									]
+								}
+							]
+						}
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						40904,
+						40905,
+						40906,
+						40907,
+						40908,
+						40915,
+						40916,
+						40917,
+						40918,
+						40920,
+						40921
+					]
+				}
+			]
+		},
+		{
+			"id": 40934,
+			"name": "ConfigModule",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "The configurations for your Medusa application are in "
+					},
+					{
+						"kind": "code",
+						"text": "`medusa-config.ts`"
+					},
+					{
+						"kind": "text",
+						"text": " located in the root of your Medusa project. The configurations include configurations for database, modules, and more.\n\n"
+					},
+					{
+						"kind": "code",
+						"text": "`medusa-config.ts`"
+					},
+					{
+						"kind": "text",
+						"text": " exports the value returned by the "
+					},
+					{
+						"kind": "code",
+						"text": "`defineConfig`"
+					},
+					{
+						"kind": "text",
+						"text": " utility function imported from "
+					},
+					{
+						"kind": "code",
+						"text": "`@medusajs/framework/utils`"
+					},
+					{
+						"kind": "text",
+						"text": ".\n\n"
+					},
+					{
+						"kind": "code",
+						"text": "`defineConfig`"
+					},
+					{
+						"kind": "text",
+						"text": " accepts as a parameter an object with the following properties:\n\n- "
+					},
+					{
+						"kind": "inline-tag",
+						"tag": "@link",
+						"text": "projectConfig",
+						"target": 40935,
+						"tsLinkText": "projectConfig"
+					},
+					{
+						"kind": "text",
+						"text": " (required): An object that holds general configurations related to the Medusa application, such as database or CORS configurations.\n- "
+					},
+					{
+						"kind": "inline-tag",
+						"tag": "@link",
+						"text": "admin",
+						"target": 40936,
+						"tsLinkText": "admin"
+					},
+					{
+						"kind": "text",
+						"text": ": An object that holds admin-related configurations.\n- "
+					},
+					{
+						"kind": "inline-tag",
+						"tag": "@link",
+						"text": "modules",
+						"target": 40941,
+						"tsLinkText": "modules"
+					},
+					{
+						"kind": "text",
+						"text": ": An object that configures the Medusa application's modules.\n- "
+					},
+					{
+						"kind": "inline-tag",
+						"tag": "@link",
+						"text": "featureFlags",
+						"target": 40942,
+						"tsLinkText": "featureFlags"
+					},
+					{
+						"kind": "text",
+						"text": ": An object that enables or disables features guarded by a feature flag.\n\nFor example:\n\n"
+					},
+					{
+						"kind": "code",
+						"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  projectConfig: {\n    // ...\n  },\n  admin: {\n    // ...\n  },\n  modules: {\n    // ...\n  },\n  featureFlags: {\n    // ...\n  }\n})\n```"
+					},
+					{
+						"kind": "text",
+						"text": "\n\n---\n\n## Environment Variables\n\nIt's highly recommended to store the values of configurations in environment variables, then reference them within "
+					},
+					{
+						"kind": "code",
+						"text": "`medusa-config.ts`"
+					},
+					{
+						"kind": "text",
+						"text": ".\n\nDuring development, you can set your environment variables in the "
+					},
+					{
+						"kind": "code",
+						"text": "`.env`"
+					},
+					{
+						"kind": "text",
+						"text": " file at the root of your Medusa application project. In production,\nsetting the environment variables depends on the hosting provider.\n\n---"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 40935,
+					"name": "projectConfig",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This property holds essential configurations related to the Medusa application, such as database and CORS configurations."
+							}
+						]
+					},
+					"type": {
+						"type": "reference",
+						"target": 40903,
+						"name": "ProjectConfigOptions",
+						"package": "@medusajs/framework"
+					}
+				},
+				{
+					"id": 40936,
+					"name": "admin",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This property holds configurations for the Medusa Admin dashboard."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  admin: {\n    backendUrl: process.env.MEDUSA_BACKEND_URL ||\n      \"http://localhost:9000\"\n  },\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "reference",
+						"target": 40889,
+						"name": "AdminOptions",
+						"package": "@medusajs/framework"
+					}
+				},
+				{
+					"id": 40941,
+					"name": "modules",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {
+						"isOptional": true
+					},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "This property holds all custom modules installed in your Medusa application.\n\n:::note\n\nMedusa's commerce modules are configured by default, so only\nadd them to this property if you're changing their configurations or adding providers to a module.\n\n:::\n\n"
+							},
+							{
+								"kind": "code",
+								"text": "`modules`"
+							},
+							{
+								"kind": "text",
+								"text": " is an array of objects, each holding a module's registration configurations. Each object has the following properties:\n\n1. "
+							},
+							{
+								"kind": "code",
+								"text": "`resolve`"
+							},
+							{
+								"kind": "text",
+								"text": ": a string indicating the path to the module relative to "
+							},
+							{
+								"kind": "code",
+								"text": "`src`"
+							},
+							{
+								"kind": "text",
+								"text": ", or the module's NPM package name. For example, "
+							},
+							{
+								"kind": "code",
+								"text": "`./modules/my-module`"
+							},
+							{
+								"kind": "text",
+								"text": ".\n2. "
+							},
+							{
+								"kind": "code",
+								"text": "`options`"
+							},
+							{
+								"kind": "text",
+								"text": ": (optional) an object indicating the options to pass to the module."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  modules: [\n    {\n      resolve: \"./modules/hello\"\n    }\n  ]\n  // ...\n})\n```"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+							"qualifiedName": "Record"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "boolean"
+									},
+									{
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+											"qualifiedName": "Partial"
+										},
+										"typeArguments": [
+											{
+												"type": "union",
+												"types": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
+															"qualifiedName": "InternalModuleDeclaration"
+														},
+														"name": "InternalModuleDeclaration",
+														"package": "@medusajs/types"
+													},
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/types/src/modules-sdk/index.ts",
+															"qualifiedName": "ExternalModuleDeclaration"
+														},
+														"name": "ExternalModuleDeclaration",
+														"package": "@medusajs/types"
+													}
+												]
+											}
+										],
+										"name": "Partial",
+										"package": "typescript"
+									}
+								]
+							}
+						],
+						"name": "Record",
+						"package": "typescript"
+					}
+				},
+				{
+					"id": 40942,
+					"name": "featureFlags",
+					"variant": "declaration",
+					"kind": 1024,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Some features in the Medusa application are guarded by a feature flag. This ensures constant shipping of new features while maintaining the engine’s stability.\n\nYou can enable a feature in your application by enabling its feature flag. Feature flags are enabled through either environment\nvariables or through this configuration property exported in "
+							},
+							{
+								"kind": "code",
+								"text": "`medusa-config.ts`"
+							},
+							{
+								"kind": "text",
+								"text": ".\n\nThe "
+							},
+							{
+								"kind": "code",
+								"text": "`featureFlags`"
+							},
+							{
+								"kind": "text",
+								"text": "'s value is an object. Its properties are the names of the feature flags, and their value is a boolean indicating whether the feature flag is enabled.\n\nYou can find available feature flags and their key name [here](https://github.com/medusajs/medusa/tree/develop/packages/medusa/src/loaders/feature-flags)."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@example",
+								"content": [
+									{
+										"kind": "code",
+										"text": "```ts title=\"medusa-config.ts\"\nmodule.exports = defineConfig({\n  featureFlags: {\n    analytics: true,\n    // ...\n  }\n  // ...\n})\n```"
+									},
+									{
+										"kind": "text",
+										"text": "\n\n:::note\n\nAfter enabling a feature flag, make sure to run migrations as it may require making changes to the database.\n\n:::"
+									}
+								]
+							}
+						]
+					},
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+							"qualifiedName": "Record"
+						},
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							},
+							{
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "boolean"
+									},
+									{
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+											"qualifiedName": "Record"
+										},
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "string"
+											},
+											{
+												"type": "intrinsic",
+												"name": "boolean"
+											}
+										],
+										"name": "Record",
+										"package": "typescript"
+									}
+								]
+							}
+						],
+						"name": "Record",
+						"package": "typescript"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Properties",
+					"children": [
+						40935,
+						40936,
+						40941,
+						40942
+					]
+				}
+			]
+		},
+		{
+			"id": 40943,
+			"name": "PluginDetails",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 40944,
+					"name": "__type",
+					"variant": "declaration",
+					"kind": 65536,
+					"flags": {},
+					"children": [
+						{
+							"id": 40945,
+							"name": "resolve",
+							"variant": "declaration",
+							"kind": 1024,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 40946,
+							"name": "name",
+							"variant": "declaration",
+							"kind": 1024,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 40947,
+							"name": "id",
+							"variant": "declaration",
+							"kind": 1024,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 40948,
+							"name": "options",
+							"variant": "declaration",
+							"kind": 1024,
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+									"qualifiedName": "Record"
+								},
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "string"
+									},
+									{
+										"type": "intrinsic",
+										"name": "unknown"
+									}
+								],
+								"name": "Record",
+								"package": "typescript"
+							}
+						},
+						{
+							"id": 40949,
+							"name": "version",
+							"variant": "declaration",
+							"kind": 1024,
+							"flags": {},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"children": [
+								40945,
+								40946,
+								40947,
+								40948,
+								40949
+							]
+						}
+					]
+				}
+			}
+		}
+	],
+	"groups": [
+		{
+			"title": "Interfaces",
+			"children": [
+				40889,
+				40898,
+				40903,
+				40934
+			]
+		},
+		{
+			"title": "Type Aliases",
+			"children": [
+				40943
+			]
+		}
+	],
+	"packageName": "@medusajs/framework",
+	"symbolIdMap": {
+		"40888": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": ""
+		},
+		"40889": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "AdminOptions"
+		},
+		"40890": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.disable"
+		},
+		"40891": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.path"
+		},
+		"40892": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.outDir"
+		},
+		"40893": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.backendUrl"
+		},
+		"40894": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.vite"
+		},
+		"40895": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type"
+		},
+		"40896": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type"
+		},
+		"40897": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "config"
+		},
+		"40898": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "HttpCompressionOptions"
+		},
+		"40899": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.enabled"
+		},
+		"40900": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.level"
+		},
+		"40901": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.memLevel"
+		},
+		"40902": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.threshold"
+		},
+		"40903": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "ProjectConfigOptions"
+		},
+		"40904": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.databaseName"
+		},
+		"40905": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.databaseUrl"
+		},
+		"40906": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.databaseSchema"
+		},
+		"40907": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.databaseLogging"
+		},
+		"40908": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.databaseDriverOptions"
+		},
+		"40909": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type"
+		},
+		"40910": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.connection"
+		},
+		"40911": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type"
+		},
+		"40912": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.ssl"
+		},
+		"40913": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type"
+		},
+		"40914": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.rejectUnauthorized"
+		},
+		"40915": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.redisUrl"
+		},
+		"40916": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.redisPrefix"
+		},
+		"40917": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.redisOptions"
+		},
+		"40918": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.sessionOptions"
+		},
+		"40920": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.workerMode"
+		},
+		"40921": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.http"
+		},
+		"40922": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type"
+		},
+		"40923": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.jwtSecret"
+		},
+		"40924": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.jwtExpiresIn"
+		},
+		"40925": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.cookieSecret"
+		},
+		"40926": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.authCors"
+		},
+		"40927": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.compression"
+		},
+		"40928": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.storeCors"
+		},
+		"40929": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.adminCors"
+		},
+		"40930": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.authMethodsPerActor"
+		},
+		"40931": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.restrictedFields"
+		},
+		"40932": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type"
+		},
+		"40933": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.store"
+		},
+		"40934": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "ConfigModule"
+		},
+		"40935": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.projectConfig"
+		},
+		"40936": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.admin"
+		},
+		"40941": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.modules"
+		},
+		"40942": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.featureFlags"
+		},
+		"40943": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "PluginDetails"
+		},
+		"40944": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type"
+		},
+		"40945": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.resolve"
+		},
+		"40946": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.name"
+		},
+		"40947": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.id"
+		},
+		"40948": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.options"
+		},
+		"40949": {
+			"sourceFileName": "../../../../packages/core/framework/src/config/types.ts",
+			"qualifiedName": "__type.version"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "../../../../packages/core/framework/src/config/types.ts"
+		},
+		"reflections": {
+			"1": 40888
+		}
+	}
+}

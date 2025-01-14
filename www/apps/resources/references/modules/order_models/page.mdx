@@ -1,0 +1,84 @@
+---
+displayed_sidebar: orderModelReference
+slug: /references/order/models
+---
+
+import { TypeList } from "docs-ui"
+
+# Order Module Data Models Reference
+
+This documentation provides a reference to the data models in the Order Module
+
+## Relations Overview
+
+```mermaid
+erDiagram
+	OrderClaim }|--|{ Order : order
+	OrderClaim ||--|| Return : return
+	OrderClaim ||--|| OrderClaimItem : additional_items
+	OrderClaim ||--|| OrderShipping : shipping_methods
+	OrderClaim ||--|| OrderTransaction : transactions
+	OrderClaimItem ||--|| OrderClaimItemImage : images
+	OrderClaimItem }|--|{ OrderLineItem : item
+	OrderCreditLine }|--|{ Order : order
+	OrderExchange }|--|{ Order : order
+	OrderExchange ||--|| Return : return
+	OrderExchange ||--|| OrderExchangeItem : additional_items
+	OrderExchange ||--|| OrderShipping : shipping_methods
+	OrderExchange ||--|| OrderTransaction : transactions
+	OrderExchangeItem }|--|{ OrderLineItem : item
+	OrderLineItem ||--|| OrderLineItemTaxLine : tax_lines
+	OrderLineItem ||--|| OrderLineItemAdjustment : adjustments
+	Order }|--|{ OrderAddress : shipping_address
+	Order ||--|| OrderSummary : summary
+	Order ||--|| OrderItem : items
+	Order ||--|| OrderShipping : shipping_methods
+	Order ||--|| OrderTransaction : transactions
+	OrderChange }|--|{ Order : order
+	OrderChange }|--|{ Return : return
+	OrderChange }|--|{ OrderClaim : claim
+	OrderChange }|--|{ OrderExchange : exchange
+	OrderChange ||--|| OrderChangeAction : actions
+	OrderChangeAction }|--|{ Order : order
+	OrderChangeAction }|--|{ Return : return
+	OrderChangeAction }|--|{ OrderClaim : claim
+	OrderChangeAction }|--|{ OrderExchange : exchange
+	OrderItem }|--|{ OrderLineItem : item
+	OrderShipping }|--|{ Return : return
+	OrderShipping }|--|{ OrderShippingMethod : shipping_method
+	Return }|--|{ Order : order
+	Return ||--|| ReturnItem : items
+	Return ||--|| OrderTransaction : transactions
+	ReturnItem }|--|{ ReturnReason : reason
+	ReturnItem }|--|{ OrderLineItem : item
+	ReturnReason }|--|{ ReturnReason : parent_return_reason
+	OrderShippingMethod ||--|| OrderShippingMethodTaxLine : tax_lines
+	OrderShippingMethod ||--|| OrderShippingMethodAdjustment : adjustments
+
+```
+
+## Classes
+
+- [Order](../../order_models/classes/order_models.Order/page.mdx)
+- [OrderAddress](../../order_models/classes/order_models.OrderAddress/page.mdx)
+- [OrderChange](../../order_models/classes/order_models.OrderChange/page.mdx)
+- [OrderChangeAction](../../order_models/classes/order_models.OrderChangeAction/page.mdx)
+- [OrderClaim](../../order_models/classes/order_models.OrderClaim/page.mdx)
+- [OrderClaimItem](../../order_models/classes/order_models.OrderClaimItem/page.mdx)
+- [OrderClaimItemImage](../../order_models/classes/order_models.OrderClaimItemImage/page.mdx)
+- [OrderCreditLine](../../order_models/classes/order_models.OrderCreditLine/page.mdx)
+- [OrderExchange](../../order_models/classes/order_models.OrderExchange/page.mdx)
+- [OrderExchangeItem](../../order_models/classes/order_models.OrderExchangeItem/page.mdx)
+- [OrderItem](../../order_models/classes/order_models.OrderItem/page.mdx)
+- [OrderLineItem](../../order_models/classes/order_models.OrderLineItem/page.mdx)
+- [OrderLineItemAdjustment](../../order_models/classes/order_models.OrderLineItemAdjustment/page.mdx)
+- [OrderLineItemTaxLine](../../order_models/classes/order_models.OrderLineItemTaxLine/page.mdx)
+- [OrderShipping](../../order_models/classes/order_models.OrderShipping/page.mdx)
+- [OrderShippingMethod](../../order_models/classes/order_models.OrderShippingMethod/page.mdx)
+- [OrderShippingMethodAdjustment](../../order_models/classes/order_models.OrderShippingMethodAdjustment/page.mdx)
+- [OrderShippingMethodTaxLine](../../order_models/classes/order_models.OrderShippingMethodTaxLine/page.mdx)
+- [OrderSummary](../../order_models/classes/order_models.OrderSummary/page.mdx)
+- [OrderTransaction](../../order_models/classes/order_models.OrderTransaction/page.mdx)
+- [Return](../../order_models/classes/order_models.Return/page.mdx)
+- [ReturnItem](../../order_models/classes/order_models.ReturnItem/page.mdx)
+- [ReturnReason](../../order_models/classes/order_models.ReturnReason/page.mdx)

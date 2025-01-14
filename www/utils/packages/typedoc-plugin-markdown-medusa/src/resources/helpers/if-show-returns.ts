@@ -1,0 +1,20 @@
+import Handlebars from "handlebars"
+import { ReflectionKind, SignatureReflection } from "typedoc"
+import getCorrectDeclarationReflection from "../../utils/get-correct-declaration-reflection.js"
+import { MarkdownTheme } from "../../theme.js"
+
+export default function (theme: MarkdownTheme) {
+  Handlebars.registerHelper(
+    "ifShowReturns",
+    function (this: SignatureReflection, options: Handlebars.HelperOptions) {
+      this.parent =
+        getCorrectDeclarationReflection(this.parent, theme) || this.parent
+      const { sections } = theme.getFormattingOptionsForLocation()
+      return sections?.member_returns !== false &&
+        this.type &&
+        !this.parent?.kindOf(ReflectionKind.Constructor)
+        ? options.fn(this)
+        : options.inverse(this)
+    }
+  )
+}

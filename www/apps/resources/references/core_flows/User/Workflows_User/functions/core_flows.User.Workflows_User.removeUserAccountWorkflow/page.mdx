@@ -1,0 +1,137 @@
+---
+slug: /references/medusa-workflows/removeUserAccountWorkflow
+sidebar_label: removeUserAccountWorkflow
+tags:
+  - remote query
+  - auth
+  - workflow
+  - user
+  - event bus
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# removeUserAccountWorkflow - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `removeUserAccountWorkflow`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This workflow deletes a user and remove the association in the auth identity.
+
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/1b86c17b7293f3b810c062d78ec6ef563f968366/packages/core/core-flows/src/user/workflows/remove-user-account.ts#L19" />
+
+## Examples
+
+<CodeTabs group="workflow-exection">
+    <CodeTab label="API Route" value="api-route">
+    
+```ts title="src/api/workflow/route.ts"
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import { removeUserAccountWorkflow } from "@medusajs/medusa/core-flows"
+
+export async function POST(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const { result } = await removeUserAccountWorkflow(req.scope)
+    .run({
+      input: {
+        "userId": "{value}"
+      }
+    })
+
+  res.send(result)
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Subscriber" value="subscriber">
+    
+```ts title="src/subscribers/order-placed.ts"
+import {
+  type SubscriberConfig,
+  type SubscriberArgs,
+} from "@medusajs/framework"
+import { removeUserAccountWorkflow } from "@medusajs/medusa/core-flows"
+
+export default async function handleOrderPlaced({
+  event: { data },
+  container,
+}: SubscriberArgs < { id: string } > ) {
+  const { result } = await removeUserAccountWorkflow(container)
+    .run({
+      input: {
+        "userId": "{value}"
+      }
+    })
+
+  console.log(result)
+}
+
+export const config: SubscriberConfig = {
+  event: "order.placed",
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Scheduled Job" value="scheduled-job">
+    
+```ts title="src/jobs/message-daily.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+import { removeUserAccountWorkflow } from "@medusajs/medusa/core-flows"
+
+export default async function myCustomJob(
+  container: MedusaContainer
+) {
+  const { result } = await removeUserAccountWorkflow(container)
+    .run({
+      input: {
+        "userId": "{value}"
+      }
+    })
+
+  console.log(result)
+}
+
+export const config = {
+  name: "run-once-a-day",
+  schedule: "0 0 * * *",
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Another Workflow" value="another-workflow">
+    
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { removeUserAccountWorkflow } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const result = removeUserAccountWorkflow
+      .runAsStep({
+        input: {
+          "userId": "{value}"
+        }
+      })
+  }
+)
+```
+
+    </CodeTab>
+  </CodeTabs>
+
+## Steps
+
+<WorkflowDiagram workflow={{"name":"removeUserAccountWorkflow","steps":[{"type":"workflow","name":"deleteUsersWorkflow","description":"This workflow deletes one or more users.\n\n","link":"../core_flows.User.Workflows_User.deleteUsersWorkflow/page.mdx","depth":1},{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::\n\n","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":2},{"type":"when","condition":"{\n      return !!authIdentity\n    }","depth":"3","steps":[{"type":"step","name":"setAuthAppMetadataStep","description":"This step sets the `app_metadata` property of an auth identity.\n\n","link":"../../../../Auth/Steps_Auth/functions/core_flows.Auth.Steps_Auth.setAuthAppMetadataStep/page.mdx","depth":3}]}]}} />
+
+## Input
+
+<TypeList types={[{"name":"RemoveUserAccountWorkflowInput","type":"[RemoveUserAccountWorkflowInput](../../../../types/core_flows.RemoveUserAccountWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"userId","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="removeUserAccountWorkflow"/>
+
+## Output
+
+<TypeList types={[{"name":"string","type":"`string`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"string","type":"`string`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="removeUserAccountWorkflow"/>

@@ -1,0 +1,32 @@
+export const metadata = {
+  title: `Order Versioning`,
+}
+
+# {metadata.title}
+
+In this document, you’ll learn how an order and its details are versioned.
+
+## What's Versioning?
+
+Versioning means assigning a version number to a record, such as an order and its items. This is useful to view the different versions of the order following changes in its lifetime.
+
+When changes are made on an order, such as an item is added or returned, the order's version changes.
+
+---
+
+## version Property
+
+The `Order` and `OrderSummary` data models have a `version` property that indicates the current version. By default, its value is `1`.
+
+Other order-related data models, such as `OrderItem`, also has a `version` property, but it indicates the version it belongs to.
+
+---
+
+## How the Version Changes
+
+When the order is changed, such as an item is exchanged, this changes the version of the order and its related data:
+
+1. The version of the order and its summary is incremented.
+2. Related order data that have a `version` property, such as the `OrderItem`, are duplicated. The duplicated item has the new version, whereas the original item has the previous version.
+
+When the order is retrieved, only the related data having the same version is retrieved.

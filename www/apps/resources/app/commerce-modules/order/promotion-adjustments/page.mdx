@@ -1,0 +1,137 @@
+---
+sidebar_label: "Promotions Adjustments"
+---
+
+export const metadata = {
+  title: `Promotions Adjustments in Orders`,
+}
+
+# {metadata.title}
+
+In this document, you’ll learn how a promotion is applied to an order’s items and shipping methods using adjustment lines.
+
+## What are Adjustment Lines?
+
+An adjustment line indicates a change to a line item or a shipping method’s amount. It’s used to apply promotions or discounts on an order.
+
+The [OrderLineItemAdjustment data model](/references/order/models/OrderLineItemAdjustment) represents changes on a line item, and the [OrderShippingMethodAdjustment data model](/references/order/models/OrderShippingMethodAdjustment) represents changes on a shipping method.
+
+![A diagram showcasing the relation between an order, its items and shipping methods, and their adjustment lines](https://res.cloudinary.com/dza7lstvk/image/upload/v1712306017/Medusa%20Resources/order-adjustments_myflir.jpg)
+
+The `amount` property of the adjustment line indicates the amount to be discounted from the original amount.
+
+<Note title="Tip">
+
+The ID of the applied promotion is stored in the `promotion_id` property of the adjustment line.
+
+</Note>
+
+---
+
+## Discountable Option
+
+The `OrderLineItem` data model has an `is_discountable` property that indicates whether promotions can be applied to the line item. It’s enabled by default.
+
+When disabled, a promotion can’t be applied to a line item. In the context of the Promotion Module, the promotion isn’t applied to the line item even if it matches its rules.
+
+
+---
+
+## Promotion Actions
+
+When using the Order and Promotion modules together, use the [computeActions method of the Promotion Module’s main service](/references/promotion/computeActions). It retrieves the actions of line items and shipping methods.
+
+<Note>
+
+Learn more about actions in the [Promotion Module’s documentation](../../promotion/actions/).
+
+</Note>
+
+```ts collapsibleLines="1-10" expandButtonLabel="Show Imports"
+import {
+  ComputeActionAdjustmentLine,
+  ComputeActionItemLine,
+  ComputeActionShippingLine,
+  // ...
+} from "@medusajs/framework/types"
+
+// ...
+
+// retrieve the order
+const order = await orderModuleService.retrieveOrder("ord_123", {
+  relations: [
+    "items.item.adjustments",
+    "shipping_methods.shipping_method.adjustments",
+  ],
+})
+// retrieve the line item adjustments
+const lineItemAdjustments: ComputeActionItemLine[] = []
+order.items.forEach((item) => {
+  const filteredAdjustments = item.adjustments?.filter(
+    (adjustment) => adjustment.code !== undefined
+  ) as unknown as ComputeActionAdjustmentLine[]
+  if (filteredAdjustments.length) {
+    lineItemAdjustments.push({
+      ...item,
+      ...item.detail,
+      adjustments: filteredAdjustments,
+    })
+  }
+})
+
+//retrieve shipping method adjustments
+const shippingMethodAdjustments: ComputeActionShippingLine[] =
+  []
+order.shipping_methods.forEach((shippingMethod) => {
+  const filteredAdjustments =
+    shippingMethod.adjustments?.filter(
+      (adjustment) => adjustment.code !== undefined
+    ) as unknown as ComputeActionAdjustmentLine[]
+  if (filteredAdjustments.length) {
+    shippingMethodAdjustments.push({
+      ...shippingMethod,
+      adjustments: filteredAdjustments,
+    })
+  }
+})
+
+// compute actions
+const actions = await promotionModuleService.computeActions(
+  ["promo_123"],
+  {
+    items: lineItemAdjustments,
+    shipping_methods: shippingMethodAdjustments,
+    // TODO infer from cart or region
+    currency_code: "usd",
+  }
+)
+```
+
+The `computeActions` method accepts the existing adjustments of line items and shipping methods to compute the actions accurately.
+
+Then, use the returned `addItemAdjustment` and `addShippingMethodAdjustment` actions to set the order’s line items and the shipping method’s adjustments.
+
+```ts collapsibleLines="1-9" expandButtonLabel="Show Imports"
+import {
+  AddItemAdjustmentAction,
+  AddShippingMethodAdjustment,
+  // ...
+} from "@medusajs/framework/types"
+
+// ...
+
+await orderModuleService.setOrderLineItemAdjustments(
+  order.id,
+  actions.filter(
+    (action) => action.action === "addItemAdjustment"
+  ) as AddItemAdjustmentAction[]
+)
+
+await orderModuleService.setOrderShippingMethodAdjustments(
+  order.id,
+  actions.filter(
+    (action) =>
+      action.action === "addShippingMethodAdjustment"
+  ) as AddShippingMethodAdjustment[]
+)
+```

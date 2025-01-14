@@ -1,0 +1,212 @@
+import { AcademicCapSolid, BoltSolid, PuzzleSolid } from "@medusajs/icons"
+import { LearningPath } from "docs-ui"
+
+export const metadata = {
+  title: `Digital Products Recipe`,
+}
+
+# {metadata.title}
+
+This recipe provides the general steps to implement digital products in your Medusa application.
+
+## Overview
+
+Digital products are stored privately using a storage service like S3. When the customer buys this type of product, an email is sent to them where they can download the product.
+
+To implement digital products in Medusa, you create a Digital Product Module that introduces the concept of a digital product and link it to existing product concepts in the Product Module.
+
+---
+
+## Install a File Module Provider
+
+A file module provider handles storage functionalities in Medusa. This includes uploading, retrieving, and downloading files, among other features.
+
+Use a file module provider to manage your stored digital products.
+
+During development, you can use the Local File Module Provider, which is installed by default in your store. For production, check out available file module providers or create your own.
+
+<CardList items={[
+  {
+    href: "/architectural-modules/file",
+    title: "File Module Providers",
+    text: "Check out available file module providers.",
+    icon: PuzzleSolid,
+  },
+  {
+    href: "/references/file-provider-module",
+    title: "Create a File Module Provider",
+    text: "Learn how to create a file module provider.",
+    icon: AcademicCapSolid,
+  },
+]} />
+
+---
+
+## Create Digital Product Module
+
+Your custom features and functionalities are implemented inside modules. The module is integrated into the Medusa application without any implications on existing functionalities.
+
+The module will hold your custom data models and the service implementing digital-product-related features.
+
+<Card
+  href="!docs!/learn/fundamentals/modules"
+  title="How to Create a Module"
+  text="Learn how to create a module."
+  icon={AcademicCapSolid}
+/>
+
+### Create Custom Data Model
+
+A data model represents a table in the database. You can define in your module data models to store data related to your custom features, such as a digital product.
+
+Then, you can link your custom data model to data models from other modules. For example, you can link the digital product model to the Product Module's `ProductVariant` data model.
+
+<CardList itemsPerRow={2} items={[
+  {
+    href: "!docs!/learn/fundamentals/modules#1-create-data-model",
+    title: "How to Create a Data Model",
+    text: "Learn how to create a data model.",
+    icon: AcademicCapSolid,
+  },
+  {
+    href: "!docs!/learn/fundamentals/module-links",
+    title: "Module Links",
+    text: "Learn how to link data models of different modules.",
+    icon: AcademicCapSolid,
+  },
+]} />
+
+### Implement Data Management Features
+
+Your module’s main service holds data-management and other related features. Then, in other resources, such as an API route, you can resolve the service from the Medusa container and use its functionalities.
+
+Medusa facilitates implementing data-management features using the service factory. Your module's main service can extend this service factory, and it generates data-management methods for your data models.
+
+<Card
+  href="!docs!/learn/fundamentals/modules/service-factory"
+  title="Service Factory"
+  text="Learn about the service factory and how to use it."
+  icon={AcademicCapSolid}
+/>
+
+---
+
+## Add Custom API Routes
+
+API routes expose your features to external applications, such as the admin dashboard or the storefront.
+
+You can create custom API routes that allow merchants to list and create digital products. In these API routes, you resolve the Digital Product Module’s main service to use its data-management features.
+
+<Card
+  href="!docs!/learn/fundamentals/api-routes"
+  title="API Routes"
+  text="Learn how to create an API route."
+  icon={AcademicCapSolid}
+/>
+
+---
+
+## Implement Workflows
+
+Your use case most likely has flows, such as creating digital products, that require multiple steps.
+
+Create workflows to implement these flows, then utilize these workflows in other resources, such as an API route.
+
+<Card
+  href="!docs!/learn/fundamentals/workflows"
+  title="Workflows"
+  text="Learn how to create a workflow."
+  icon={AcademicCapSolid}
+/>
+
+---
+
+## Manage Linked Records
+
+If you've defined links between data models of two modules, you can manage them through two tools: Link and Query.
+
+Use Link to create a link between two records, and use Query to fetch data across linked data models.
+
+<CardList itemsPerRow={2} items={[
+  {
+    href: "!docs!/learn/fundamentals/module-links/link",
+    title: "How to Use Link",
+    text: "Learn how to link data models of different modules.",
+    icon: AcademicCapSolid,
+  },
+  {
+    href: "!docs!/learn/fundamentals/module-links/query",
+    title: "How to Use Query",
+    text: "Learn how to fetch data across modules with Medusa's Query.",
+    icon: AcademicCapSolid,
+  },
+]} />
+
+---
+
+## Customize Admin Dashboard
+
+You can extend the Medusa Admin to provide merchants with an interface to manage digital products. You can inject widgets into existing pages or create new pages. 
+
+In your customizations, you send requests to the API routes you created to create and list digital products.
+
+<CardList items={[
+  {
+    href: "!docs!/learn/fundamentals/admin/widgets",
+    title: "Create a Widget",
+    text: "Learn how to create a widget in the Medusa Admin.",
+    icon: AcademicCapSolid,
+  },
+  {
+    href: "!docs!/learn/fundamentals/admin/ui-routes",
+    title: "Create UI Route",
+    text: "Learn how to create a UI route in the Medusa Admin.",
+    icon: AcademicCapSolid,
+  },
+]} />
+
+---
+
+## Deliver Digital Products to the Customer
+
+When a customer purchases a digital product, they should receive a link to download it.
+
+You can create or install a fulfillment module provider that handles the logic of fulfilling the digital product.
+
+<Note type="soon">
+
+Fulfillment providers are under development.
+
+</Note>
+
+<Card
+  href="/commerce-modules/fulfillment"
+  title="Fulfillment Module"
+  text="Learn about the Fulfillment Module and its providers."
+  icon={AcademicCapSolid}
+/>
+
+---
+
+## Customize or Build Storefront
+
+Customers use your storefront to browse your digital products and purchase them. You can also provide other helpful features, such as previewing the digital product before purchase.
+
+Medusa provides a Next.js storefront with standard commerce features including listing products, placing orders, and managing accounts. You can customize the storefront and cater its functionalities to support digital products.
+
+Alternatively, you can build the storefront with your preferred tech stack.
+
+<CardList items={[
+  {
+    href: "/nextjs-starter",
+    title: "Next.js Starter",
+    text: "Learn how to install and use the Next.js Starter storefront.",
+    icon: AcademicCapSolid,
+  },
+  {
+    href: "/storefront-development",
+    title: "Storefront Guides",
+    text: "Learn how to build a storefront for your Medusa application.",
+    icon: AcademicCapSolid,
+  },
+]} />

@@ -1,0 +1,478 @@
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Create Brands UI Route in Admin`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll add a UI route to the admin dashboard that shows all [brands](../../custom-features/module/page.mdx) in a new page. You'll retrieve the brands from the server and display them in a table with pagination.
+
+<Prerequisites
+  items={[
+    {
+      text: "Brands Module",
+      link: "/learn/customization/custom-features/modules"
+    },
+  ]}
+/>
+
+## 1. Get Brands API Route
+
+In a [previous chapter](../../extend-features/query-linked-records/page.mdx), you learned how to add an API route that retrieves brands and their products using [Query](../../../fundamentals/module-links/query/page.mdx). You'll expand that API route to support pagination, so that on the admin dashboard you can show the brands in a paginated table.
+
+Replace or create the `GET` API route at `src/api/admin/brands/route.ts` with the following:
+
+export const apiRouteHighlights = [
+  ["15", "metadata", "Pagination details, such as the total count or how many items were skipped."],
+  ["18", "queryConfig", "Query configurations parsed from the request."],
+]
+
+```ts title="src/api/admin/brands/route.ts" highlights={apiRouteHighlights}
+// other imports...
+import {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+
+export const GET = async (
+  req: MedusaRequest,
+  res: MedusaResponse
+) => {
+  const query = req.scope.resolve("query")
+  
+  const { 
+    data: brands, 
+    metadata: { count, take, skip },
+  } = await query.graph({
+    entity: "brand",
+    ...req.queryConfig,
+  })
+
+  res.json({ 
+    brands,
+    count,
+    limit: take,
+    offset: skip,
+  })
+}
+```
+
+In the API route, you use Query's `graph` method to retrieve the brands. In the method's object parameter, you spread the `queryConfig` property of the request object. This property holds configurations for pagination and retrieved fields.
+
+The query configurations are combined from default configurations, which you'll add next, and the request's query parameters:
+
+- `fields`: The fields to retrieve in the brands.
+- `limit`: The maximum number of items to retrieve.
+- `offset`: The number of items to skip before retrieving the returned items.
+
+When you pass pagination configurations to the `graph` method, the returned object has the pagination's details in a `metadata` property, whose value is an object having the following properties:
+
+- `count`: The total count of items.
+- `take`: The maximum number of items returned in the `data` array.
+- `skip`: The number of items skipped before retrieving the returned items.
+
+You return in the response the retrieved brands and the pagination configurations.
+
+<Note>
+
+Learn more about pagination with Query in [this chapter](../../../fundamentals/module-links/query/page.mdx#apply-pagination).
+
+</Note>
+
+---
+
+## 2. Add Default Query Configurations
+
+Next, you'll set the default query configurations of the above API route and allow passing query parameters to change the configurations.
+
+Medusa provides a `validateAndTransformQuery` middleware that validates the accepted query parameters for a request and sets the default Query configuration. So, in `src/api/middlewares.ts`, add a new middleware configuration object:
+
+```ts title="src/api/middlewares.ts"
+import { 
+  defineMiddlewares,
+  validateAndTransformQuery,
+} from "@medusajs/framework/http"
+import { createFindParams } from "@medusajs/medusa/api/utils/validators"
+// other imports...
+
+export const GetBrandsSchema = createFindParams()
+
+export default defineMiddlewares({
+  routes: [
+    // ...
+    {
+      matcher: "/admin/brands",
+      method: "GET",
+      middlewares: [
+        validateAndTransformQuery(
+          GetBrandsSchema,
+          {
+            defaults: [
+              "id",
+              "name",
+              "products.*",
+            ],
+            isList: true,
+          }
+        ),
+      ],
+    },
+
+  ],
+})
+```
+
+You apply the `validateAndTransformQuery` middleware on the `GET /admin/brands` API route. The middleware accepts two parameters:
+
+- A [Zod](https://zod.dev/) schema that a request's query parameters must satisfy. Medusa provides `createFindParams` that generates a Zod schema with the following properties:
+    - `fields`: A comma-separated string indicating the fields to retrieve.
+    - `limit`: The maximum number of items to retrieve.
+    - `offset`: The number of items to skip before retrieving the returned items.
+    - `order`: The name of the field to sort the items by. Learn more about sorting in [the API reference](!api!/admin#sort-order)
+- An object of Query configurations having the following properties:
+    - `defaults`: An array of default fields and relations to retrieve.
+    - `isList`: Whether the API route returns a list of items.
+
+By applying the above middleware, you can pass pagination configurations to `GET /admin/brands`, which will return a paginated list of brands. You'll see how it works when you create the UI route.
+
+<Note>
+
+Learn more about using the `validateAndTransformQuery` middleware to configure Query in [this chapter](../../../fundamentals/module-links/query/page.mdx#request-query-configurations).
+
+</Note>
+
+---
+
+## 3. Initialize JS SDK
+
+In your custom UI route, you'll retrieve the brands by sending a request to the Medusa server. Medusa has a [JS SDK](!resources!/js-sdk) that simplifies sending requests to the core API route.
+
+If you didn't follow the [previous chapter](../widget/page.mdx), create the file `src/admin/lib/sdk.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the file](https://res.cloudinary.com/dza7lstvk/image/upload/v1733414606/Medusa%20Book/brands-admin-dir-overview-1_jleg0t.jpg)
+
+```ts title="src/admin/lib/sdk.ts"
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: "http://localhost:9000",
+  debug: process.env.NODE_ENV === "development",
+  auth: {
+    type: "session",
+  },
+})
+```
+
+You initialize the SDK passing it the following options:
+
+- `baseUrl`: The URL to the Medusa server.
+- `debug`: Whether to enable logging debug messages. This should only be enabled in development.
+- `auth.type`: The authentication method used in the client application, which is `session` in the Medusa Admin dashboard.
+
+You can now use the SDK to send requests to the Medusa server.
+
+<Note>
+
+Learn more about the JS SDK and its options in [this reference](!resources!/js-sdk).
+
+</Note>
+
+---
+
+## 4. Add a UI Route to Show Brands
+
+You'll now add the UI route that shows the paginated list of brands. A UI route is a React component created in a `page.tsx` file under a sub-directory of `src/admin/routes`. The file's path relative to src/admin/routes determines its path in the dashboard.
+
+<Note>
+
+Learn more about UI routes in [this chapter](../../../fundamentals/admin/ui-routes/page.mdx).
+
+</Note>
+
+So, to add the UI route at the `localhost:9000/app/brands` path, create the file `src/admin/routes/brands/page.tsx` with the following content:
+
+![Directory structure of the Medusa application after adding the UI route.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733472011/Medusa%20Book/brands-admin-dir-overview-3_syytld.jpg)
+
+export const uiRouteHighlights = [
+  ["8", "BrandsPage", "The UI route that displays a new page."],
+  ["23", "defineRouteConfig", "Export config to add a link for the UI route in the sidebar."],
+  ["24", "label", "The sidebar item's label."],
+  ["25", "icon", "The sidebar item's icon."]
+]
+
+```tsx title="src/admin/routes/brands/page.tsx" highlights={uiRouteHighlights}
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { TagSolid } from "@medusajs/icons"
+import { Container, Heading } from "@medusajs/ui"
+import { useQuery } from "@tanstack/react-query"
+import { sdk } from "../../lib/sdk"
+import { useMemo, useState } from "react"
+
+const BrandsPage = () => {
+  // TODO retrieve brands
+
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <div>
+          <Heading level="h2">Brands</Heading>
+        </div>
+      </div>
+      {/* TODO show brands */}
+    </Container>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Brands",
+  icon: TagSolid,
+})
+
+export default BrandsPage
+```
+
+A route's file must export the React component that will be rendered in the new page. It must be the default export of the file. You can also export configurations that add a link in the sidebar for the UI route. You create these configurations using `defineRouteConfig` from the Admin Extension SDK.
+
+So far, you only show a "Brands" header. In admin customizations, use components from the [Medusa UI package](!ui!) to maintain a consistent user interface and design in the dashboard.
+
+### Add Table Component
+
+To show the brands with pagination functionalities, you'll create a new `Table` component that uses the UI package's [Table](!ui!/components/table) component with some alterations to match the design of the Medusa Admin. This new component is taken from the [Admin Components guide](!resources!/admin-components/components/table).
+
+Create the `Table` component in the file `src/admin/components/table.tsx`:
+
+![Directory structure of the Medusa application after adding the table component.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733472527/Medusa%20Book/brands-admin-dir-overview-4_avosrf.jpg)
+
+```tsx title="src/admin/components/table.tsx"
+import { useMemo } from "react"
+import { Table as UiTable } from "@medusajs/ui"
+
+export type TableProps = {
+  columns: {
+    key: string
+    label?: string
+    render?: (value: unknown) => React.ReactNode
+  }[]
+  data: Record<string, unknown>[]
+  pageSize: number
+  count: number
+  currentPage: number
+  setCurrentPage: (value: number) => void
+}
+
+export const Table = ({
+  columns,
+  data,
+  pageSize,
+  count,
+  currentPage,
+  setCurrentPage,
+}: TableProps) => {
+  const pageCount = useMemo(() => {
+    return Math.ceil(count / pageSize)
+  }, [count, pageSize])
+
+  const canNextPage = useMemo(() => {
+    return currentPage < pageCount - 1
+  }, [currentPage, pageCount])
+  const canPreviousPage = useMemo(() => {
+    return currentPage - 1 >= 0
+  }, [currentPage])
+
+  const nextPage = () => {
+    if (canNextPage) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+
+  const previousPage = () => {
+    if (canPreviousPage) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+
+  return (
+    <div className="flex h-full flex-col overflow-hidden !border-t-0">
+      <UiTable>
+        <UiTable.Header>
+          <UiTable.Row>
+            {columns.map((column, index) => (
+              <UiTable.HeaderCell key={index}>
+                {column.label || column.key}
+              </UiTable.HeaderCell>
+            ))}
+          </UiTable.Row>
+        </UiTable.Header>
+        <UiTable.Body>
+          {data.map((item, index) => {
+            const rowIndex = "id" in item ? item.id as string : index
+            return (
+              <UiTable.Row key={rowIndex}>
+                {columns.map((column, index) => (
+                  <UiTable.Cell key={`${rowIndex}-${index}`}>
+                    <>
+                      {column.render && column.render(item[column.key])}
+                      {!column.render && (
+                        <>{item[column.key] as string}</>
+                      )}
+                    </>
+                  </UiTable.Cell>
+                ))}
+              </UiTable.Row>
+            )
+          })}
+        </UiTable.Body>
+      </UiTable>
+      <UiTable.Pagination
+        count={count}
+        pageSize={pageSize}
+        pageIndex={currentPage}
+        pageCount={pageCount}
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        previousPage={previousPage}
+        nextPage={nextPage}
+      />
+    </div>
+  )
+}
+```
+
+This component accepts the following props:
+
+- `columns`: An array of the table's columns.
+- `data`: The rows in the table.
+- `pageSize`: The maximum number of items shown in a page.
+- `count`: The total number of items.
+- `currentPage`: A zero-based index of the current page.
+- `setCurrentPage`: A function to change the current page.
+
+In the component, you use the UI package's [Table](!ui!/components/table) component to display the data received as a prop in a table that supports pagination.
+
+You can learn more about this component's implementation and how it works in the [Admin Components guide](!resources!/admin-components), which provides more examples of how to build common components in the Medusa Admin dashboard.
+
+### Retrieve Brands From API Route
+
+You'll now update the UI route to retrieve the brands from the API route you added earlier.
+
+First, add the following type in `src/admin/routes/brands/page.tsx`:
+
+```tsx title="src/admin/routes/brands/page.tsx"
+type BrandsResponse = {
+  brands: {
+    id: string
+    name: string
+  }[]
+  count: number
+  limit: number
+  offset: number
+}
+```
+
+This is the type of expected response from the `GET /admin/brands` API route.
+
+Then, replace the `// TODO retrieve brands` in the component with the following:
+
+export const queryHighlights = [
+  ["1", "currentPage", "A zero-based index of the current page of items."],
+  ["2", "limit", "The maximum number of items per page."],
+  ["3", "offset", "The number of items to skip before retrieving the page's items."],
+  ["7", "useQuery", "Retrieve brands using Tanstack Query"],
+  ["8", "fetch", "Send a request to a custom API route."],
+  ["8", "`/admin/brands`", "The API route's path."],
+  ["9", "query", "Query parameters to pass in the request"]
+]
+
+```tsx title="src/admin/routes/brands/page.tsx" highlights={queryHighlights}
+const [currentPage, setCurrentPage] = useState(0)
+const limit = 15
+const offset = useMemo(() => {
+  return currentPage * limit
+}, [currentPage])
+
+const { data } = useQuery<BrandsResponse>({
+  queryFn: () => sdk.client.fetch(`/admin/brands`, {
+    query: {
+      limit,
+      offset,
+    },
+  }),
+  queryKey: [["brands", limit, offset]],
+})
+```
+
+You first define pagination-related variables:
+
+- `currentPage`: A zero-based index of the current page of items.
+- `limit`: The maximum number of items per page.
+- `offset`: The number of items to skip before retrieving the page's items. This is calculated from the `currentPage` and `limit` variables.
+
+Then, you use `useQuery` from [Tanstack (React) Query](https://tanstack.com/query/latest) to query the Medusa server. Tanstack Query provides features like asynchronous state management and optimized caching.
+
+In the `queryFn` function that executes the query, you use the JS SDK's `client.fetch` method to send a request to your custom API route. The first parameter is the route's path, and the second is an object of request configuration and data. You pass the query parameters in the `query` property.
+
+This sends a request to the [Get Brands API route](#1-get-brands-api-route), passing the pagination query parameters. Whenever `currentPage` is updated, the `offset` is also updated, which will send a new request to retrieve the brands for the current page.
+
+### Display Brands Table
+
+Finally, you'll display the brands in a table using the component you created earlier. Import the component at the top of `src/admin/routes/brands/page.tsx`:
+
+```tsx title="src/admin/routes/brands/page.tsx"
+import { Table } from "../../components/table"
+```
+
+Then, replace the `{/* TODO show brands */}` in the return statement with the following:
+
+```tsx title="src/admin/routes/brands/page.tsx"
+<Table
+  columns={[
+    {
+      key: "id",
+      label: "#",
+    },
+    {
+      key: "name",
+      label: "Name",
+    },
+  ]}
+  data={data?.brands || []}
+  pageSize={data?.limit || limit}
+  count={data?.count || 0}
+  currentPage={currentPage}
+  setCurrentPage={setCurrentPage}
+/>
+```
+
+This renders a table that shows the ID and name of the brands.
+
+---
+
+## Test it Out
+
+To test out the UI route, start the Medusa application:
+
+```bash npm2yarn
+npm run dev
+```
+
+Then, open the admin dashboard at `http://localhost:9000/app`. After you log in, you'll find a new "Brands" sidebar item. Click on it to see the brands in your store. You can also go to `http://localhost:9000/app/brands` to see the page.
+
+![A new sidebar item is added for the new brands UI route. The UI route shows the table of brands with pagination.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733421074/Medusa%20Book/Screenshot_2024-12-05_at_7.46.52_PM_slcdqd.png)
+
+---
+
+## Summary
+
+By following the previous chapters, you:
+
+- Injected a widget into the product details page to show the product's brand.
+- Created a UI route in the Medusa Admin that shows the list of brands.
+
+---
+
+## Next Steps: Integrate Third-Party Systems
+
+Your customizations often span across systems, where you need to retrieve data or perform operations in a third-party system.
+
+In the next chapters, you'll learn about the concepts that facilitate integrating third-party systems in your application. You'll integrate a dummy third-party system and sync the brands between it and the Medusa application.

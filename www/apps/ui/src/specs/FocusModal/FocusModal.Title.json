@@ -1,0 +1,6 @@
+{
+  "description": "This component adds an accessible title to the modal.\nIt accepts props from the [Radix UI Dialog Title](https://www.radix-ui.com/primitives/docs/components/dialog#title) component.",
+  "methods": [],
+  "displayName": "FocusModal.Title",
+  "props": {}
+}

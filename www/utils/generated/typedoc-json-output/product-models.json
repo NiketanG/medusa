@@ -1,0 +1,6049 @@
+{
+	"id": 12497,
+	"name": "product-models",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"comment": {
+		"summary": [
+			{
+				"text": "## Relations Overview\n\n",
+				"kind": "text"
+			},
+			{
+				"text": "```mermaid\nerDiagram\n\tProduct ||--|| ProductVariant : variants\n\tProduct }|--|{ ProductTag : tags\n\tProduct ||--|| ProductOption : options\n\tProduct ||--|| ProductImage : images\n\tProduct }|--|{ ProductCategory : categories\n\tProductCategory ||--|| ProductCategory : category_children\n\tProductCollection ||--|| Product : products\n\tProductOption ||--|| ProductOptionValue : values\n\tProductOptionValue }|--|{ ProductVariant : variants\n\tProductType ||--|| Product : product\n\n```",
+				"kind": "code"
+			}
+		]
+	},
+	"children": [
+		{
+			"id": 12653,
+			"name": "ProductCategory",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 12654,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 12655,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the product category."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12656,
+											"name": "name",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The name of the product category"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12657,
+											"name": "description",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The description of the product category"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12658,
+											"name": "handle",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The unique handle of the product category"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12659,
+											"name": "mpath",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The mpath of the product category"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12660,
+											"name": "is_active",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Whether the product category is active."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/boolean.ts",
+													"qualifiedName": "BooleanProperty"
+												},
+												"name": "BooleanProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12661,
+											"name": "is_internal",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Whether the product category is internal, meaning it's only available for admin users."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/boolean.ts",
+													"qualifiedName": "BooleanProperty"
+												},
+												"name": "BooleanProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12662,
+											"name": "rank",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The rank of the product category among its siblings."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/number.ts",
+													"qualifiedName": "NumberProperty"
+												},
+												"name": "NumberProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12663,
+											"name": "metadata",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Holds custom data in key-value pairs."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/json.ts",
+													"qualifiedName": "JSONProperty"
+												},
+												"name": "JSONProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12664,
+											"name": "parent_category",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated parent_category."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/belongs-to.ts",
+													"qualifiedName": "BelongsTo"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12653,
+														"name": "ProductCategory"
+													}
+												],
+												"name": "BelongsTo",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12669,
+											"name": "category_children",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated category_children."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/has-many.ts",
+													"qualifiedName": "HasMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12653,
+														"name": "ProductCategory"
+													}
+												],
+												"name": "HasMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12672,
+											"name": "products",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated products."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/many-to-many.ts",
+													"qualifiedName": "ManyToMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12498,
+														"name": "Product"
+													}
+												],
+												"name": "ManyToMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												12655,
+												12656,
+												12657,
+												12658,
+												12659,
+												12660,
+												12661,
+												12662,
+												12663,
+												12664,
+												12669,
+												12672
+											]
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "literal",
+						"value": "ProductCategory"
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		},
+		{
+			"id": 12720,
+			"name": "ProductCollection",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 12721,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 12722,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the product collection."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12723,
+											"name": "title",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The title of the product collection"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12724,
+											"name": "handle",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The unique handle of the product collection"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12725,
+											"name": "metadata",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Holds custom data in key-value pairs."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/json.ts",
+													"qualifiedName": "JSONProperty"
+												},
+												"name": "JSONProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12726,
+											"name": "products",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated products."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/has-many.ts",
+													"qualifiedName": "HasMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12498,
+														"name": "Product"
+													}
+												],
+												"name": "HasMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												12722,
+												12723,
+												12724,
+												12725,
+												12726
+											]
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "literal",
+						"value": "ProductCollection"
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		},
+		{
+			"id": 12774,
+			"name": "ProductImage",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 12775,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 12776,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the product image."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12777,
+											"name": "url",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The URL of the product image"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12778,
+											"name": "metadata",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Holds custom data in key-value pairs."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/json.ts",
+													"qualifiedName": "JSONProperty"
+												},
+												"name": "JSONProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12779,
+											"name": "rank",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The rank of the product image among its sibling images."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/number.ts",
+													"qualifiedName": "NumberProperty"
+												},
+												"name": "NumberProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12780,
+											"name": "product",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated product."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/belongs-to.ts",
+													"qualifiedName": "BelongsTo"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12498,
+														"name": "Product"
+													}
+												],
+												"name": "BelongsTo",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												12776,
+												12777,
+												12778,
+												12779,
+												12780
+											]
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "reflection",
+						"declaration": {
+							"id": 12828,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 12829,
+									"name": "tableName",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isReadonly": true
+									},
+									"type": {
+										"type": "literal",
+										"value": "image"
+									},
+									"defaultValue": "\"image\""
+								},
+								{
+									"id": 12830,
+									"name": "name",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isReadonly": true
+									},
+									"type": {
+										"type": "literal",
+										"value": "ProductImage"
+									},
+									"defaultValue": "\"ProductImage\""
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										12829,
+										12830
+									]
+								}
+							]
+						}
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		},
+		{
+			"id": 12899,
+			"name": "ProductOptionValue",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 12900,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 12901,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the product option value."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12902,
+											"name": "value",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The value of the product option."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12903,
+											"name": "metadata",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Holds custom data in key-value pairs."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/json.ts",
+													"qualifiedName": "JSONProperty"
+												},
+												"name": "JSONProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12904,
+											"name": "option",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated option."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/belongs-to.ts",
+													"qualifiedName": "BelongsTo"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12831,
+														"name": "ProductOption"
+													}
+												],
+												"name": "BelongsTo",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12929,
+											"name": "variants",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated variants."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/many-to-many.ts",
+													"qualifiedName": "ManyToMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 13068,
+														"name": "ProductVariant"
+													}
+												],
+												"name": "ManyToMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												12901,
+												12902,
+												12903,
+												12904,
+												12929
+											]
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "literal",
+						"value": "ProductOptionValue"
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		},
+		{
+			"id": 12831,
+			"name": "ProductOption",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 12832,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 12833,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the product option."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12834,
+											"name": "title",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The title of the product option."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12835,
+											"name": "metadata",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Holds custom data in key-value pairs."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/json.ts",
+													"qualifiedName": "JSONProperty"
+												},
+												"name": "JSONProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12836,
+											"name": "product",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated product."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/belongs-to.ts",
+													"qualifiedName": "BelongsTo"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12498,
+														"name": "Product"
+													}
+												],
+												"name": "BelongsTo",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12884,
+											"name": "values",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated values."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/has-many.ts",
+													"qualifiedName": "HasMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12899,
+														"name": "ProductOptionValue"
+													}
+												],
+												"name": "HasMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												12833,
+												12834,
+												12835,
+												12836,
+												12884
+											]
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "literal",
+						"value": "ProductOption"
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		},
+		{
+			"id": 12959,
+			"name": "ProductTag",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 12960,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 12961,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the product tag."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12962,
+											"name": "value",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The value of the product tag"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12963,
+											"name": "metadata",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Holds custom data in key-value pairs."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/json.ts",
+													"qualifiedName": "JSONProperty"
+												},
+												"name": "JSONProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12964,
+											"name": "products",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated products."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/many-to-many.ts",
+													"qualifiedName": "ManyToMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12498,
+														"name": "Product"
+													}
+												],
+												"name": "ManyToMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												12961,
+												12962,
+												12963,
+												12964
+											]
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "reflection",
+						"declaration": {
+							"id": 13012,
+							"name": "__type",
+							"variant": "declaration",
+							"kind": 65536,
+							"flags": {},
+							"children": [
+								{
+									"id": 13013,
+									"name": "tableName",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isReadonly": true
+									},
+									"type": {
+										"type": "literal",
+										"value": "product_tag"
+									},
+									"defaultValue": "\"product_tag\""
+								},
+								{
+									"id": 13014,
+									"name": "name",
+									"variant": "declaration",
+									"kind": 1024,
+									"flags": {
+										"isReadonly": true
+									},
+									"type": {
+										"type": "literal",
+										"value": "ProductTag"
+									},
+									"defaultValue": "\"ProductTag\""
+								}
+							],
+							"groups": [
+								{
+									"title": "Properties",
+									"children": [
+										13013,
+										13014
+									]
+								}
+							]
+						}
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		},
+		{
+			"id": 13015,
+			"name": "ProductType",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 13016,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 13017,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the product type."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13018,
+											"name": "value",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The value of the product type"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13019,
+											"name": "metadata",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Holds custom data in key-value pairs."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/json.ts",
+													"qualifiedName": "JSONProperty"
+												},
+												"name": "JSONProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13020,
+											"name": "product",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated product."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/has-many.ts",
+													"qualifiedName": "HasMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12498,
+														"name": "Product"
+													}
+												],
+												"name": "HasMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												13017,
+												13018,
+												13019,
+												13020
+											]
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "literal",
+						"value": "ProductType"
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		},
+		{
+			"id": 13068,
+			"name": "ProductVariant",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 13069,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 13070,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the product variant."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13071,
+											"name": "title",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The title of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13072,
+											"name": "sku",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The SKU of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13073,
+											"name": "barcode",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The barcode of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13074,
+											"name": "ean",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The EAN of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13075,
+											"name": "upc",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The UPC of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13076,
+											"name": "allow_backorder",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Whether customers can purchase this variant even if it's out of stock."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/boolean.ts",
+													"qualifiedName": "BooleanProperty"
+												},
+												"name": "BooleanProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13077,
+											"name": "manage_inventory",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Whether Medusa manages the variant's inventory. If disabled, the variant is always considered in stock."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/boolean.ts",
+													"qualifiedName": "BooleanProperty"
+												},
+												"name": "BooleanProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13078,
+											"name": "hs_code",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The HS code of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13079,
+											"name": "origin_country",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The origin country of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13080,
+											"name": "mid_code",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The MID code of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13081,
+											"name": "material",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The material of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13082,
+											"name": "weight",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The weight of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/number.ts",
+													"qualifiedName": "NumberProperty"
+												},
+												"name": "NumberProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13083,
+											"name": "length",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The length of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/number.ts",
+													"qualifiedName": "NumberProperty"
+												},
+												"name": "NumberProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13084,
+											"name": "height",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The height of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/number.ts",
+													"qualifiedName": "NumberProperty"
+												},
+												"name": "NumberProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13085,
+											"name": "width",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The width of the product variant"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/number.ts",
+													"qualifiedName": "NumberProperty"
+												},
+												"name": "NumberProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13086,
+											"name": "metadata",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Holds custom data in key-value pairs."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/json.ts",
+													"qualifiedName": "JSONProperty"
+												},
+												"name": "JSONProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13087,
+											"name": "variant_rank",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The variant's rank among its siblings."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/number.ts",
+													"qualifiedName": "NumberProperty"
+												},
+												"name": "NumberProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13088,
+											"name": "product",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated product."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/belongs-to.ts",
+													"qualifiedName": "BelongsTo"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12498,
+														"name": "Product"
+													}
+												],
+												"name": "BelongsTo",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 13179,
+											"name": "options",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated options."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/many-to-many.ts",
+													"qualifiedName": "ManyToMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12899,
+														"name": "ProductOptionValue"
+													}
+												],
+												"name": "ManyToMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												13070,
+												13071,
+												13072,
+												13073,
+												13074,
+												13075,
+												13076,
+												13077,
+												13078,
+												13079,
+												13080,
+												13081,
+												13082,
+												13083,
+												13084,
+												13085,
+												13086,
+												13087,
+												13088,
+												13179
+											]
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "literal",
+						"value": "ProductVariant"
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		},
+		{
+			"id": 12498,
+			"name": "Product",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 12499,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 12500,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the product."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12501,
+											"name": "title",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The title of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12502,
+											"name": "handle",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The unique handle of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12503,
+											"name": "subtitle",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The subtitle of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12504,
+											"name": "description",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The description of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12505,
+											"name": "is_giftcard",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Whether the product is a giftcard."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/boolean.ts",
+													"qualifiedName": "BooleanProperty"
+												},
+												"name": "BooleanProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12506,
+											"name": "status",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The status of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/enum.ts",
+													"qualifiedName": "EnumProperty"
+												},
+												"typeArguments": [
+													{
+														"type": "query",
+														"queryType": {
+															"type": "reference",
+															"target": {
+																"sourceFileName": "../../../../packages/core/utils/src/product/index.ts",
+																"qualifiedName": "ProductStatus"
+															},
+															"name": "ProductStatus",
+															"package": "@medusajs/utils",
+															"preferValues": true
+														}
+													}
+												],
+												"name": "EnumProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12507,
+											"name": "thumbnail",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The thumbnail URL of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12508,
+											"name": "weight",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The weight of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12509,
+											"name": "length",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The length of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12510,
+											"name": "height",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The height of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12511,
+											"name": "width",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The width of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12512,
+											"name": "origin_country",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The origin country of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12513,
+											"name": "hs_code",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The HS code of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12514,
+											"name": "mid_code",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The MID code of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12515,
+											"name": "material",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The material of the product"
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12516,
+											"name": "discountable",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Whether the product is discountable."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/boolean.ts",
+													"qualifiedName": "BooleanProperty"
+												},
+												"name": "BooleanProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12517,
+											"name": "external_id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The external ID of the product, used to store the product's ID in an external system."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12518,
+											"name": "metadata",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Holds custom data in key-value pairs."
+													}
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/json.ts",
+													"qualifiedName": "JSONProperty"
+												},
+												"name": "JSONProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12519,
+											"name": "variants",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated variants."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/has-many.ts",
+													"qualifiedName": "HasMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 13068,
+														"name": "ProductVariant"
+													}
+												],
+												"name": "HasMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12549,
+											"name": "type",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated type."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/belongs-to.ts",
+													"qualifiedName": "BelongsTo"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 13015,
+														"name": "ProductType"
+													}
+												],
+												"name": "BelongsTo",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12568,
+											"name": "tags",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated tags."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/many-to-many.ts",
+													"qualifiedName": "ManyToMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12959,
+														"name": "ProductTag"
+													}
+												],
+												"name": "ManyToMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12581,
+											"name": "options",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated options."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/has-many.ts",
+													"qualifiedName": "HasMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12831,
+														"name": "ProductOption"
+													}
+												],
+												"name": "HasMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12594,
+											"name": "images",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated images."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/has-many.ts",
+													"qualifiedName": "HasMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12774,
+														"name": "ProductImage"
+													}
+												],
+												"name": "HasMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12608,
+											"name": "collection",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated collection."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/belongs-to.ts",
+													"qualifiedName": "BelongsTo"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12720,
+														"name": "ProductCollection"
+													}
+												],
+												"name": "BelongsTo",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 12629,
+											"name": "categories",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The associated categories."
+													}
+												],
+												"modifierTags": [
+													"@expandable"
+												]
+											},
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/relations/many-to-many.ts",
+													"qualifiedName": "ManyToMany"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": 12653,
+														"name": "ProductCategory"
+													}
+												],
+												"name": "ManyToMany",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												12500,
+												12501,
+												12502,
+												12503,
+												12504,
+												12505,
+												12506,
+												12507,
+												12508,
+												12509,
+												12510,
+												12511,
+												12512,
+												12513,
+												12514,
+												12515,
+												12516,
+												12517,
+												12518,
+												12519,
+												12549,
+												12568,
+												12581,
+												12594,
+												12608,
+												12629
+											]
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "literal",
+						"value": "Product"
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		}
+	],
+	"groups": [
+		{
+			"title": "Variables",
+			"children": [
+				12653,
+				12720,
+				12774,
+				12899,
+				12831,
+				12959,
+				13015,
+				13068,
+				12498
+			]
+		}
+	],
+	"packageName": "@medusajs/product",
+	"symbolIdMap": {
+		"12497": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/index.ts",
+			"qualifiedName": ""
+		},
+		"12498": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "Product"
+		},
+		"12499": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object"
+		},
+		"12500": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12501": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12502": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12503": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.subtitle"
+		},
+		"12504": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.description"
+		},
+		"12505": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.is_giftcard"
+		},
+		"12506": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.status"
+		},
+		"12507": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.thumbnail"
+		},
+		"12508": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"12509": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.length"
+		},
+		"12510": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.height"
+		},
+		"12511": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.width"
+		},
+		"12512": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"12513": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"12514": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"12515": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.material"
+		},
+		"12516": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.discountable"
+		},
+		"12517": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.external_id"
+		},
+		"12518": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12519": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"12520": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12521": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12522": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object"
+		},
+		"12523": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12524": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12525": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.sku"
+		},
+		"12526": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.barcode"
+		},
+		"12527": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.ean"
+		},
+		"12528": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.upc"
+		},
+		"12529": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.allow_backorder"
+		},
+		"12530": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.manage_inventory"
+		},
+		"12531": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"12532": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"12533": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"12534": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.material"
+		},
+		"12535": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"12536": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.length"
+		},
+		"12537": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.height"
+		},
+		"12538": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.width"
+		},
+		"12539": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12540": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.variant_rank"
+		},
+		"12541": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12542": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12543": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12544": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12545": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12546": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.options"
+		},
+		"12547": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12548": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12549": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.type"
+		},
+		"12550": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12551": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12552": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object"
+		},
+		"12553": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12554": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.value"
+		},
+		"12555": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12556": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12557": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__function"
+		},
+		"12558": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__function"
+		},
+		"12559": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12560": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12561": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object"
+		},
+		"12562": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12563": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.value"
+		},
+		"12564": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12565": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12566": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__function"
+		},
+		"12567": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__function"
+		},
+		"12568": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.tags"
+		},
+		"12569": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12570": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12571": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object"
+		},
+		"12572": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12573": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.value"
+		},
+		"12574": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12575": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.products"
+		},
+		"12576": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__function"
+		},
+		"12577": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__function"
+		},
+		"12578": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object"
+		},
+		"12579": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.tableName"
+		},
+		"12580": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.name"
+		},
+		"12581": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.options"
+		},
+		"12582": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12583": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12584": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object"
+		},
+		"12585": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12586": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12587": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12588": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12589": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12590": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12591": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.values"
+		},
+		"12592": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12593": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12594": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.images"
+		},
+		"12595": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12596": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12597": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object"
+		},
+		"12598": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12599": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.url"
+		},
+		"12600": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12601": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.rank"
+		},
+		"12602": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12603": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__function"
+		},
+		"12604": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__function"
+		},
+		"12605": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object"
+		},
+		"12606": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.tableName"
+		},
+		"12607": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.name"
+		},
+		"12608": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.collection"
+		},
+		"12609": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12610": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12611": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object"
+		},
+		"12612": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12613": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12614": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12615": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12616": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.products"
+		},
+		"12617": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__function"
+		},
+		"12618": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__function"
+		},
+		"12619": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12620": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12621": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object"
+		},
+		"12622": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12623": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12624": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12625": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12626": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.products"
+		},
+		"12627": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__function"
+		},
+		"12628": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__function"
+		},
+		"12629": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.categories"
+		},
+		"12630": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12631": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12632": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object"
+		},
+		"12633": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12634": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.name"
+		},
+		"12635": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.description"
+		},
+		"12636": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12637": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.mpath"
+		},
+		"12638": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.is_active"
+		},
+		"12639": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.is_internal"
+		},
+		"12640": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.rank"
+		},
+		"12641": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12642": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.parent_category"
+		},
+		"12643": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12644": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12645": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12646": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12647": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.category_children"
+		},
+		"12648": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12649": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12650": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.products"
+		},
+		"12651": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12652": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12653": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "ProductCategory"
+		},
+		"12654": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object"
+		},
+		"12655": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12656": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.name"
+		},
+		"12657": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.description"
+		},
+		"12658": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12659": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.mpath"
+		},
+		"12660": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.is_active"
+		},
+		"12661": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.is_internal"
+		},
+		"12662": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.rank"
+		},
+		"12663": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12664": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.parent_category"
+		},
+		"12665": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12666": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12667": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12668": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12669": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.category_children"
+		},
+		"12670": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12671": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12672": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__object.products"
+		},
+		"12673": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12674": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-category.ts",
+			"qualifiedName": "__function"
+		},
+		"12675": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object"
+		},
+		"12676": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12677": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12678": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12679": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.subtitle"
+		},
+		"12680": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.description"
+		},
+		"12681": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.is_giftcard"
+		},
+		"12682": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.status"
+		},
+		"12683": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.thumbnail"
+		},
+		"12684": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"12685": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.length"
+		},
+		"12686": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.height"
+		},
+		"12687": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.width"
+		},
+		"12688": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"12689": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"12690": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"12691": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.material"
+		},
+		"12692": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.discountable"
+		},
+		"12693": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.external_id"
+		},
+		"12694": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12695": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"12696": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12697": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12698": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.type"
+		},
+		"12699": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12700": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12701": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12702": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12703": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.tags"
+		},
+		"12704": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12705": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12706": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.options"
+		},
+		"12707": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12708": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12709": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.images"
+		},
+		"12710": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12711": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12712": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.collection"
+		},
+		"12713": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12714": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12715": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12716": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12717": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.categories"
+		},
+		"12718": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12719": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12720": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "ProductCollection"
+		},
+		"12721": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object"
+		},
+		"12722": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12723": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12724": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12725": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12726": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__object.products"
+		},
+		"12727": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__function"
+		},
+		"12728": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-collection.ts",
+			"qualifiedName": "__function"
+		},
+		"12729": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object"
+		},
+		"12730": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12731": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12732": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12733": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.subtitle"
+		},
+		"12734": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.description"
+		},
+		"12735": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.is_giftcard"
+		},
+		"12736": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.status"
+		},
+		"12737": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.thumbnail"
+		},
+		"12738": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"12739": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.length"
+		},
+		"12740": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.height"
+		},
+		"12741": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.width"
+		},
+		"12742": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"12743": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"12744": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"12745": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.material"
+		},
+		"12746": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.discountable"
+		},
+		"12747": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.external_id"
+		},
+		"12748": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12749": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"12750": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12751": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12752": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.type"
+		},
+		"12753": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12754": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12755": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12756": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12757": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.tags"
+		},
+		"12758": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12759": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12760": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.options"
+		},
+		"12761": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12762": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12763": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.images"
+		},
+		"12764": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12765": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12766": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.collection"
+		},
+		"12767": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12768": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12769": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12770": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12771": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.categories"
+		},
+		"12772": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12773": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12774": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "ProductImage"
+		},
+		"12775": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object"
+		},
+		"12776": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12777": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.url"
+		},
+		"12778": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12779": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.rank"
+		},
+		"12780": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12781": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__function"
+		},
+		"12782": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__function"
+		},
+		"12783": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object"
+		},
+		"12784": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12785": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12786": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12787": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.subtitle"
+		},
+		"12788": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.description"
+		},
+		"12789": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.is_giftcard"
+		},
+		"12790": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.status"
+		},
+		"12791": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.thumbnail"
+		},
+		"12792": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"12793": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.length"
+		},
+		"12794": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.height"
+		},
+		"12795": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.width"
+		},
+		"12796": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"12797": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"12798": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"12799": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.material"
+		},
+		"12800": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.discountable"
+		},
+		"12801": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.external_id"
+		},
+		"12802": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12803": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"12804": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12805": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12806": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.type"
+		},
+		"12807": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12808": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12809": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12810": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12811": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.tags"
+		},
+		"12812": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12813": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12814": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.options"
+		},
+		"12815": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12816": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12817": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.images"
+		},
+		"12818": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12819": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12820": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.collection"
+		},
+		"12821": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12822": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12823": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12824": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12825": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.categories"
+		},
+		"12826": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12827": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12828": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object"
+		},
+		"12829": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.tableName"
+		},
+		"12830": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-image.ts",
+			"qualifiedName": "__object.name"
+		},
+		"12831": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "ProductOption"
+		},
+		"12832": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object"
+		},
+		"12833": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12834": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12835": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12836": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12837": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12838": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12839": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object"
+		},
+		"12840": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12841": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12842": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12843": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.subtitle"
+		},
+		"12844": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.description"
+		},
+		"12845": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.is_giftcard"
+		},
+		"12846": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.status"
+		},
+		"12847": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.thumbnail"
+		},
+		"12848": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"12849": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.length"
+		},
+		"12850": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.height"
+		},
+		"12851": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.width"
+		},
+		"12852": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"12853": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"12854": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"12855": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.material"
+		},
+		"12856": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.discountable"
+		},
+		"12857": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.external_id"
+		},
+		"12858": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12859": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"12860": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12861": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12862": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.type"
+		},
+		"12863": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12864": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12865": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12866": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12867": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.tags"
+		},
+		"12868": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12869": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12870": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.options"
+		},
+		"12871": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12872": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12873": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.images"
+		},
+		"12874": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12875": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12876": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.collection"
+		},
+		"12877": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12878": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12879": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12880": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12881": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.categories"
+		},
+		"12882": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12883": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12884": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.values"
+		},
+		"12885": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12886": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12887": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object"
+		},
+		"12888": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12889": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.value"
+		},
+		"12890": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12891": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.option"
+		},
+		"12892": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12893": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12894": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12895": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12896": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"12897": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12898": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12899": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "ProductOptionValue"
+		},
+		"12900": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object"
+		},
+		"12901": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12902": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.value"
+		},
+		"12903": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12904": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.option"
+		},
+		"12905": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12906": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12907": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object"
+		},
+		"12908": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12909": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12910": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12911": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12912": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12913": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12914": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.values"
+		},
+		"12915": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12916": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12917": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12918": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12919": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object"
+		},
+		"12920": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12921": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12922": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12923": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12924": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12925": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12926": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__object.values"
+		},
+		"12927": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12928": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option.ts",
+			"qualifiedName": "__function"
+		},
+		"12929": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"12930": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12931": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"12932": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object"
+		},
+		"12933": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12934": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12935": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.sku"
+		},
+		"12936": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.barcode"
+		},
+		"12937": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.ean"
+		},
+		"12938": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.upc"
+		},
+		"12939": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.allow_backorder"
+		},
+		"12940": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.manage_inventory"
+		},
+		"12941": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"12942": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"12943": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"12944": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.material"
+		},
+		"12945": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"12946": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.length"
+		},
+		"12947": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.height"
+		},
+		"12948": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.width"
+		},
+		"12949": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12950": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.variant_rank"
+		},
+		"12951": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.product"
+		},
+		"12952": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12953": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12954": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12955": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12956": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.options"
+		},
+		"12957": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12958": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"12959": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "ProductTag"
+		},
+		"12960": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object"
+		},
+		"12961": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12962": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.value"
+		},
+		"12963": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12964": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.products"
+		},
+		"12965": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__function"
+		},
+		"12966": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__function"
+		},
+		"12967": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object"
+		},
+		"12968": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.id"
+		},
+		"12969": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.title"
+		},
+		"12970": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"12971": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.subtitle"
+		},
+		"12972": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.description"
+		},
+		"12973": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.is_giftcard"
+		},
+		"12974": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.status"
+		},
+		"12975": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.thumbnail"
+		},
+		"12976": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"12977": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.length"
+		},
+		"12978": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.height"
+		},
+		"12979": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.width"
+		},
+		"12980": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"12981": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"12982": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"12983": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.material"
+		},
+		"12984": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.discountable"
+		},
+		"12985": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.external_id"
+		},
+		"12986": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"12987": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"12988": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12989": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12990": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.type"
+		},
+		"12991": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12992": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12993": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12994": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12995": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.tags"
+		},
+		"12996": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12997": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"12998": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.options"
+		},
+		"12999": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13000": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13001": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.images"
+		},
+		"13002": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13003": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13004": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.collection"
+		},
+		"13005": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13006": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13007": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13008": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13009": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.categories"
+		},
+		"13010": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13011": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13012": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object"
+		},
+		"13013": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.tableName"
+		},
+		"13014": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-tag.ts",
+			"qualifiedName": "__object.name"
+		},
+		"13015": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "ProductType"
+		},
+		"13016": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object"
+		},
+		"13017": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.id"
+		},
+		"13018": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.value"
+		},
+		"13019": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"13020": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__object.product"
+		},
+		"13021": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__function"
+		},
+		"13022": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-type.ts",
+			"qualifiedName": "__function"
+		},
+		"13023": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object"
+		},
+		"13024": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.id"
+		},
+		"13025": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.title"
+		},
+		"13026": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"13027": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.subtitle"
+		},
+		"13028": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.description"
+		},
+		"13029": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.is_giftcard"
+		},
+		"13030": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.status"
+		},
+		"13031": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.thumbnail"
+		},
+		"13032": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"13033": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.length"
+		},
+		"13034": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.height"
+		},
+		"13035": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.width"
+		},
+		"13036": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"13037": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"13038": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"13039": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.material"
+		},
+		"13040": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.discountable"
+		},
+		"13041": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.external_id"
+		},
+		"13042": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"13043": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"13044": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13045": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13046": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.type"
+		},
+		"13047": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13048": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13049": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13050": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13051": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.tags"
+		},
+		"13052": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13053": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13054": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.options"
+		},
+		"13055": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13056": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13057": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.images"
+		},
+		"13058": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13059": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13060": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.collection"
+		},
+		"13061": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13062": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13063": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13064": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13065": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.categories"
+		},
+		"13066": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13067": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13068": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "ProductVariant"
+		},
+		"13069": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object"
+		},
+		"13070": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.id"
+		},
+		"13071": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.title"
+		},
+		"13072": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.sku"
+		},
+		"13073": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.barcode"
+		},
+		"13074": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.ean"
+		},
+		"13075": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.upc"
+		},
+		"13076": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.allow_backorder"
+		},
+		"13077": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.manage_inventory"
+		},
+		"13078": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"13079": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"13080": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"13081": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.material"
+		},
+		"13082": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"13083": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.length"
+		},
+		"13084": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.height"
+		},
+		"13085": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.width"
+		},
+		"13086": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"13087": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.variant_rank"
+		},
+		"13088": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.product"
+		},
+		"13089": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"13090": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"13091": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object"
+		},
+		"13092": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.id"
+		},
+		"13093": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.title"
+		},
+		"13094": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"13095": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.subtitle"
+		},
+		"13096": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.description"
+		},
+		"13097": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.is_giftcard"
+		},
+		"13098": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.status"
+		},
+		"13099": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.thumbnail"
+		},
+		"13100": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"13101": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.length"
+		},
+		"13102": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.height"
+		},
+		"13103": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.width"
+		},
+		"13104": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"13105": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"13106": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"13107": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.material"
+		},
+		"13108": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.discountable"
+		},
+		"13109": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.external_id"
+		},
+		"13110": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"13111": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"13112": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13113": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13114": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.type"
+		},
+		"13115": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13116": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13117": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13118": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13119": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.tags"
+		},
+		"13120": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13121": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13122": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.options"
+		},
+		"13123": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13124": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13125": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.images"
+		},
+		"13126": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13127": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13128": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.collection"
+		},
+		"13129": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13130": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13131": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13132": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13133": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.categories"
+		},
+		"13134": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13135": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13136": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"13137": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"13138": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object"
+		},
+		"13139": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.id"
+		},
+		"13140": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.title"
+		},
+		"13141": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.handle"
+		},
+		"13142": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.subtitle"
+		},
+		"13143": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.description"
+		},
+		"13144": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.is_giftcard"
+		},
+		"13145": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.status"
+		},
+		"13146": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.thumbnail"
+		},
+		"13147": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.weight"
+		},
+		"13148": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.length"
+		},
+		"13149": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.height"
+		},
+		"13150": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.width"
+		},
+		"13151": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.origin_country"
+		},
+		"13152": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.hs_code"
+		},
+		"13153": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.mid_code"
+		},
+		"13154": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.material"
+		},
+		"13155": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.discountable"
+		},
+		"13156": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.external_id"
+		},
+		"13157": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"13158": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"13159": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13160": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13161": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.type"
+		},
+		"13162": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13163": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13164": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.tags"
+		},
+		"13165": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13166": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13167": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.options"
+		},
+		"13168": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13169": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13170": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.images"
+		},
+		"13171": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13172": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13173": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.collection"
+		},
+		"13174": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13175": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13176": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__object.categories"
+		},
+		"13177": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13178": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product.ts",
+			"qualifiedName": "__function"
+		},
+		"13179": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__object.options"
+		},
+		"13180": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"13181": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-variant.ts",
+			"qualifiedName": "__function"
+		},
+		"13182": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object"
+		},
+		"13183": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.id"
+		},
+		"13184": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.value"
+		},
+		"13185": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.metadata"
+		},
+		"13186": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.option"
+		},
+		"13187": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"13188": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"13189": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"13190": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"13191": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__object.variants"
+		},
+		"13192": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		},
+		"13193": {
+			"sourceFileName": "../../../../packages/modules/product/src/models/product-option-value.ts",
+			"qualifiedName": "__function"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "../../../../packages/modules/product/src/models/index.ts"
+		},
+		"reflections": {
+			"1": 12497
+		}
+	}
+}

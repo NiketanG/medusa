@@ -1,0 +1,1948 @@
+import { Card, Prerequisites, Details } from "docs-ui"
+import { Github } from "@medusajs/icons"
+
+export const ogImage = "https://res.cloudinary.com/dza7lstvk/image/upload/v1732200494/Medusa%20Resources/opengraph-image_kstzrn.jpg"
+
+export const metadata = {
+  title: `Integrate Medusa with Sanity`,
+  openGraph: {
+    images: [
+      {
+        url: ogImage,
+        width: 800,
+        height: 450,
+        type: "image/jpeg"
+      }
+    ],
+  },
+  twitter: {
+    images: [
+      {
+        url: ogImage,
+        width: 800,
+        height: 450,
+        type: "image/jpeg"
+      }
+    ]
+  }
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how to integrate Medusa with Sanity.
+
+When you install a Medusa application, you get a fully-fledged commerce platform with support for customizations. While Medusa allows you to manage basic content, such as product description and images, you might need rich content-management features, such as localized content. Medusa's framework supports you in integrating a CMS with these features.
+
+Sanity is a CMS that simplifies managing content from third-party sources into a single interface. By integrating it with Medusa, you can manage your storefront and commerce-related content, such as product details, from a single interface. You also benefit from advanced content-management features, such as live-preview editing.
+
+This guide will teach you how to:
+
+- Install and set up Medusa.
+- Install and set up Sanity with Medusa's Next.js Starter storefront.
+- Sync product data from Medusa to Sanity when a product is created or updated.
+- Customize the Medusa Admin dashboard to check the sync status and trigger syncing products to Sanity.
+
+You can follow this guide whether you're new to Medusa or an advanced Medusa developer. This guide also assumes you're familiar with Sanity concepts, which you can learn about in [their documentation](https://www.sanity.io/docs).
+
+<Card
+  title="Example Repository"
+  text="Find the full code of the guide in this repository."
+  href="https://github.com/medusajs/examples/tree/main/sanity-integration"
+  icon={Github}
+/>
+
+---
+
+## Step 1: Install a Medusa Application
+
+<Prerequisites items={[
+  {
+    text: "Node.js v20+",
+    link: "https://nodejs.org/en/download"
+  },
+  {
+    text: "Git CLI tool",
+    link: "https://git-scm.com/downloads"
+  },
+  {
+    text: "PostgreSQL",
+    link: "https://www.postgresql.org/download/"
+  }
+]} />
+
+Start by installing the Medusa application on your machine with the following command:
+
+```bash
+npx create-medusa-app@latest
+```
+
+You'll first be asked for the project's name. Then, when you're asked whether you want to install the Next.js storefront, choose `Y` for yes.
+
+Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name, and the Next.js storefront in a directory with the `{project-name}-storefront` name.
+
+<Note title="Why is the storefront installed separately?">
+
+The Medusa application is composed of a headless Node.js server and an admin dashboard. The storefront is installed or custom-built separately and connects to the Medusa application through its REST endpoints, called [API routes](!docs!/learn/fundamentals/api-routes). Learn more about Medusa's architecture in [this documentation](!docs!/learn/introduction/architecture).
+
+</Note>
+
+Once the installation finishes successfully, the Medusa Admin dashboard will open with a form to create a new user. Enter the user's credential and submit the form.
+
+Afterwards, you can login with the new user and explore the dashboard. The Next.js storefront is also running at `http://localhost:8000`.
+
+<Note title="Ran to Errors?">
+
+Check out the [troubleshooting guides](../../../troubleshooting/create-medusa-app-errors/page.mdx) for help.
+
+</Note>
+
+---
+
+## Step 2: Install Sanity Client SDK
+
+In this step, you'll install [Sanity's JavaScript client SDK](https://www.sanity.io/docs/js-client) in the Medusa application, which you'll use later in your code when sending requests to Sanity.
+
+In your terminal, move to the Medusa application's directory and run the following command:
+
+```bash npm2yarn
+cd project-name # replace with directory name
+npm install @sanity/client
+```
+
+---
+
+## Step 3: Create a Sanity Project
+
+When the Medusa application connects to Sanity, it must connect to a project in Sanity.
+
+So, before building the integration in Medusa, create a project in Sanity using their website:
+
+1. [Sign in or sign up on the Sanity website.](https://www.sanity.io/login)
+2. On your account's dashboard, click the "Create new project" button.
+
+![The Create new project button is at the top of the dashboard page.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732091565/Medusa%20Resources/Screenshot_2024-11-20_at_10.31.10_AM_vvq7y6.png)
+
+3. Enter a project name and click "Create Project"
+
+![A pop-up form will open where you can choose project name and organization.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732091565/Medusa%20Resources/Screenshot_2024-11-20_at_10.32.33_AM_xb0rsn.png)
+
+You'll go back to the project's setting page in a later step.
+
+---
+
+## Step 4: Create Sanity Module
+
+To integrate third-party services into Medusa, you create a custom module. A module is a re-usable package with functionalities related to a single feature or domain. Medusa integrates the module into your application without implications or side effects on your setup.
+
+In this step, you'll create a Sanity Module that provides the interface to connect to and interact with Sanity. In later steps, you'll use the functionalities provided by this module to sync products to Sanity or retrieve documents from it.
+
+<Note>
+
+Learn more about modules in [this documentation](!docs!/learn/fundamentals/modules).
+
+</Note>
+
+### Create Module Directory
+
+A module is created under the `src/modules` directory of your Medusa application. So, create the directory `src/modules/sanity`.
+
+### Create Service
+
+You define a module's functionalities in a service. A service is a TypeScript or JavaScript class that the module exports. In the service's methods, you can connect to the database, which is useful if your module defines tables in the database, or connect to a third-party service.
+
+Medusa registers the module's service in the [Medusa container](!docs!/learn/fundamentals/medusa-container), allowing you to easily resolve the service from other customizations and use its methods.
+
+<Note title="What is the Medusa Container?">
+
+The Medusa application registers resources, such as a module's service or the [logging tool](!docs!/learn/debugging-and-testing/logging), in the Medusa container so that you can resolve them from other customizations, as you'll see in later sections. Learn more about it in [this documentation](!docs!/learn/fundamentals/medusa-container).
+
+</Note>
+
+In this section, you'll create the Sanity Module's service and the methods necessary to connect to Sanity.
+
+Start by creating the file `src/modules/sanity/service.ts` with the following content:
+
+```ts title="src/modules/sanity/service.ts"
+import {
+  Logger,
+} from "@medusajs/framework/types"
+import {
+  SanityClient,
+} from "@sanity/client"
+
+class SanityModuleService {
+  private client: SanityClient
+  private studioUrl?: string
+  private logger: Logger
+
+  // TODO
+}
+
+export default SanityModuleService
+```
+
+You create the `SanityModuleService` class that for now only has three properties:
+
+- `client` property of type `SanityClient` (from the Sanity SDK you installed in the previous step) to send requests to Sanity.
+- `studioUrl` property which will hold the URL to access the Sanity studio.
+- `logger` property, which is an instance of Medusa's [Logger](!docs!/learn/debugging-and-testing/logging), to log messages.
+
+In the service, you want to initialize the client early-on so that you can use it in the service's methods. This requires options to be passed to the client, like the Sanity API key or project ID.
+
+So, add after the import at the top of the file the following types:
+
+```ts title="src/modules/sanity/service.ts"
+// other imports...
+
+const SyncDocumentTypes = {
+  PRODUCT: "product",
+} as const
+
+type SyncDocumentTypes =
+  (typeof SyncDocumentTypes)[keyof typeof SyncDocumentTypes];
+
+type ModuleOptions = {
+  api_token: string;
+  project_id: string;
+  api_version: string;
+  dataset: "production" | "development";
+  type_map?: Record<SyncDocumentTypes, string>;
+  studio_url?: string;
+}
+```
+
+The `ModuleOptions` type defines the type of options that the module expects:
+
+- `api_token`: API token to connect to Sanity.
+- `project_id`: The ID of the Sanity project.
+- `api_version`: The Sanity API version.
+- `dataset`: The dataset to use, which is either `production` or `development`.
+- `type_map`: The types to sync from Medusa to Sanity. For simplicity, this guide only covers syncing products, but you can support other data types like product categories, too.
+- `studio_url`: The URL to the Sanity studio. This is used to show the studio URL later in the Medusa Admin dashboard.
+
+You can now initialize the client, which you'll do in the `constructor` of the `SanityModuleService`:
+
+```ts title="src/modules/sanity/service.ts"
+import {
+  // other imports...
+  createClient,
+} from "@sanity/client"
+
+// types...
+
+type InjectedDependencies = {
+  logger: Logger
+};
+
+class SanityModuleService {
+  // properties...
+  constructor({
+    logger,
+  }: InjectedDependencies, options: ModuleOptions) {
+    this.client = createClient({
+      projectId: options.project_id,
+      apiVersion: options.api_version,
+      dataset: options.dataset,
+      token: options.api_token,
+    })
+    this.logger = logger
+
+    this.logger.info("Connected to Sanity")
+
+    this.studioUrl = options.studio_url
+    
+    // TODO initialize more properties
+  }
+}
+```
+
+The service's constructor accepts two parameters:
+
+1. Resources to resolve from the Module's container. A module has a different container than the Medusa application, which you can learn more about it in [this documentation](!docs!/learn/fundamentals/modules/container).
+2. The options passed to the module.
+
+In the constructor, you create a Sanity client using the `createClient` function imported from `@sanity/client`. You pass it the options that the module receives.
+
+You also initialize the `logger` and `studioUrl` properties, and log a message indicating that connection to Sanity was successful.
+
+#### Transform Product Data
+
+When you create or update products in Sanity, you must prepare the product object based on what Sanity expects.
+
+So, you'll add methods to the service that transform a Medusa product to a Sanity document object.
+
+Start by adding the following types and class properties to `src/modules/sanity/service.ts`:
+
+```ts title="src/modules/sanity/service.ts"
+type SyncDocumentInputs<T> = T extends "product"
+  ? ProductDTO
+  : never
+
+type TransformationMap<T> = Record<
+  SyncDocumentTypes,
+  (data: SyncDocumentInputs<T>) => any
+>;
+
+class SanityModuleService {
+  // other properties...
+  private typeMap: Record<SyncDocumentTypes, string>
+  private createTransformationMap: TransformationMap<SyncDocumentTypes>
+  private updateTransformationMap: TransformationMap<SyncDocumentTypes>
+
+  // ...
+}
+```
+
+First, you define types for a transformation map, which is a map that pairs up a document type (such as `product`) to a function that handles transforming its data.
+
+Then, in the service, you define three new properties:
+
+- `typeMap`: Pair of `SyncDocumentTypes` values (for example, `product`) and their type name in Sanity.
+- `createTransformationMap`: Pair of `SyncDocumentTypes` values (for example, `product`) and the method used to transform a Medusa product to a Sanity document data to be created.
+- `updateTransformationMap`: Pair of `SyncDocumentTypes` values (for example, `product`) and the method used to transform a Medusa product to a Sanity update operation.
+
+Next, add the following two methods to transform a product:
+
+```ts title="src/modules/sanity/service.ts"
+// other imports...
+import {
+  ProductDTO,
+} from "@medusajs/framework/types"
+
+class SanityModuleService {
+  // ...
+  private transformProductForCreate = (product: ProductDTO) => {
+    return {
+      _type: this.typeMap[SyncDocumentTypes.PRODUCT],
+      _id: product.id,
+      title: product.title,
+      specs: [
+        {
+          _key: product.id,
+          _type: "spec",
+          title: product.title,
+          lang: "en",
+        },
+      ],
+    }
+  }
+
+  private transformProductForUpdate = (product: ProductDTO) => {
+    return {
+      set: {
+        title: product.title,
+      },
+    }
+  }
+}
+```
+
+The `transformProductForCreate` method accepts a product and returns an object that you'll later pass to Sanity to create the product document. Similarly, the `transformProductForUpdate` method accepts a product and returns an object that you'll later pass to Sanity to update the product document.
+
+<Note title="Tip">
+
+The Sanity document's schema type will be defined in a later chapter. If you add other fields to it, make sure to edit these methods.
+
+</Note>
+
+Finally, initialize the new properties you added in the `SanityModuleService`'s constructor:
+
+```ts title="src/modules/sanity/service.ts"
+class SanityModuleService {
+  // ...
+  constructor({
+    logger,
+  }: InjectedDependencies, options: ModuleOptions) {
+    // ...
+    this.typeMap = Object.assign(
+      {},
+      {
+        [SyncDocumentTypes.PRODUCT]: "product",
+      },
+      options.type_map || {}
+    )
+
+    this.createTransformationMap = {
+      [SyncDocumentTypes.PRODUCT]: this.transformProductForCreate,
+    }
+
+    this.updateTransformationMap = {
+      [SyncDocumentTypes.PRODUCT]: this.transformProductForUpdate,
+    }
+  }
+  // ...
+}
+```
+
+You initialize the `typeMap` property to map the `product` type in Medusa to the `product` schema type in Sanity. You also initialize the `createTransformationMap` and `updateTransformationMap` to map the methods to transform a product for creation or update.
+
+<Note title="Tip">
+
+You can modify these properties to add support for other schema types, such as product categories or collections.
+
+</Note>
+
+#### Methods to Manage Documents
+
+In this section, you'll add the methods that accept data from Medusa and create or update them as documents in Sanity.
+
+Add the following methods to the `SanityModuleService` class:
+
+export const syncMethodsHighlights = [
+  ["9", "upsertSyncDocument", "Creates or updates a document in Sanity for a data type in Medusa."],
+  ["21", "createSyncDocument", "Creates a document in Sanity for a data type in Medusa."],
+  ["30", "updateSyncDocument", "Updates a document in Sanity for a data type in Medusa."]
+]
+
+```ts title="src/modules/sanity/service.ts" highlights={syncMethodsHighlights}
+// other imports...
+import {
+  // ...
+  FirstDocumentMutationOptions,
+} from "@sanity/client"
+
+class SanityModuleService {
+  // ...
+  async upsertSyncDocument<T extends SyncDocumentTypes>(
+    type: T,
+    data: SyncDocumentInputs<T>
+  ) {
+    const existing = await this.client.getDocument(data.id)
+    if (existing) {
+      return await this.updateSyncDocument(type, data)
+    }
+
+    return await this.createSyncDocument(type, data)
+  }
+
+  async createSyncDocument<T extends SyncDocumentTypes>(
+    type: T,
+    data: SyncDocumentInputs<T>,
+    options?: FirstDocumentMutationOptions
+  ) {
+    const doc = this.createTransformationMap[type](data)
+    return await this.client.create(doc, options)
+  }
+
+  async updateSyncDocument<T extends SyncDocumentTypes>(
+    type: T,
+    data: SyncDocumentInputs<T>
+  ) {
+    const operations = this.updateTransformationMap[type](data)
+    return await this.client.patch(data.id, operations).commit()
+  }
+}
+```
+
+You add three methods:
+
+- `upsertSyncDocument`: Creates or updates a document in Sanity for a data type in Medusa.
+- `createSyncDocument`: Creates a document in Sanity for a data type in Medusa. It uses the `createTransformationMap` property to use the transform method of the specified Medusa data type (for example, a product's data).
+- `updateSyncDocument`: Updates a document in Sanity for a data type in Medusa. It uses the `updateTransformationMap` property to use the transform method of the specified Medusa data type (for example, a product's data).
+
+You also need methods to manage the Sanity documents without transformations. So, add the following methods to `SanityModuleService`:
+
+export const methodsHighlights = [
+  ["3", "retrieve", "Retrieve a document from Sanity."],
+  ["7", "delete", "Delete a document from Sanity."],
+  ["11", "update", "Updates a document in Sanity."],
+  ["17", "list", "Retrieves a list of Sanity documents."]
+]
+
+```ts title="src/modules/sanity/service.ts" highlights={methodsHighlights}
+class SanityModuleService {
+  // ...
+  async retrieve(id: string) {
+    return this.client.getDocument(id)
+  }
+
+  async delete(id: string) {
+    return this.client.delete(id)
+  }
+
+  async update(id: string, data: any) {
+    return await this.client.patch(id, {
+      set: data,
+    }).commit()
+  }
+
+  async list(
+    filter: {
+      id: string | string[]
+    }
+  ) {
+    const data = await this.client.getDocuments(
+      Array.isArray(filter.id) ? filter.id : [filter.id]
+    )
+
+    return data.map((doc) => ({
+      id: doc?._id,
+      ...doc,
+    }))
+  }
+}
+```
+
+You add other three methods:
+
+- `retrieve` to retrieve a document by its ID.
+- `delete` to delete a document by its ID.
+- `update` to update a document by its ID with new data.
+- `list` to list documents, with ability to filter them by their IDs. Since a Sanity document's ID is a product's ID, you can pass product IDs as a filter to retrieve their documents.
+
+### Export Module Definition
+
+The `SanityModuleService` class now has the methods necessary to connect to and perform actions in Sanity.
+
+Next, you must export the Module definition, which lets Medusa know what the Module's name is and what is its service.
+
+Create the file `src/modules/sanity/index.ts` with the following content:
+
+```ts title="src/modules/sanity/index.ts"
+import { Module } from "@medusajs/framework/utils"
+import SanityModuleService from "./service"
+
+export const SANITY_MODULE = "sanity"
+
+export default Module(SANITY_MODULE, {
+  service: SanityModuleService,
+})
+```
+
+In the file, you export the `SANITY_MODULE` which is the Module's name. You'll use it later when you resolve the module from the Medusa container.
+
+You also export the module definition using `Module` from the Modueles SDK, which accepts as a first parameter the module's name, and as a second parameter an object having a `service` property, indicating the module's service.
+
+### Add Module to Configurations
+
+Finally, to register a module in Medusa, you must add it to Medusa's configurations.
+
+Medusa's configurations are set in the `medusa-config.ts` file, which is at the root directory of your Medusa application. The configuration object accepts a `modules` array, whose value is an array of modules to add to the application.
+
+Add the `modules` property to the exported configurations in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "./src/modules/sanity",
+      options: {
+        api_token: process.env.SANITY_API_TOKEN,
+        project_id: process.env.SANITY_PROJECT_ID,
+        api_version: new Date().toISOString().split("T")[0],
+        dataset: "production",
+        studio_url: process.env.SANITY_STUDIO_URL || 
+          "http://localhost:3000/studio",
+        type_map: {
+          product: "product",
+        },
+      },
+    },
+  ],
+})
+```
+
+In the `modules` array, you pass a module object having the following properties:
+
+- `resolve`: The path to the module to register in the application. It can also be the name of an NPM package.
+- `options`: An object of options to pass to the module. These are the options you expect and use in the module's service.
+
+Some of the module's options, such as the Sanity API key, are set in environment variables. So, add the following environment variables to `.env`:
+
+```shell
+SANITY_API_TOKEN=
+SANITY_PROJECT_ID=
+SANITY_STUDIO_URL=http://localhost:8000/studio
+```
+
+Where:
+
+- `SANITY_API_TOKEN`: The API key token to connect to Sanity, which you can retrieve from the Sanity project's dashboard:
+    - Go to the API tab.
+
+![The API tab is at the top of the project dashboard next to Settings.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732091810/Medusa%20Resources/Screenshot_2024-11-20_at_10.35.29_AM_ltj7cd.png)
+
+    - Scroll down to Tokens and click on the "Add API Token" button.
+
+![The Add API token button is at the top right of the Tokens section.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732091810/Medusa%20Resources/Screenshot_2024-11-20_at_10.35.52_AM_ccgsum.png)
+
+    - Enter a name for the API token, choose "Editor" for the permissions, then click Save.
+
+![In the Token form, enter the name and choose "Editor" for permisions.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732091811/Medusa%20Resources/Screenshot_2024-11-20_at_10.36.25_AM_nqxa5y.png)
+
+- `SANITY_PROJECT_ID`: The ID of the project, which you can find at the top section of your Sanity project's dashboard.
+
+![The project ID is in the top information of the project.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732091988/Medusa%20Resources/Screenshot_2024-11-20_at_10.39.24_AM_cscir8.png)
+
+- `SANITY_STUDIO_URL`: The URL to access the studio. You'll set the studio up in a later section, but for now set it to `http://localhost:8000/studio`.
+
+### Test the Module
+
+To test that the module is working, you'll start the Medusa application and see if the "Connected to Sanity" message is logged in the console.
+
+To start the Medusa application, run the following command in the application's directory:
+
+```bash npm2yarn
+npm run dev
+```
+
+If you see the following message among the logs:
+
+```bash
+info:    Connected to Sanity
+```
+
+That means your Sanity credentials were correct, and Medusa was able to connect to Sanity.
+
+In the next steps, you'll create a link between the Product and Sanity modules to retrieve data between them easily, and build a flow around the Sanity Module to sync data.
+
+---
+
+## Step 5: Link Product and Sanity Modules
+
+Since a product has a document in Sanity, you want to build an association between the [Product](../../../commerce-modules/product/page.mdx) and Sanity modules so that when you retrieve a product, you also retrieve its associated Sanity document.
+
+However, modules are [isolated](!docs!/learn/fundamentals/modules/isolation) to ensure they're re-usable and don't have side effects when integrated into the Medusa application. So, to build associations between modules, you define [module links](!docs!/learn/fundamentals/module-links).
+
+A Module Link associates two modules' data models while maintaining module isolation. A data model can be a table in the database or a virtual model from an external systems.
+
+In this section, you'll define a link between the Product and Sanity modules.
+
+Links are defined in a TypeScript or JavaScript file under the `src/links` directory. So, create the file `src/links/product-sanity.ts` with the following content:
+
+```ts title="src/links/product-sanity.ts"
+import { defineLink } from "@medusajs/framework/utils"
+import ProductModule from "@medusajs/medusa/product"
+import { SANITY_MODULE } from "../modules/sanity"
+
+defineLink(
+  {
+    ...ProductModule.linkable.product.id,
+    field: "id",
+  },
+  {
+    linkable: {
+      serviceName: SANITY_MODULE,
+      alias: "sanity_product",
+      primaryKey: "id",
+    },
+  },
+  {
+    readOnly: true,
+  }
+)
+```
+
+You define a link using `defineLink` from the Modules SDK. It accepts three parameters:
+
+1. The first data model part of the link. In this case, it's the Product Module's `product` data model. A module has a special `linkable` property that contain link configurations for its data models.
+2. The second data model part of the link. Since the Sanity Module doesn't have a Medusa data model, you specify the configurations in a `linkable` object that has the following properties:
+    - `serviceName`: The registration name in the Medusa container of the service managing the data model, which in this case is the Sanity Module's name (since the module's service is registered under that name).
+    - `alias`: The name to refer to the model part of this link, such as when retrieving the Sanity document of a product. You'll use this in a later section.
+    - `primaryKey`: The name of the data model's primary key field.
+3. An object of configurations for the module link. By default, Medusa creates a table in the database to represent the link you define. Since the module link isn't created between two Medusa data models, you enable the `readOnly` configuration, which will tell Medusa not to create a table in the database for this link.
+
+In the next steps, you'll see how this link allows you to retrieve documents when retrieving products.
+
+---
+
+## Step 6: Sync Data to Sanity
+
+After integrating Sanity with a custom module, you now want to sync product data from Medusa to Sanity, automatically and manually. To implement the sync logic, you need a workflow.
+
+A workflow is a series of queries and actions, called steps, that complete a task. You construct a workflow like you construct a function, but it's a special function that allows you to track its executions' progress, define roll-back logic, and configure other advanced features. You'll see how all of this works in the upcoming sections.
+
+Within a workflow's steps, you resolve modules to use their service's functionalities as part of a bigger flow. Then, you can execute the workflow from other customizations, such as in response to an event or in an API route.
+
+<Note>
+
+Learn more about workflows in [this documentation](!docs!/learn/fundamentals/workflows)
+
+</Note>
+
+In this section, you'll create a workflow that syncs products from Medusa to Sanity. Later, you'll execute this workflow when a product is created or updated, or when an admin user triggers the syncing manually.
+
+### Create Step
+
+The syncing workflow will have a single step that syncs products provided as an input to Sanity.
+
+So, to implement that step, create the file `src/workflows/sanity-sync-products/steps/sync.ts` with the following content:
+
+export const syncStepHighlights = [
+  ["13", "createStep", "Create a step."],
+  ["15", "container", "The Medusa container to resolve resources."],
+  ["36", "graph", "Retrieve a paginated list of products with their sanity document."]
+]
+
+```ts title="src/workflows/sanity-sync-products/steps/sync.ts" highlights={syncStepHighlights}
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { ProductDTO } from "@medusajs/framework/types"
+import { 
+  ContainerRegistrationKeys,
+  promiseAll,
+} from "@medusajs/framework/utils"
+import SanityModuleService from "../../../modules/sanity/service"
+import { SANITY_MODULE } from "../../../modules/sanity"
+
+export type SyncStepInput = {
+  product_ids?: string[];
+}
+
+export const syncStep = createStep(
+  { name: "sync-step", async: true },
+  async (input: SyncStepInput, { container }) => {
+    const sanityModule: SanityModuleService = container.resolve(SANITY_MODULE)
+    const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+    const total = 0
+    const upsertMap: {
+      before: any
+      after: any
+    }[] = []
+
+    const batchSize = 200
+    const hasMore = true
+    const offset = 0
+    const filters = input.product_ids ? {
+      id: input.product_ids,
+    } : {}
+
+    while (hasMore) {
+      const {
+        data: products,
+        metadata: { count },
+      } = await query.graph({
+        entity: "product",
+        fields: [
+          "id",
+          "title",
+          // @ts-ignore
+          "sanity_product.*",
+        ],
+        filters,
+        pagination: {
+          skip: offset,
+          take: batchSize,
+          order: {
+            id: "ASC",
+          },
+        },
+      })
+
+      // TODO sync products
+    }
+  }
+)
+```
+
+You define the `syncStep` using the `createStep` function, which accepts two parameters:
+
+- An object of step configurations. The object must have the `name` property, which is this step's unique name. Enabling the `async` property means that the workflow should run asynchronously in the background. This is useful when the workflow is triggered manually through an HTTP request, meaning the response will be returned to the client even if the workflow hasn't finished executing.
+- The step's function definition as a second parameter.
+
+The step function accepts the step's input as a first parameter, and an object of options as a second. The object of options has a `container` property, which is an instance of the Medusa container that you can use to resolve resources.
+
+In the step, you resolve from the Medusa container Sanity Module's service and [Query](!docs!/learn/fundamentals/module-links/query), which is a tool that allows you to retrieve data across modules and links.
+
+You use Query's `graph` method to retrieve products, filtering them by their IDs and applying pagination configurations. The `graph` method accepts a `fields` property in its object parameter, which indicates the product data model's fields and relations to retrieve.
+
+Notice that you pass `sanity_product.*` in the `fields` array. Medusa will retrieve the Sanity document of each product using Sanity Module's `list` method and attach it to the returned product. So, you don't have to retrieve the products and documents separately. Each product object in the returned array will look similar to this:
+
+```json title="Example Product Object"
+{
+  "id": "prod_123",
+  "title": "Shirt",
+  "sanity_product": {
+    "id": "prod_123",
+    "_type": "product",
+    // other Sanity fields...
+  }
+}
+```
+
+Next, you want to sync the retrieved products. So, replace the `TODO` in the `while` loop with the following:
+
+```ts title="src/workflows/sanity-sync-products/steps/sync.ts"
+while (hasMore) {
+  // ...
+  try {
+    await promiseAll(
+      products.map(async (prod) => {
+        const after = await sanityModule.upsertSyncDocument(
+          "product", 
+          prod as ProductDTO
+        )
+
+        upsertMap.push({
+          // @ts-ignore
+          before: prod.sanity_product,
+          after,
+        })
+
+        return after
+      })
+    )
+  } catch (e) {
+    return StepResponse.permanentFailure(
+      `An error occurred while syncing documents: ${e}`,
+      upsertMap
+    )
+  }
+
+  offset += batchSize
+  hasMore = offset < count
+  total += products.length
+}
+```
+
+In the `while` loop, you loop over the array of products to sync them to Sanity. You use the `promiseAll` Medusa utility that loops over an array of promises and ensures that all transactions within these promises are rolled back in case an error occurs.
+
+For each product, you upsert it into Sanity, then push its document before and after the update to the `upsertMap`. You'll learn more about its use later.
+
+You also wrap the `promiseAll` function within a try-catch block. In the catch block, you invoke and return `StepResponse.permanentFailure` which indicates that the step has failed but still invokes the rollback mechanism that you'll implement in a bit. The first parameter of `permanentFailure` is the error message, and the second is the data to use in the rollback mechanism.
+
+Finally, after the `while` loop and at the end of the step, add the following return statement:
+
+```ts title="src/workflows/sanity-sync-products/steps/sync.ts"
+return new StepResponse({ total }, upsertMap)
+```
+
+If no errors occur, the step returns an instance of `StepResponse`, which must be returned by any step. It accepts as a first parameter the data to return to the workflow that executed this step.
+
+#### Add Compensation Function
+
+`StepResponse` accepts a second parameter, which is passed to the compensation function. A compensation function defines the rollback logic of a step, and it's only executed if an error occurs in the workflow. This eliminates data inconsistency if an error occurs and the workflow can't finish execution successfully.
+
+<Note title="Tip">
+
+Learn more about compensation functions in [this documentation](!docs!/learn/fundamentals/workflows/compensation-function).
+
+</Note>
+
+The `syncStep` creates or updates products in Sanity. So, the compensation function must delete created documents or revert the update of a document to its previous data. The compensation function is only executed if an error occurs.
+
+To define the compensation function, pass a third-parameter to the `createStep` function:
+
+```ts title="src/workflows/sanity-sync-products/steps/sync.ts"
+export const syncStep = createStep(
+  { name: "sync-step", async: true },
+  async (input: SyncStepInput, { container }) => {
+    // ...
+  },
+  async (upsertMap, { container }) => {
+    if (!upsertMap) {
+      return
+    }
+
+    const sanityModule: SanityModuleService = container.resolve(SANITY_MODULE)
+
+    await promiseAll(
+      upsertMap.map(({ before, after }) => {
+        if (!before) {
+          // delete the document
+          return sanityModule.delete(after._id)
+        }
+
+        const { _id: id, ...oldData } = before
+
+        return sanityModule.update(
+          id,
+          oldData
+        )
+      })
+    )
+  }
+)
+```
+
+The compensation function accepts the data passed in the step's `StepResponse` second parameter (in this case, `upsertMap`), and an object of options similar to that of the step.
+
+In the compensation function, you resolve the Sanity Module's service, then loop over the `upsertMap` to delete created documents, or revert existing ones.
+
+### Create Workflow
+
+You'll now create the workflow that uses the `syncStep`. This is the workflow that you'll later execute to sync data automatically or manually.
+
+Workflows are created in a file under the `src/workflows` directory. So, create the file `src/workflows/sanity-sync-products/index.ts` with the following content:
+
+```ts title="src/workflows/sanity-sync-products/index.ts"
+import {
+  createWorkflow,
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
+import { syncStep } from "./steps/sync"
+
+export type SanitySyncProductsWorkflowInput = {
+  product_ids?: string[];
+};
+
+export const sanitySyncProductsWorkflow = createWorkflow(
+  { name: "sanity-sync-products", retentionTime: 10000 },
+  function (input: SanitySyncProductsWorkflowInput) {
+    const result = syncStep(input)
+
+    return new WorkflowResponse(result)
+  }
+)
+```
+
+You create a workflow using the `createWorkflow` from the Workflows SDK. It accepts an object of options as a first parameter, where the `name` property is required and indicates the workflow's unique name.
+
+The `retentionTime` property indicates how long should the workflow's progress be saved in the database. This is useful if you later want to track whether the workflow is successfully executing.
+
+`createWorkflow` accepts as a second parameter a constructor function, which is the workflow's implementation. In the function, you execute the `syncStep` to sync the specified products in the input, then return its result. Workflows must return an instance of `WorkflowResponse`.
+
+<Note title="Tip">
+
+A workflow's constructor function has some constraints in implementation. Learn more about them in [this documentation](!docs!/learn/fundamentals/workflows/constructor-constraints).
+
+</Note>
+
+You'll execute and test this workflow in the next steps.
+
+---
+
+## Step 7: Handle Product Changes in Medusa
+
+You've defined the workflow to sync the products. Now, you want to execute it when a product is created or updated.
+
+Medusa emits events when certain actions occur, such as when a product is created. Then, you can listen to those events in a subscriber.
+
+A subscriber is an asynchronous function that listens to one or more events. Then, when those events are emitted, the subscriber is executed in the background of your application.
+
+Subscribers are useful when you want to perform an action that isn't an integral part of a flow, but as a reaction to a performed action. In this case, syncing the products to Sanity isn't integral to creating a product, so you do it in a subscriber after the product is created.
+
+<Note>
+
+Learn more about events and subscribers in [this documentation](!docs!/learn/fundamentals/events-and-subscribers). You can also find the list of emitted events in [this reference](../../../events-reference/page.mdx).
+
+</Note>
+
+So, to run the workflow you defined in the previous event when a product is created or updated, you'll create a subscriber that listens to the `product.created` and `product.updated` events.
+
+Subscribers are created under the `src/subscribers` directory. So, create the file `src/subscribers/sanity-product-sync.ts` with the following content:
+
+export const subscriberHighlights = [
+  ["10", "data", "The event's data payload."],
+  ["13", "sanitySyncProductsWorkflow", "Execute the workflow whenever a product is created or updated."],
+  ["21", "event", "The events that the subscriber is listening to."]
+]
+
+```ts title="src/subscribers/sanity-product-sync.ts" highlights={subscriberHighlights}
+import type { 
+  SubscriberArgs, 
+  SubscriberConfig,
+} from "@medusajs/medusa"
+import { 
+  sanitySyncProductsWorkflow,
+} from "../workflows/sanity-sync-products"
+
+export default async function upsertSanityProduct({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  await sanitySyncProductsWorkflow(container).run({
+    input: {
+      product_ids: [data.id],
+    },
+  })
+}
+
+export const config: SubscriberConfig = {
+  event: ["product.created", "product.updated"],
+}
+```
+
+The subscriber function `upsertSanityProduct` accepts an object as a parameter that has the following properties:
+
+- `event`: An object of the event's details. Its `data` property holds the data payload emitted with the event, which in this case is the ID of the product created or updated.
+- `container`: An instance of the Medusa container to resolve resources.
+
+In the subscriber, you execute the `sanitySyncProductsWorkflow` by invoking it, passing it the container, then invoking its `run` method. You pass the workflow's input in the `input` property of the `run`'s object parameter.
+
+The subscriber file must also export a configuration object. It has an `event` property, which is the names of the events that the subscriber is listening to.
+
+### Test it Out
+
+To test it out, run the Medusa application, then open the Medusa Admin in your browser at `http://localhost:9000/app`. Try creating or updating a product. You'll see the following message in the console:
+
+```bash
+info:    Processing product.created which has 1 subscribers
+```
+
+This means that the `product.created` event was emitted and your subscriber was executed.
+
+In the next step, you'll setup Sanity with Next.js, and you can then monitor the updates in Sanity's studio.
+
+---
+
+## Step 8: Setup Sanity with Next.js Starter Storefront
+
+In this step, you'll install Sanity in the Next.js Starter and configure it. You'll then have a Sanity studio in your Next.js storefront, where you'll later view the product documents being synced from Medusa, and update their content that you'll display in the storefront on the product details page.
+
+Sanity has a CLI tool that helps you with the setup. First, change to the Next.js Starter's directory (it's outside the Medusa application's directory and its name is `{project-name}-storefront`, where `{project-name}` is the name of the Medusa application's directory).
+
+Then, run the following command:
+
+```bash badgeLabel="Storefront" badgeColor="blue"
+npx sanity@latest init
+```
+
+You'll then be asked a few questions:
+
+- For the project, select the Sanity project you created earlier in this guide.
+- For dataset, use `production` unless you changed it in the Sanity project.
+- Select yes for adding the Sanity configuration files to the Next.js folder.
+- Select yes for TypeScript.
+- Select yes for Sanity studio, and choose the `/studio` route.
+- Select clean project template.
+- Select yes for adding the project ID and dataset to `.env.local`.
+
+Afterwards, the command will install the necessary dependencies for Sanity.
+
+<Details summaryContent="Error during installation">
+  If you run into an error during the installation of peer dependencies, try running the following command to install them:
+
+  ```bash
+  yarn add next-sanity@9.8.15 @sanity/client@^6.22.4 @sanity/icons@^3.4.0 @sanity/types@^3.62.0 @sanity/ui@^2.8.10 next@^15.0.0 react@^19.0.0 react-dom@^19.0.0 sanity@^3.62.0 styled-components@^6.1
+  ```
+</Details>
+
+### Update Middleware
+
+The Next.js Starter storefront has a middleware that ensures all requests start with a country code (for example, `/us`).
+
+Since the Sanity studio runs at `/studio`, the middleware should ignore requests to this path.
+
+Open the file `src/middleware.ts` and find the following `if` condition:
+
+```ts title="src/middleware.ts" badgeLabel="Storefront" badgeColor="blue"
+if (
+  urlHasCountryCode &&
+  (!isOnboarding || onboardingCookie) &&
+  (!cartId || cartIdCookie)
+) {
+  return NextResponse.next()
+}
+```
+
+Replace it with the following condition:
+
+```ts title="src/middleware.ts" badgeLabel="Storefront" badgeColor="blue"
+if (
+  request.nextUrl.pathname.startsWith("/studio") ||
+  urlHasCountryCode &&
+  (!isOnboarding || onboardingCookie) &&
+  (!cartId || cartIdCookie)
+) {
+  return NextResponse.next()
+}
+```
+
+If the path starts with `/studio`, the middleware will stop executing and the page will open.
+
+### Set CORS Settings
+
+Every Sanity project has a configured set of CORS origins allowed, with the default being `http://localhost:3333`.
+
+The Next.js Starter runs on the `8000` port, so you must add it to the allowed CORS origins.
+
+In your Sanity project's dashboard:
+
+1. Click on the API tab.
+
+![Find the API tab at the top of the dashboard.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732096643/Medusa%20Resources/Screenshot_2024-11-20_at_10.35.29_AM_ltj7cd.png)
+
+2. Scroll down to CORS origins and click the "Add CORS origin" button.
+
+![Find the CORS origins section and click the Add CORS origin button at its top right.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732096997/Medusa%20Resources/Screenshot_2024-11-20_at_12.02.50_PM_ahsthb.png)
+
+3. Enter `http://localhost:8000` in the Origin field.
+4. Enable the "Allow credentials" checkbox.
+
+![After filling out the Origin field, click on the Allow credentials checkbox to enable it.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732097074/Medusa%20Resources/Screenshot_2024-11-20_at_12.04.09_PM_nxdvwh.png)
+
+5. Click the Save button.
+
+### Open Sanity Studio
+
+To open the Sanity studio, start the Next.js Starter's development server:
+
+```bash npm2yarn
+npm run dev
+```
+
+Then, open `http://localhost:8000/studio` in your browser. The Sanity studio will open, but right now it's empty.
+
+---
+
+## Step 9: Add Product Schema Type in Sanity
+
+In this step, you'll define the `product` schema type in Sanity. You' can then view the documents of that schema in the studio and update their content.
+
+To create the schema type, create the file `src/sanity/schemaTypes/documents/product.ts` with the following content:
+
+```ts title="src/sanity/schemaTypes/documents/product.ts" badgeLabel="Storefront" badgeColor="blue"
+import { ComposeIcon } from "@sanity/icons"
+import { DocumentDefinition } from "sanity"
+
+const productSchema: DocumentDefinition = {
+  fields: [
+    {
+      name: "title",
+      type: "string",
+    },
+    {
+      group: "content",
+      name: "specs",
+      of: [
+        {
+          fields: [
+            { name: "lang", title: "Language", type: "string" },
+            { name: "title", title: "Title", type: "string" },
+            {
+              name: "content",
+              rows: 3,
+              title: "Content",
+              type: "text",
+            },
+          ],
+          name: "spec",
+          type: "object",
+        },
+      ],
+      type: "array",
+    },
+    {
+      fields: [
+        { name: "title", title: "Title", type: "string" },
+        {
+          name: "products",
+          of: [{ to: [{ type: "product" }], type: "reference" }],
+          title: "Addons",
+          type: "array",
+          validation: (Rule) => Rule.max(3),
+        },
+      ],
+      name: "addons",
+      type: "object",
+    },
+  ],
+  name: "product",
+  preview: {
+    select: {
+      title: "title",
+    },
+  },
+  title: "Product Page",
+  type: "document",
+  groups: [{
+    default: true,
+    // @ts-ignore
+    icon: ComposeIcon,
+    name: "content",
+    title: "Content",
+  }],
+}
+
+export default productSchema
+```
+
+This creates a schema that has the following fields:
+
+- `title`: The title of a document, which is in this case the product's type.
+- `specs`: An array of product specs. Each object in the array has the following fields:
+    - `lang`: This is useful if you want to have localized content.
+    - `title`: The product's title.
+    - `content`: Textual content, such as the product's description.
+- `addons`: An object of products related to this product.
+
+When you sync the products from Medusa, you only sync the title. You manage the `specs` and `addons` fields within Sanity.
+
+Next, replace the content of `src/sanity/schemaTypes/index.ts` with the following:
+
+```ts title="src/sanity/schemaTypes/index.ts" badgeLabel="Storefront" badgeColor="blue"
+import { SchemaPluginOptions } from "sanity"
+import productSchema from "./documents/product"
+
+export const schema: SchemaPluginOptions = {
+  types: [productSchema],
+  templates: (templates) => templates.filter(
+    (template) => template.schemaType !== "product"
+  ),
+}
+```
+
+You add the product schema to the list of exported schemas, but also disable creating a new product. You can only create the products in Medusa.
+
+### Test it Out
+
+To ensure that your schema is defined correctly and working, start the Next.js storefront's server, and open the Sanity studio again at `http://localhost:8000/studio`.
+
+You'll find "Product Page" under Content. If you click on it, you'll find any product you've synced from Medusa.
+
+If you haven't synced any products yet or you want to see the live update, try now creating or updating a product in Medusa. You'll find it added in the Sanity studio.
+
+If you click on any product, you can edit its existing field under "Specs" or add new ones. In the next section, you'll learn how to show the content in the "Specs" field on the storefront's product details page.
+
+---
+
+## Step 10: Show Sanity Content in Next.js Starter Storefront
+
+Now that you're managing a product's content in Sanity, you want to show that content on the storefront. In this step, you'll customize the Next.js Starter storefront to show a product's content as defined in Sanity.
+
+A product's details are retrieved in the file `src/app/[countryCode]/(main)/products/[handle]/page.tsx`. So, replace the `ProductPage` function with the following:
+
+export const sanityContentHighlights = [
+  ["19", "sanity", "Get the product's content from Sanity."]
+]
+
+```tsx title="src/app/[countryCode]/(main)/products/[handle]/page.tsx" badgeLabel="Storefront" badgeColor="blue" highlights={sanityContentHighlights}
+// other imports...
+import { client } from "../../../../../sanity/lib/client"
+
+// ...
+
+export default async function ProductPage(props: Props) {
+  const params = await props.params
+  const region = await getRegion(params.countryCode)
+
+  if (!region) {
+    notFound()
+  }
+
+  const pricedProduct = await listProducts({
+    countryCode: params.countryCode,
+    queryParams: { handle: params.handle },
+  }).then(({ response }) => response.products[0])
+
+  if (!pricedProduct) {
+    notFound()
+  }
+
+  // alternatively, you can filter the content by the language
+  const sanity = (await client.getDocument(pricedProduct.id))?.specs[0]
+
+  return (
+    <ProductTemplate
+      product={pricedProduct}
+      region={region}
+      countryCode={params.countryCode}
+    />
+  )
+}
+```
+
+You import the Sanity client defined in `src/sanity/lib/client.ts` (this was generated by Sanity's CLI). Then, in the page's function, you retrieve the product's document by ID and pass its first step to the `ProductTemplate` component.
+
+This is a simplified approach, but you can also have languages in your storefront and filter the spec based on the current language.
+
+Next, you need to customize the `ProductTemplate` to accept the `sanity` prop. In the file `src/modules/products/templates/index.tsx` add the following to `ProductTemplateProps`:
+
+```tsx title="src/modules/products/templates/index.tsx" badgeLabel="Storefront" badgeColor="blue"
+type ProductTemplateProps = {
+  // ...
+  sanity?: {
+    content: string
+  }
+}
+```
+
+Then, add the `sanity` property to the expanded props of the component:
+
+```tsx title="src/modules/products/templates/index.tsx" badgeLabel="Storefront" badgeColor="blue"
+const ProductTemplate: React.FC<ProductTemplateProps> = ({
+  // ...
+  sanity,
+}) => {
+  // ...
+}
+```
+
+Finally, pass the `sanity` prop to the `ProductInfo` component in the return statement:
+
+```tsx title="src/modules/products/templates/index.tsx" badgeLabel="Storefront" badgeColor="blue"
+<ProductInfo product={product} sanity={sanity} />
+```
+
+Next, you need to update the `ProductInfo` component to accept and use the `sanity` prop.
+
+In `src/modules/products/templates/product-info/index.tsx`, update the `ProductInfoProps` to accept the `sanity` prop:
+
+```tsx title="src/modules/products/templates/product-info/index.tsx" badgeLabel="Storefront" badgeColor="blue"
+type ProductInfoProps = {
+  // ...
+  sanity?: {
+    content: string
+  }
+}
+```
+
+Then, add the `sanity` property to the expanded props of the component:
+
+```tsx title="src/modules/products/templates/index.tsx" badgeLabel="Storefront" badgeColor="blue"
+const ProductInfo = ({ 
+  // ...
+  sanity,
+}: ProductInfoProps) => {
+  // ...
+}
+```
+
+Next, find the following line in the return statement:
+
+```tsx title="src/modules/products/templates/index.tsx" badgeLabel="Storefront" badgeColor="blue"
+{product.description}
+```
+
+And replace it with the following:
+
+```tsx title="src/modules/products/templates/index.tsx" badgeLabel="Storefront" badgeColor="blue"
+{sanity?.content || product.description}
+```
+
+Instead of showing the product's description on the product details page, this will show the content defined in Sanity if available.
+
+### Test it Out
+
+To test this out, first, run both the Next.js Starter storefront and the Medusa application, and open the Sanity studio. Try editing the content of the first spec of a product.
+
+Then, open the Next.js Starter storefront at `http://localhost:8000` and go to "Store" from the menu, then select the product you edited in Sanity.
+
+In the product's page, you'll find under the product's name the content you put in Sanity.
+
+You can now manage the product's content in Sanity, add more fields, and customize how you show them in the storefront. The Medusa application will also automatically create documents in Sanity for new products you add or update, ensuring your products are always synced across systems.
+
+---
+
+## Step 11: Customize Admin to Manually Sync Data
+
+There are cases where you need to trigger the syncing of products manually, such as when an error occurs or you have products from before creating this integration.
+
+The Medusa Admin dashboard is customizable, allowing you to either inject components, called [widgets](!docs!/learn/fundamentals/admin/widgets), into existing pages, or adding new pages, called [UI routes](!docs!/learn/fundamentals/admin/ui-routes). In these customizations, you can send requests to the Medusa application to perform custom operations.
+
+In this step, you'll add a widget to the product's details page. In that page, you'll show whether a product is synced with Sanity, and allow the admin user to trigger syncing it manually.
+
+![The widget in the product details page.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732093722/Medusa%20Resources/Screenshot_2024-11-20_at_11.08.23_AM_wzftfv.png)
+
+Before you do that, however, you need two new API routes in your Medusa application: one to retrieve a document from Sanity, and one to trigger syncing the product data.
+
+<Note title="What is an API Route?">
+
+An API route is a REST API endpoint that exposes commerce features to the admin dashboard or other frontend clients. Learn more about API routes in [this documentation](!docs!/learn/fundamentals/api-routes).
+
+</Note>
+
+### Get Sanity Document API Route
+
+In this section, you'll create the API route to retrieve a sanity document, and the URL to it in the Sanity studio.
+
+To retrieve the URL to the Sanity studio, add the following method in the Sanity Module's service in `src/modules/sanity/service.ts`:
+
+```ts title="src/modules/sanity/service.ts"
+class SanityModuleService {
+  // ...
+  async getStudioLink(
+    type: string,
+    id: string,
+    config: { explicit_type?: boolean } = {}
+  ) {
+    const resolvedType = config.explicit_type ? type : this.typeMap[type]
+    if (!this.studioUrl) {
+      throw new Error("No studio URL provided")
+    }
+    return `${this.studioUrl}/structure/${resolvedType};${id}`
+  }
+}
+```
+
+The method uses the `studioUrl` property, which you set in the `constructor` using the `studio_url` module option, to get the studio link.
+
+Then, to create the API route, create the file `src/api/admin/sanity/documents/[id]/route.ts` with the following content:
+
+```ts title="src/api/admin/sanity/documents/[id]/route.ts"
+import { 
+  MedusaRequest, 
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import SanityModuleService from "src/modules/sanity/service"
+import { SANITY_MODULE } from "../../../../../modules/sanity"
+
+export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+  const { id } = req.params
+
+  const sanityModule: SanityModuleService = req.scope.resolve(
+    SANITY_MODULE
+  )
+  const sanityDocument = await sanityModule.retrieve(id)
+
+  const url = sanityDocument ? 
+    await sanityModule.getStudioLink(
+      sanityDocument._type,
+      sanityDocument._id,
+      { explicit_type: true }
+    )
+    : ""
+
+  res.json({ sanity_document: sanityDocument, studio_url: url })
+}
+```
+
+This defines a `GET` API route at `/admin/sanity/documents/:id`, where `:id` is a dynamic path parameter indicating the ID of a document to retrieve.
+
+In the `GET` route handler, you resolve the Sanity Module's service and use it to first retrieve the product's document, then the studio link of that document.
+
+You return in the JSON response an object having the `sanity_document` and `studio_url` properties.
+
+You'll test out this route in a later section.
+
+<Note title="Tip">
+
+Since the API route is added under the `/admin` prefix, only authenticated admin users can access it. Learn more about protected routes in [this documentation](!docs!/learn/fundamentals/api-routes/protected-routes).
+
+</Note>
+
+### Trigger Sanity Sync API Route
+
+In this section, you'll add the API route that manually triggers syncing a product to Sanity.
+
+Since you already have the workflow to sync products, you only need to create an API route that executes it.
+
+Create the file `src/api/admin/sanity/documents/[id]/sync/route.ts` with the following content:
+
+```ts title="src/api/admin/sanity/documents/[id]/sync/route.ts"
+import { 
+  MedusaRequest, 
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import { 
+  sanitySyncProductsWorkflow,
+} from "../../../../../../workflows/sanity-sync-products"
+
+export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
+  const { transaction } = await sanitySyncProductsWorkflow(req.scope)
+    .run({
+      input: { product_ids: [req.params.id] },
+    })
+
+  res.json({ transaction_id: transaction.transactionId })
+}
+```
+
+You add a `POST` API route at `/admin/sanity/documents/:id/sync`, where `:id` is a dynamic path parameter that indicates the ID of a product to sync to Sanity.
+
+In the `POST` API route handler, you execute the `sanitySyncProductsWorkflow`, passing it the ID of the product from the path parameter as an input.
+
+In the next section, you'll customize the admin dashboard and send requests to the API route from there.
+
+### Sanity Product Widget
+
+In this section, you'll add a widget in the product details page. The widget will show the Sanity document of the product and triggers syncing it to Sanity using the API routes you created.
+
+To send requests from admin customizations to the Medusa server, you need to use Medusa's [JS SDK](../../../js-sdk/page.mdx). You'll also use [Tanstack Query](https://tanstack.com/query/latest) to benefit from features like data caching and invalidation.
+
+To configure the JS SDK, create the file `src/admin/lib/sdk.ts` with the following content:
+
+```ts title="src/admin/lib/sdk.ts"
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: "http://localhost:9000",
+  debug: process.env.NODE_ENV === "development",
+  auth: {
+    type: "session",
+  },
+})
+```
+
+You initialize the JS SDK and export it. You can learn more about configuring the JS SDK in [this guide](../../../js-sdk/page.mdx).
+
+Next, you'll create hooks using Tanstack Query to send requests to the API routes you created earlier.
+
+Create the file `src/admin/hooks/sanity.tsx` with the following content:
+
+```ts title="src/admin/hooks/sanity.tsx"
+import { 
+  useMutation, 
+  UseMutationOptions, 
+  useQueryClient, 
+} from "@tanstack/react-query"
+import { sdk } from "../lib/sdk"
+
+export const useTriggerSanityProductSync = (
+  id: string,
+  options?: UseMutationOptions
+) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () =>
+      sdk.client.fetch(`/admin/sanity/documents/${id}/sync`, {
+        method: "post",
+      }),
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: [`sanity_document`, `sanity_document_${id}`],
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+```
+
+You define the `useTriggerSanityProductSync` hook which creates a Tanstack Query mutation that, when executed, sends a request to the API route that triggers syncing the product to Sanity.
+
+Add in the same file another hook:
+
+```ts title="src/admin/hooks/sanity.tsx"
+// other imports...
+import { 
+  // ...
+  QueryKey, 
+  useQuery, 
+  UseQueryOptions,
+} from "@tanstack/react-query"
+import { FetchError } from "@medusajs/js-sdk"
+
+// ...
+
+export const useSanityDocument = (
+  id: string,
+  query?: Record<any, any>,
+  options?: Omit<
+    UseQueryOptions<
+      Record<any, any>,
+      FetchError,
+      { sanity_document: Record<any, any>; studio_url: string },
+      QueryKey
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const fetchSanityProductStatus = async (query?: Record<any, any>) => {
+    return await sdk.client.fetch<Record<any, any>>(
+      `/admin/sanity/documents/${id}`,
+      {
+        query,
+      }
+    )
+  }
+
+  const { data, ...rest } = useQuery({
+    queryFn: async () => fetchSanityProductStatus(query),
+    queryKey: [`sanity_document_${id}`],
+    ...options,
+  })
+
+  return { ...data, ...rest }
+}
+```
+
+You define the hook `useSanityDocument` which retrieves the Sanity document of a product using Tankstack Query.
+
+You can now create the widget injected in a product's details page. Widgets are react components created in a file under the `src/admin/widgets` directory.
+
+So, create the file `src/admin/widgets/sanity-product.tsx` with the following content:
+
+```tsx title="src/admin/widgets/sanity-product.tsx"
+import { defineWidgetConfig } from "@medusajs/admin-sdk"
+import { AdminProduct, DetailWidgetProps } from "@medusajs/types"
+import { ArrowUpRightOnBox } from "@medusajs/icons"
+import { Button, CodeBlock, Container, StatusBadge, toast } from "@medusajs/ui"
+import { useState } from "react"
+import {
+  useSanityDocument,
+  useTriggerSanityProductSync,
+} from "../hooks/sanity"
+
+const ProductWidget = ({ data }: DetailWidgetProps<AdminProduct>) => {
+  const { mutateAsync, isPending } = useTriggerSanityProductSync(data.id)
+  const { sanity_document, studio_url, isLoading } = useSanityDocument(data.id)
+  const [showCodeBlock, setShowCodeBlock] = useState(false)
+
+  const handleSync = async () => {
+    try {
+      await mutateAsync(undefined)
+      toast.success(`Sync triggered.`)
+    } catch (err) {
+      toast.error(`Couldn't trigger sync: ${
+        (err as Record<string, unknown>).message
+      }`)
+    }
+  }
+
+  return (
+    <Container>
+      <div className="flex justify-between w-full items-center">
+        <div className="flex gap-2 items-center">
+          <h2>Sanity Status</h2>
+          <div>
+            {isLoading ? (
+              "Loading..."
+            ) : sanity_document?.title === data.title ? (
+              <StatusBadge color="green">Synced</StatusBadge>
+            ) : (
+              <StatusBadge color="red">Not Synced</StatusBadge>
+            )}
+          </div>
+        </div>
+        <Button
+          size="small"
+          variant="secondary"
+          onClick={handleSync}
+          disabled={isPending}
+        >
+          Sync
+        </Button>
+      </div>
+      <div className="mt-6">
+        <div className="mb-4 flex gap-4">
+          <Button
+            size="small"
+            variant="secondary"
+            onClick={() => setShowCodeBlock(!showCodeBlock)}
+          >
+            {showCodeBlock ? "Hide" : "Show"} Sanity Document
+          </Button>
+          {studio_url && (
+            <a href={studio_url} target="_blank" rel="noreferrer">
+              <Button variant="transparent">
+                <ArrowUpRightOnBox /> Sanity Studio
+              </Button>
+            </a>
+          )}
+        </div>
+        {!isLoading && showCodeBlock && (
+          <CodeBlock
+            className="dark"
+            snippets={[
+              {
+                language: "json",
+                label: "Sanity Document",
+                code: JSON.stringify(sanity_document, null, 2),
+              },
+            ]}
+          >
+            <CodeBlock.Body />
+          </CodeBlock>
+        )}
+      </div>
+    </Container>
+  )
+}
+
+// The widget's configurations
+export const config = defineWidgetConfig({
+  zone: "product.details.after",
+})
+
+export default ProductWidget
+```
+
+The file exports a `ProductWidget` component and a `config` object created with `defineWidgetConfig` from the Admin Extension SDK. In the `config` object, you specify the zone to inject the widget into in the `zone` property.
+
+<Note title="Tip">
+
+Find all widget injection zones in [this reference](../../../admin-widget-injection-zones/page.mdx).
+
+</Note>
+
+In the widget, you use the `useSanityDocument` to retrieve the product's document from Sanity by sending a request to the API route you created earlier. You show that document's details and a button to trigger syncing the data.
+
+When the "Sync" button is clicked, you use the `useTriggerSanityProductSync` hook which sends a request to the API route you created earlier and executes the workflow that syncs the product to Sanity. The workflow will execute in the background, since you configured its step to be async.
+
+To render a widget that matches the rest of the admin dashboard's design, you use components from the [Medusa UI package](!ui!), such as the `CodeBlock` or `Container` components.
+
+<Note>
+
+Learn more about widgets in [this documentation](/learn/fundamentals/admin/widgets).
+
+</Note>
+
+### Test it Out
+
+To test these customizations out, start the Medusa application and open the admin dashboard. Then, choose a product and scroll down to the end of the page.
+
+You'll find a new "Sanity Status" section showing you whether the product is synced to Sanity and its document's details. You can also click the Sync button, which will sync the product to Sanity.
+
+---
+
+## Step 12: Add Track Syncs Page to Medusa Admin
+
+Earlier in this guide when introducing workflows, you learned that you can track the execution of a workflow. As a last step of this guide, you'll add a new page in the admin dashboard that shows the executions of the `sanitySyncProductsWorkflow` and their status. You'll also add the ability to sync all products to Sanity from that page.
+
+![A screenshot of the page to track and trigger syncs.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732095185/Medusa%20Resources/Screenshot_2024-11-20_at_11.09.42_AM_te8xic.png)
+
+### Retrieve Sync Executions API Route
+
+Medusa has a [workflow engine](../../../architectural-modules/workflow-engine/page.mdx) that manages workflow executions, roll-backs, and other functionalities under the hood.
+
+The workflow engine is an [architectural module](!docs!/learn/fundamentals/modules/architectural-modules), which can be replaced with a [Redis Workflow Engine](../../../architectural-modules/workflow-engine/redis/page.mdx), or a custom one of your choice, allowing you to take ownership of your application's tooling.
+
+In your customizations, you can resolve the workflow engine from the container and manage executions of a workflow, such as retrieve them and check their progress.
+
+In this section, you'll create an API route to retrieve the stored executions of the `sanitySyncProductsWorkflow` workflow, so that you can display them later on the dashboard.
+
+<Note title="Tip">
+
+When you defined the `sanitySyncProductsWorkflow`, you set its `retentionTime` option so that you can store the workflow execution's details temporarily. If a workflow doesn't have this option set, its execution won't be stored for tracking.
+
+</Note>
+
+Create the file `src/api/admin/sanity/syncs/route.ts` with the following content:
+
+```ts title="src/api/admin/sanity/syncs/route.ts"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework"
+import { Modules } from "@medusajs/framework/utils"
+import { 
+  sanitySyncProductsWorkflow,
+} from "../../../../workflows/sanity-sync-products"
+
+export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
+  const workflowEngine = req.scope.resolve(
+    Modules.WORKFLOW_ENGINE
+  )
+
+  const [executions, count] = await workflowEngine
+    .listAndCountWorkflowExecutions(
+      {
+        workflow_id: sanitySyncProductsWorkflow.getName(),
+      },
+      { order: { created_at: "DESC" } }
+    )
+
+  res.json({ workflow_executions: executions, count })
+}
+```
+
+You add a `GET` API route at `/admin/sanity/syncs`. In the API route handler, you resolve the Workflow Engine Module's service from the Medusa container. You use the `listAndCountWorkflowExecutions` method to retrieve the executions of the `sanitySyncProductsWorkflow` workflow, filtering by its name.
+
+You return the executions in the JSON response of the route.
+
+### Trigger Sync API Route
+
+In this section, you'll add another API route that triggers syncing all products to Sanity.
+
+In the same file `src/api/admin/sanity/syncs/route.ts`, add the following:
+
+```ts title="api/admin/sanity/syncs/route.ts"
+export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
+  const { transaction } = await sanitySyncProductsWorkflow(req.scope).run({
+    input: {},
+  })
+
+  res.json({ transaction_id: transaction.transactionId })
+}
+```
+
+This adds a `POST` API route at `/admin/sanity/syncs`. In the route handler, you execute the `sanitySyncProductsWorkflow` without passing it a `product_ids` input. The step in the workflow will retrieve all products, instead of filtering them by ID, and sync them to Sanity.
+
+You return the transaction ID of the workflow, which you can use to track the execution's progress since the workflow will run in the background. This is not implemented in this guide, but Medusa has a [Get Execution API route](!api!admin#workflows-executions_getworkflowsexecutionsworkflow_idtransaction_id) that you can use to get the details of a workflow's execution.
+
+### Add Sanity UI Route
+
+In this section, you'll add a UI route in the admin dashboard, which is a new page, that shows the list of `sanitySyncProductsWorkflow` executions and allows triggering sync of all products in Medusa.
+
+A UI route is React component exported in a file under the `src/admin/routes` directory. Similar to a widget, a UI route can also send requests to the Medusa application to perform actions using your custom API routes.
+
+Before creating the UI route, you'll create hooks using Tanstack Query that send requests to these UI routes. In the file `src/admin/hooks/sanity.tsx`, add the following two new hooks:
+
+```tsx title="src/admin/hooks/sanity.tsx"
+export const useTriggerSanitySync = (options?: UseMutationOptions) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () =>
+      sdk.client.fetch(`/admin/sanity/syncs`, {
+        method: "post",
+      }),
+    onSuccess: (data: any, variables: any, context: any) => {
+      queryClient.invalidateQueries({
+        queryKey: [`sanity_sync`],
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useSanitySyncs = (
+  query?: Record<any, any>,
+  options?: Omit<
+    UseQueryOptions<
+      Record<any, any>,
+      FetchError,
+      { workflow_executions: Record<any, any>[] },
+      QueryKey
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const fetchSanitySyncs = async (query?: Record<any, any>) => {
+    return await sdk.client.fetch<Record<any, any>>(`/admin/sanity/syncs`, {
+      query,
+    })
+  }
+
+  const { data, ...rest } = useQuery({
+    queryFn: async () => fetchSanitySyncs(query),
+    queryKey: [`sanity_sync`],
+    ...options,
+  })
+
+  return { ...data, ...rest }
+}
+```
+
+The `useTriggerSanitySync` hook creates a mutation that, when executed, sends a request to the trigger sync API route you created earlier to sync all products.
+
+The `useSanitySyncs` hook sends a request to the retrieve sync executions API route that you created earlier to retrieve the workflow's exections.
+
+Finally, to create the UI route, create the file `src/admin/routes/sanity/page.tsx` with the following content:
+
+```tsx title="src/admin/routes/sanity/page.tsx"
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { Sanity } from "@medusajs/icons"
+import {
+  Badge,
+  Button,
+  Container,
+  Heading,
+  Table,
+  Toaster,
+  toast,
+} from "@medusajs/ui"
+import { useSanitySyncs, useTriggerSanitySync } from "../../hooks/sanity"
+
+const SanityRoute = () => {
+  const { mutateAsync, isPending } = useTriggerSanitySync()
+  const { workflow_executions, refetch } = useSanitySyncs()
+
+  const handleSync = async () => {
+    try {
+      await mutateAsync()
+      toast.success(`Sync triggered.`)
+      refetch()
+    } catch (err) {
+      toast.error(`Couldn't trigger sync: ${
+        (err as Record<string, unknown>).message
+      }`)
+    }
+  }
+
+  const getBadgeColor = (state: string) => {
+    switch (state) {
+      case "invoking":
+        return "blue"
+      case "done":
+        return "green"
+      case "failed":
+        return "red"
+      default:
+        return "grey"
+    }
+  }
+
+  return (
+    <>
+      <Container className="flex flex-col p-0 overflow-hidden">
+        <div className="p-6 flex justify-between">
+          <Heading className="font-sans font-medium h1-core">
+            Sanity Syncs
+          </Heading>
+          <Button
+            variant="secondary"
+            size="small"
+            onClick={handleSync}
+            disabled={isPending}
+          >
+            Trigger Sync
+          </Button>
+        </div>
+        <Table>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Sync ID</Table.HeaderCell>
+              <Table.HeaderCell>Status</Table.HeaderCell>
+              <Table.HeaderCell>Created At</Table.HeaderCell>
+              <Table.HeaderCell>Updated At</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+
+          <Table.Body>
+            {(workflow_executions || []).map((execution) => (
+              <Table.Row
+                key={execution.id}
+                className="cursor-pointer"
+                onClick={() =>
+                  (window.location.href = `/app/sanity/${execution.id}`)
+                }
+              >
+                <Table.Cell>{execution.id}</Table.Cell>
+                <Table.Cell>
+                  <Badge
+                    rounded="full"
+                    size="2xsmall"
+                    color={getBadgeColor(execution.state)}
+                  >
+                    {execution.state}
+                  </Badge>
+                </Table.Cell>
+                <Table.Cell>{execution.created_at}</Table.Cell>
+                <Table.Cell>{execution.updated_at}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </Container>
+      <Toaster />
+    </>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Sanity",
+  icon: Sanity,
+})
+
+export default SanityRoute
+```
+
+The file's path relative to the `src/admin/routes` directory indicates its path in the admin dashboard. So, this adds a new route at the path `http://localhost:9000/app/sanity`.
+
+The file must export the UI route's component. Also, to add an item in the sidebar for the UI route, you export a configuration object, created with `defineRouteConfig` from the Admin Extension SDK. The function accepts the following properties:
+
+- `label`: The sidebar item's label.
+- `icon`: The icon to the show in the sidebar.
+
+In the UI route, you use the `useSanitySyncs` hook to retrieve the list of sync executions and display them with their status. You also show a "Trigger Sync" button that, when clicked, uses the mutation from the `useTriggerSanitySync` hook to send a request to the Medusa application and trigger the sync.
+
+To display components that match the design of the Medusa Admin, you use components from the [Medusa UI package](!ui!).
+
+<Note>
+
+Learn more about UI routes in [this documentation](!docs!/learn/fundamentals/admin/ui-routes).
+
+</Note>
+
+### Test it Out
+
+To test it out, start the Medusa application and open the admin dashboard. After logging in, you'll find a new "Sanity" item in the sidebar.
+
+If you click on it, you'll see a table of the latest syncs. You also trigger syncing by clicking the "Trigger Sync" button. After you click the button, you should see a new execution added to the table.
+
+---
+
+## Next Steps
+
+You've now integrated Medusa with Sanity and can benefit from powerful commerce and CMS features.
+
+If you're new to Medusa, check out the [main documentation](!docs!/learn), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
+
+To learn more about the commerce features that Medusa provides, check out Medusa's [Commerce Modules](../../../commerce-modules/page.mdx).
+
+For other general guides related to deployment, storefront development, integrations, and more, check out the [Development Resources](../../../page.mdx).

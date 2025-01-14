@@ -1,39 +1,257 @@
 name: Medusa Pipeline
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - develop
+      - v1.x
+  pull_request:
+    branches:
+      - develop
+      - v1.x
 
 jobs:
-  unit-tests:
+  setup:
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+    outputs:
+      module-matrix: ${{ steps.set-module-matrix.outputs.matrix }}
+      module-chunks: ${{ steps.set-module-chunks.outputs.chunks }}
+      http-matrix: ${{ steps.set-http-matrix.outputs.matrix }}
+      http-chunks: ${{ steps.set-http-chunks.outputs.chunks }}
+      unit-tests-matrix: ${{ steps.set-unit-tests-matrix.outputs.matrix }}
+      unit-tests-chunks: ${{ steps.set-unit-tests-chunks.outputs.chunks }}
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
+        uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
 
       - name: Checkout
-        uses: actions/checkout@v2.3.5
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: 20
           cache: "yarn"
 
       - name: Assert changed
         run: ./scripts/assert-changed-files-actions.sh "packages"
 
-      - name: Bootstrap packages
-        uses: ./.github/actions/cache-bootstrap
+      - name: Install dependencies
+        uses: ./.github/actions/cache-deps
         with:
-          extension: unit-tests
+          extension: pipeline
+
+      - id: set-module-chunks
+        name: Set Module Chunks
+        working-directory: integration-tests/modules
+        run: echo "chunks=$(yarn run jest --listTests --json | jq -cM '[_nwise(length / 2 | ceil)]')" >> $GITHUB_OUTPUT
+
+      - id: set-module-matrix
+        name: Set Module Matrix
+        run: echo "matrix=$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')" >> $GITHUB_OUTPUT
+        env:
+          CHUNKS: ${{ steps.set-module-chunks.outputs.chunks }}
+
+      - id: set-http-chunks
+        name: Set HTTP Chunks
+        working-directory: integration-tests/http
+        run: echo "chunks=$(yarn run jest --listTests --json | jq -cM '[_nwise(length / 2 | ceil)]')" >> $GITHUB_OUTPUT
+
+      - id: set-http-matrix
+        name: Set HTTP Matrix
+        run: echo "matrix=$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')" >> $GITHUB_OUTPUT
+        env:
+          CHUNKS: ${{ steps.set-http-chunks.outputs.chunks }}
+
+      - id: set-unit-tests-chunks
+        name: Set Unit Tests Chunks
+        run: echo "chunks=$(yarn workspaces list --json | jq -j '[inputs | .name]' | jq -r | jq -cM '[_nwise(length / 2 | ceil)]')" >> $GITHUB_OUTPUT
+
+      - id: set-unit-tests-matrix
+        name: Set Unit Tests Matrix
+        run: echo "matrix=$(echo $CHUNKS | jq -cM 'to_entries | map(.key)')" >> $GITHUB_OUTPUT
+        env:
+          CHUNKS: ${{ steps.set-unit-tests-chunks.outputs.chunks }}
+
+  unit-tests-matrix:
+    needs: setup
+    runs-on: ubuntu-latest
+    name: Shard (${{ matrix.chunk }}) Unit Tests
+    strategy:
+      fail-fast: false
+      matrix:
+        chunk: ${{ fromJSON(needs.setup.outputs.unit-tests-matrix) }}
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Assert changed
+        run: ./scripts/assert-changed-files-actions.sh "packages"
+
+      - name: Install dependencies
+        uses: ./.github/actions/cache-deps
+        with:
+          extension: pipeline
 
       - name: Run unit tests
-        run: node --max-old-space-size=2048 ./node_modules/.bin/jest -w 1
+        run: yarn test:chunk
+        env:
+          CHUNK: ${{ matrix.chunk }}
+          CHUNKS: ${{ needs.setup.outputs.unit-tests-chunks }}
 
-  integration-tests:
+  integration-tests-packages:
+    needs: setup
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 1s
+          --health-timeout 10s
+          --health-retries 10
+        ports:
+          - 6379:6379
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 1s
+          --health-timeout 10s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        uses: ./.github/actions/cache-deps
+        with:
+          extension: pipeline
+
+      - name: Run integration tests
+        run: yarn test:integration:packages
+        env:
+          DB_PASSWORD: postgres
+          DB_USERNAME: postgres
+
+  integration-tests-http-matrix:
+   needs: setup
+   name: Shard (${{ matrix.chunk }}) HTTP Integration Tests
+   runs-on: ubuntu-latest
+   strategy:
+     fail-fast: false
+     matrix:
+       chunk: ${{ fromJSON(needs.setup.outputs.http-matrix) }}
+   env:
+     TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+     TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  
+   services:
+     redis:
+       image: redis
+       options: >-
+         --health-cmd "redis-cli ping"
+         --health-interval 1s
+         --health-timeout 10s
+         --health-retries 10
+       ports:
+         - 6379:6379
+     postgres:
+       image: postgres
+       env:
+         POSTGRES_PASSWORD: postgres
+         POSTGRES_USER: postgres
+       options: >-
+         --health-cmd pg_isready
+         --health-interval 1s
+         --health-timeout 10s
+         --health-retries 10
+       ports:
+         - 5432:5432
+
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v3
+       with:
+         fetch-depth: 0
+  
+     - name: Install dependencies
+       uses: ./.github/actions/cache-deps
+       with:
+         extension: pipeline
+  
+     - name: Run HTTP integration tests
+       run: yarn test:integration:http
+       env:
+         DB_USERNAME: postgres
+         DB_PASSWORD: postgres
+         NODE_OPTIONS: "--max_old_space_size=4096"
+         CHUNK: ${{ matrix.chunk }}
+         CHUNKS: ${{ needs.setup.outputs.http-chunks }}
+
+  integration-tests-http:
+   if: ${{ always() }}
+   runs-on: ubuntu-latest
+   needs: integration-tests-http-matrix
+   steps:
+     - run: exit 1
+       if: >-
+         ${{
+              contains(needs.integration-tests-http-matrix.result, 'failure')
+           || contains(needs.integration-tests-http-matrix.result, 'cancelled')
+           || contains(needs.integration-tests-http-matrix.result, 'skipped')
+         }}
+     - run: exit 0
+       if: ${{ contains(needs.integration-tests-http-matrix.result, 'success') }}
+
+  unit-tests:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: unit-tests-matrix
+    steps:
+      - run: exit 1
+        if: >-
+          ${{
+               contains(needs.unit-tests-matrix.result, 'failure')
+            || contains(needs.unit-tests-matrix.result, 'cancelled')
+            || contains(needs.unit-tests-matrix.result, 'skipped')
+          }}
+      - run: exit 0
+        if: ${{ contains(needs.unit-tests-matrix.result, 'success') }}
+
+  integration-tests-modules-matrix:
+    needs: setup
+    name: Shard (${{ matrix.chunk }}) Module Integration Tests
+    strategy:
+      matrix:
+        chunk: ${{ fromJSON(needs.setup.outputs.module-matrix) }}
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
     services:
       postgres:
@@ -43,50 +261,43 @@ jobs:
           POSTGRES_USER: postgres
         options: >-
           --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-interval 1s
+          --health-timeout 10s
+          --health-retries 10
         ports:
           - 5432:5432
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Checkout
-        uses: actions/checkout@v2.3.5
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v2.4.1
+      - name: Install dependencies
+        uses: ./.github/actions/cache-deps
         with:
-          node-version: "14"
-          cache: "yarn"
+          extension: pipeline
 
-      - name: Bootstrap packages
-        uses: ./.github/actions/cache-bootstrap
-        with:
-          extension: integration-tests
-
-      - name: Install dev cli
-        run: sudo npm i -g medusa-dev-cli
-
-      - name: Set path to medusa repo
-        run: medusa-dev --set-path-to-repo `pwd`
-
-      - name: Force install
-        run: medusa-dev --force-install
-        working-directory: integration-tests/api
-
-      - name: Build integration tests
-        run: yarn build
-        working-directory: integration-tests/api
-
-      - name: Run integration tests
-        run: yarn test
-        working-directory: integration-tests/api
+      - name: Run Modules integration tests
+        run: yarn test:integration:modules
         env:
+          DB_USERNAME: postgres
           DB_PASSWORD: postgres
+          NODE_OPTIONS: "--max_old_space_size=4096"
+          CHUNK: ${{ matrix.chunk }}
+          CHUNKS: ${{ needs.setup.outputs.module-chunks }}
+
+  integration-tests-modules:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: integration-tests-modules-matrix
+    steps:
+      - run: exit 1
+        if: >-
+          ${{
+               contains(needs.integration-tests-modules-matrix.result, 'failure')
+            || contains(needs.integration-tests-modules-matrix.result, 'cancelled')
+            || contains(needs.integration-tests-modules-matrix.result, 'skipped')
+          }}
+      - run: exit 0
+        if: ${{ contains(needs.integration-tests-modules-matrix.result, 'success') }}

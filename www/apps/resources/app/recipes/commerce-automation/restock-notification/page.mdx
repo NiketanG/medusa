@@ -1,0 +1,1488 @@
+import { Card, Prerequisites, Details, WorkflowDiagram } from "docs-ui"
+import { Github } from "@medusajs/icons"
+
+export const ogImage = "https://res.cloudinary.com/dza7lstvk/image/upload/v1733326703/Medusa%20Resources/restock-notification_sw5k7d.jpg"
+
+export const metadata = {
+  title: `Implement Restock Notifications in Medusa`,
+  openGraph: {
+    images: [
+      {
+        url: ogImage,
+        width: 1600,
+        height: 836,
+        type: "image/jpeg"
+      }
+    ],
+  },
+  twitter: {
+    images: [
+      {
+        url: ogImage,
+        width: 1600,
+        height: 836,
+        type: "image/jpeg"
+      }
+    ]
+  }
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how to notify customers when a variant is restocked in Medusa.
+
+When you install a Medusa application, you get a fully-fledged commerce platform with a framework for customization. The Medusa application's commerce features are built around [commerce modules](../../../commerce-modules/page.mdx) which are available out-of-the-box. These features include managing the inventory of product variants in different stock locations and sales channels.
+
+Customers browsing your store may be interested in a product that is currently out of stock. To keep the customer interested in your store and encourage them to purchase the product in the future, you can build customizations around Medusa's commerce features to subscribe customers to receive a notification when the product is restocked.
+
+This guide will teach you how to:
+
+- Install and set up Medusa.
+- Implement the data model to subscribe for variant restocking.
+- Add a custom endpoint to subscribe a customer to a variant's restock notification.
+- Build a flow to send a notification to customers subscribed to a variant when it's restocked.
+
+You can follow this guide whether you're new to Medusa or an advanced Medusa developer.
+
+<Card
+  title="Example Repository"
+  text="Find the full code of the guide in this repository."
+  href="https://github.com/medusajs/examples/tree/main/restock-notification"
+  icon={Github}
+/>
+
+---
+
+## Step 1: Install a Medusa Application
+
+<Prerequisites items={[
+  {
+    text: "Node.js v20+",
+    link: "https://nodejs.org/en/download"
+  },
+  {
+    text: "Git CLI tool",
+    link: "https://git-scm.com/downloads"
+  },
+  {
+    text: "PostgreSQL",
+    link: "https://www.postgresql.org/download/"
+  }
+]} />
+
+Start by installing the Medusa application on your machine with the following command:
+
+```bash
+npx create-medusa-app@latest
+```
+
+You'll first be asked for the project's name. You can also optionally choose to install the [Next.js starter storefront](../../../nextjs-starter/page.mdx).
+
+Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name. If you chose to install the Next.js starter, it'll be installed in a separate directory with the `{project-name}-storefront` name.
+
+<Note title="Why is the storefront installed separately">
+
+The Medusa application is composed of a headless Node.js server and an admin dashboard. The storefront is installed or custom-built separately and connects to the Medusa application through its REST endpoints, called [API routes](!docs!/learn/fundamentals/api-routes). Learn more about Medusa's architecture in [this documentation](!docs!/learn/introduction/architecture).
+
+</Note>
+
+Once the installation finishes successfully, the Medusa Admin dashboard will open with a form to create a new user. Enter the user's credential and submit the form. Afterwards, you can login with the new user and explore the dashboard.
+
+<Note title="Ran into Errors">
+
+Check out the [troubleshooting guides](../../../troubleshooting/create-medusa-app-errors/page.mdx) for help.
+
+</Note>
+
+---
+
+## Step 2: Create Restock Module
+
+To add custom tables to the database, which are called data models, you create a module. A module is a re-usable package with functionalities related to a single feature or domain. Medusa integrates the module into your application without implications or side effects on your setup.
+
+In this step, you'll create a Restock Module that adds a custom data model for restock notification subscriptions. In later steps, you'll store customer subscriptions in this data model.
+
+<Note>
+
+Learn more about modules in [this documentation](!docs!/learn/fundamentals/modules).
+
+</Note>
+
+### Create Module Directory
+
+A module is created under the `src/modules` directory of your Medusa application. So, create the directory `src/modules/restock`.
+
+![Diagram showcasing the module directory to create](https://res.cloudinary.com/dza7lstvk/image/upload/v1733222736/Medusa%20Resources/restock-dir-overview-1_hiz58j.jpg)
+
+### Create Data Models
+
+A data model represents a table in the database. You create data models using Medusa's Data Model Language (DML). It simplifies defining a table's columns, relations, and indexes with straightforward methods and configurations.
+
+<Note>
+
+Learn more about data models in [this documentation](!docs!/learn/fundamentals/modules#1-create-data-model).
+
+</Note>
+
+In Medusa, you have sales channels that indicate the channels you sell your products through, such as online storefront or offline store. A product's variants have different inventory quantities across stock locations, which are associated with sales channels.
+
+![A diagram showcasing how a variant's inventory is stored across modules](https://res.cloudinary.com/dza7lstvk/image/upload/v1733224214/Medusa%20Resources/inventory-details-example_nvx4cj.jpg)
+
+So, a customer sees the inventory quantity of a product variant based on their sales channel. To subscribe a customer to a product variant's restock notification, you'll store the subscription in a `RestockSubscription` data model.
+
+You create a data model in a TypeScript or JavaScript file under the `models` directory of a module. So, create the file `src/modules/restock/models/restock-subscription.ts` with the following content:
+
+![The directory structure of the Restock Module after adding this model.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733224503/Medusa%20Resources/restock-dir-overview-2_chap79.jpg)
+
+```ts title="src/modules/restock/models/restock-subscription.ts"
+import { model } from "@medusajs/framework/utils"
+
+const RestockSubscription = model.define("restock_subscription", {
+  id: model.id().primaryKey(),
+  variant_id: model.text(),
+  sales_channel_id: model.text(),
+  email: model.text(),
+  customer_id: model.text().nullable(),
+})
+.indexes([
+  {
+    on: ["variant_id", "sales_channel_id", "email"],
+    unique: true,
+  },
+])
+
+export default RestockSubscription
+```
+
+You define the data model using DML's `define` method. It accepts two parameters:
+
+1. The first one is the name of the data model's table in the database.
+2. The second is an object, which is the data model's schema. The schema's properties are defined using DML methods.
+
+In the data model, you define the following properties:
+
+1. `id`: A primary key ID for each record.
+2. `variant_id`: The ID of a variant that customers have subscribed to.
+3. `sales_channel_id`: The ID of the sales channel that this variant is out-of-stock in.
+4. `email`: The email of the customer subscribed to the restock notification.
+5. `customer_id`: The customer's ID in Medusa. This is nullable in case the customer is a guest.
+
+<Note>
+
+Learn more about data model [properties](!docs!/learn/fundamentals/data-models/property-types) and [relations](!docs!/learn/fundamentals/data-models/relationships).
+
+</Note>
+
+You also define a unique index on the `variant_id`, `sales_channel_id`, and `email` properties using the `indexes` method.
+
+<Note>
+
+Learn more about data model indexes in [this documentation](!docs!/learn/fundamentals/data-models/index).
+
+</Note>
+
+### Create Service
+
+You define data-management methods of your data models in a service. A service is a TypeScript or JavaScript class that the module exports. In the service's methods, you can perform database operations.
+
+<Note>
+
+Learn more about services in [this documentation](!docs!/learn/fundamentals/modules#2-create-service).
+
+</Note>
+
+In this section, you'll create the Restock Module's service. Create the file `src/modules/restock/service.ts` with the following content:
+
+![The directory structure of the Restock Module after adding this service.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733224957/Medusa%20Resources/restock-dir-overview-4_pkypup.jpg)
+
+```ts title="src/modules/restock/service.ts"
+import { MedusaService } from "@medusajs/framework/utils"
+import RestockSubscription from "./models/restock-subscription"
+
+class RestockModuleService extends MedusaService({
+  RestockSubscription,
+}) { }
+
+export default RestockModuleService
+```
+
+The `RestockModuleService` extends `MedusaService` from the Modules SDK which generates a class with data-management methods for your module's data models. This saves you time on implementing Create, Read, Update, and Delete (CRUD) methods.
+
+So, the `RestockModuleService` class now has methods like `createRestockSubscriptions` and `retrieveRestockSubscription`.
+
+<Note>
+
+Find all methods generated by the `MedusaService` in [this reference](../../..//service-factory-reference/page.mdx).
+
+</Note>
+
+You'll use this service in a later method to store and manage restock subscriptions.
+
+### Export Module Definition
+
+The final piece to a module is its definition, which you export in an `index.ts` file at its root directory. This definition tells Medusa the name of the module and its service.
+
+So, create the file `src/modules/restock/index.ts` with the following content:
+
+![The directory structure of the Restock Module after adding the definition file.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733225036/Medusa%20Resources/restock-dir-overview-5_dcam6u.jpg)
+
+```ts title="src/modules/restock/index.ts"
+import { Module } from "@medusajs/framework/utils"
+import RestockModuleService from "./service"
+
+export const RESTOCK_MODULE = "restock"
+
+export default Module(RESTOCK_MODULE, {
+  service: RestockModuleService,
+})
+```
+
+You use the `Module` function from the Modules SDK to create the module's definition. It accepts two parameters:
+
+1. The module's name, which is `restock`.
+2. An object with a required property `service` indicating the module's service.
+
+### Add Module to Medusa's Configurations
+
+Once you finish building the module, add it to Medusa's configurations to start using it.
+
+In `medusa-config.ts`, add a `modules` property and pass an array with your custom module:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "./src/modules/restock",
+    },
+  ],
+})
+```
+
+Each object in the `modules` array has a `resolve` property, whose value is either a path to the module's directory, or an `npm` package’s name.
+
+### Generate Migrations
+
+Since data models represent tables in the database, you define how they're created in the database with migrations. A migration is a TypeScript or JavaScript file that defines database changes made by a module.
+
+<Note>
+
+Learn more about migrations in [this documentation](!docs!/learn/fundamentals/modules#5-generate-migrations).
+
+</Note>
+
+Medusa's CLI tool generates the migrations for you. To generate a migration for the Restock Module, run the following command in your Medusa application's directory:
+
+```bash
+npx medusa db:generate restock
+```
+
+The `db:generate` command of the Medusa CLI accepts the name of the module to generate the migration for. You'll now have a `migrations` directory under `src/modules/restock` that holds the generated migration.
+
+![The directory structure of the Restock Module after generating the migration](https://res.cloudinary.com/dza7lstvk/image/upload/v1733225157/Medusa%20Resources/restock-dir-overview-6_c2z6oi.jpg)
+
+Then, to reflect these migrations on the database, run the following command:
+
+```bash
+npx medusa db:migrate
+```
+
+The table of the Restock Module's data model are now created in the database.
+
+---
+
+## Step 3: Link Restock Subscription to Product Variant
+
+Since the `RestockSubscription` data model stores the product variant's ID, you may want to retrieve the product variant's details while retrieving a restock subscription record.
+
+However, modules are [isolated](!docs!/learn/fundamentals/modules/isolation) to ensure they're re-usable and don't have side effects when integrated into the Medusa application. So, to build associations between modules, you define [module links](!docs!/learn/fundamentals/module-links). A Module link associates two modules' data models while maintaining module isolation.
+
+In this section, you'll link the `RestockSubscription` data model to the [Product Module](../../../commerce-modules/product/page.mdx)'s `ProductVariant` data model.
+
+<Note>
+
+Learn more about module links in [this documentation](!docs!/learn/fundamentals/module-links).
+
+</Note>
+
+To create a link, create the file `src/links/restock-variant.ts` with the following content:
+
+![The directory structure of the Medusa Application after adding this link.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733225402/Medusa%20Resources/restock-dir-overview-7_dln3fw.jpg)
+
+```ts title="src/links/restock-variant.ts"
+import { defineLink } from "@medusajs/framework/utils"
+import RestockModule from "../modules/restock"
+import ProductModule from "@medusajs/medusa/product"
+
+export default defineLink(
+  {
+    ...RestockModule.linkable.restockSubscription.id,
+    field: "variant_id",
+  },
+  ProductModule.linkable.productVariant,
+  {
+    readOnly: true,
+  }
+)
+```
+
+You define a link using `defineLink` from the Modules SDK. It accepts three parameters:
+
+1. The first data model part of the link, which is the Restock Module's `restockSubscription` data model. A module has a special `linkable` property that contain link configurations for its data models. You also specify the field that points to the product variant.
+1. The second data model part of the link, which is the Product Module's `productVariant` data model.
+3. An object of configurations for the module link. By default, Medusa creates a table in the database to represent the link you define. However, in this guide, you only want this link to retrieve the variants associated with a subscription and vice-versa. So, you enable `readOnly` telling Medusa not to create a table for this link.
+
+In the next steps, you'll see how this link allows you to retrieve product variants' details when retrieving restock subscriptions.
+
+---
+
+## Step 4: Create Restock Subscription Workflow
+
+To subscribe customers to a variant's restock notification, you need a workflow.
+
+A workflow is a series of queries and actions, called steps, that complete a task. You construct a workflow like you construct a function, but it's a special function that allows you to track its executions' progress, define roll-back logic, and configure other advanced features. Then, you execute the workflow from other customizations, such as in an endpoint.
+
+In this section, you'll create a workflow that validates that a variant is out-of-stock in the customer's sales channel, then subscribes the customer to the variant's restock notification. Later, you'll execute this workflow in an endpoint that you use in a storefront.
+
+<Note>
+
+Learn more about workflows in [this documentation](!docs!/learn/fundamentals/workflows)
+
+</Note>
+
+The workflow has the following steps:
+
+<WorkflowDiagram
+  workflow={{
+    name: "createRestockSubscriptionWorkflow",
+    steps: [
+      {
+        type: "when",
+        condition: "!customer.email",
+        steps: [
+          {
+            type: "step",
+            name: "useQueryGraphStep",
+            description: "Retrieve the customer using Query if an email isn't provided.",
+            depth: 1,
+            link: "/references/helper-steps/useQueryGraphStep"
+          },
+        ]
+      },
+      {
+        type: "step",
+        name: "validateVariantOutOfStockStep",
+        description: "Validate that the variant is out-of-stock, otherwise throw an error.",
+        depth: 1,
+        link: "#validatevariantoutofstockstep"
+      },
+      {
+        type: "step",
+        name: "useQueryGraphStep",
+        description: "Retrieve the restock subscription using Query if it exists.",
+        depth: 1,
+        link: "/references/helper-steps/useQueryGraphStep"
+      },
+      {
+        type: "when",
+        condition: "data.length === 0",
+        steps: [
+          {
+            type: "step",
+            name: "createRestockSubscriptionStep",
+            description: "Create the restock subscription if it doesn't exist.",
+            depth: 2,
+            link: "#createrestocksubscriptionstep"
+          },
+          {
+            type: "step",
+            name: "updateRestockSubscriptionStep",
+            description: "Update the restock subscription if it exists.",
+            depth: 2,
+            link: "#updatesestocksubscriptionstep"
+          }
+        ],
+        depth: 1,
+      },
+      {
+        type: "step",
+        name: "useQueryGraphStep",
+        description: "Retrieve the restock subscription using Query again to return it.",
+        depth: 1,
+        link: "/references/helper-steps/useQueryGraphStep"
+      },
+    ]
+  }}
+/>
+
+The `useQueryGraphStep` is from Medusa's workflows package. So, you'll only implement the other steps.
+
+### validateVariantOutOfStockStep
+
+The second step in the workflow will validate that the variant is actually out of stock in the customer's sales channel.
+
+Create the file `src/workflows/create-restock-subscription/steps/validate-variant-out-of-stock.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the step.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733227547/Medusa%20Resources/restock-dir-overview-10_g3dbi3.jpg)
+
+```ts title="src/workflows/create-restock-subscription/steps/validate-variant-out-of-stock.ts"
+import { getVariantAvailability, MedusaError } from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+
+type ValidateVariantOutOfStockStepInput = {
+  variant_id: string
+  sales_channel_id: string
+}
+
+export const validateVariantOutOfStockStep = createStep(
+  "validate-variant-out-of-stock",
+  async ({ variant_id, sales_channel_id }: ValidateVariantOutOfStockStepInput, { container }) => {
+    const query = container.resolve("query")
+    const availability = await getVariantAvailability(query, {
+      variant_ids: [variant_id],
+      sales_channel_id,
+    })
+    
+    if (availability[variant_id].availability > 0) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Variant isn't out of stock."
+      )
+    }
+  }
+)
+```
+
+This step accepts the ID of the variant and the ID of the customer's sales channel. In the step, you use the `getVariantAvailability` from the Medusa Framework to get the variant's quantity in the specified sales channels. If the variant's quantity is greater than `0`, you throw an error, stopping the workflow's execution.
+
+### createRestockSubscriptionStep
+
+In the workflow, you'll try to retrieve the restock subscription if it already exists for the same email, variant ID, and sales channel ID. If it doesn't exist, you'll use this step to create the restock subscription.
+
+Create the file `src/workflows/create-restock-subscription/steps/create-restock-subscription.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the step.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733227679/Medusa%20Resources/restock-dir-overview-11_dyrpao.jpg)
+
+export const createRSHighlights = [
+  ["15", "restockModuleService", "Resolve the Restock Module's service from the Medusa container."],
+  ["19", "createRestockSubscriptions", "Use the service's generated method to create restock subscriptions."]
+]
+
+```ts title="src/workflows/create-restock-subscription/steps/create-restock-subscription.ts" highlights={createRSHighlights}
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import RestockModuleService from "../../../modules/restock/service"
+import { RESTOCK_MODULE } from "../../../modules/restock"
+
+type CreateRestockSubscriptionStepInput = {
+  variant_id: string
+  sales_channel_id: string
+  email: string
+  customer_id?: string
+}
+
+export const createRestockSubscriptionStep = createStep(
+  "create-restock-subscription",
+  async (input: CreateRestockSubscriptionStepInput, { container }) => {
+    const restockModuleService: RestockModuleService = container.resolve(
+      RESTOCK_MODULE
+    )
+
+    const restockSubscription = await restockModuleService.createRestockSubscriptions(
+      input
+    )
+
+    return new StepResponse(restockSubscription, restockSubscription)
+  }
+)
+```
+
+In the step, you resolve the Restock Module's service from the Medusa container. Medusa registers the service of custom and core modules in the container under the module's name.
+
+Then, you use the service's `createRestockSubscriptions` method, which was generated by `MedusaService`, to create the restock subscription.
+
+<Note>
+
+Learn more about a service's generated methods in [this reference](../../../service-factory-reference/page.mdx).
+
+</Note>
+
+Finally, you return the created restock subscription by passing it as a first parameter to `StepResponse`. The second parameter is data passed to the compensation function, which you'll learn about next.
+
+#### Add Compensation Function
+
+A compensation function defines the rollback logic of a step, and it's only executed if an error occurs in the workflow. This eliminates data inconsistency if an error occurs and the workflow can't finish execution successfully.
+
+<Note title="Tip">
+
+Learn more about compensation functions in [this documentation](!docs!/learn/fundamentals/workflows/compensation-function).
+
+</Note>
+
+Since the `createRestockSubscriptionStep` creates a restock subscription, you'll undo that in the compensation function. To add a compensation function, pass it as a third parameter to `createStep`:
+
+```ts title="src/workflows/create-restock-subscription/steps/create-restock-subscription.ts"
+export const createOrGetRestockSubscriptionsStep = createStep(
+  // ...
+  async (restockSubscription, { container }) => {
+    const restockModuleService: RestockModuleService = container.resolve(
+      RESTOCK_MODULE
+    )
+
+    await restockModuleService.deleteRestockSubscriptions(restockSubscription.id)
+  }
+)
+```
+
+The compensation function receives two parameters:
+
+1. The second parameter of `StepResponse`, which is the created restock subscription.
+2. An object similar to the second parameter of a step function. It has a `container` property to resolve resources from the Medusa container.
+
+In the compensation function, you resolve the Restock Module's service from the container, then delete the created subscription using the generated `deleteRestockSubscriptions` method.
+
+### updateRestockSubscriptionStep
+
+As mentioned in the previous step, the workflow will try to retrieve the restock subscription in case it already exists. If it does, you'll run this step to update its customer ID if it wasn't previously set in the subscription.
+
+Create the file `src/workflows/create-restock-subscription/steps/update-restock-subscription.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the step.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733227952/Medusa%20Resources/restock-dir-overview-12_vubtkp.jpg)
+
+```ts title="src/workflows/create-restock-subscription/steps/update-restock-subscription.ts"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import RestockModuleService from "../../../modules/restock/service"
+import { RESTOCK_MODULE } from "../../../modules/restock"
+
+type UpdateRestockSubscriptionStepInput = {
+  id: string
+  customer_id?: string
+}
+
+export const updateRestockSubscriptionStep = createStep(
+  "update-restock-subscription",
+  async ({ id, customer_id }: UpdateRestockSubscriptionStepInput, { container }) => {
+    const restockModuleService: RestockModuleService = container.resolve(
+      RESTOCK_MODULE
+    )
+
+    const oldData = await restockModuleService.retrieveRestockSubscription(
+      id
+    )
+    const restockSubscription = await restockModuleService.updateRestockSubscriptions({
+      id,
+      customer_id: oldData.customer_id || customer_id,
+    })
+
+    return new StepResponse(restockSubscription, oldData)
+  },
+  async (restockSubscription, { container }) => {
+    const restockModuleService: RestockModuleService = container.resolve(
+      RESTOCK_MODULE
+    )
+
+    await restockModuleService.updateRestockSubscriptions(restockSubscription)
+  }
+)
+```
+
+In the step, you resolve the Restock Module's service and use its generated `retrieveRestockSubscription` method to retrieve the restock subscription. You then update the subscription with the `updateRestockSubscriptions`, updating the customer ID if it wasn't set in the subscription.
+
+The step returns the updated restock subscription. It also passes to the compensation function the subscription's data before the update to undo the change in case an error occurs.
+
+### Add createRestockSubscriptionWorkflow
+
+You can now finally add the workflow that uses all these steps. Create the file `src/workflows/create-restock-subscription/index.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the workflow.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733229373/Medusa%20Resources/restock-dir-overview-13_zdwawe.jpg)
+
+export const subscriptionWorkflow1Highlights = [
+  ["16", "createWorkflow", "Create a workflow."],
+  ["23", "transform", "Set the customer ID to an empty string if not provided."],
+  ["28", "when", "If email is not set, try to retrieve customer by its ID."],
+  ["48", "transform", "Set the email either to the one in the input or the specified customer's email."],
+]
+
+```ts title="src/workflows/create-restock-subscription/index.ts" highlights={subscriptionWorkflow1Highlights}
+import { createWorkflow, transform, when, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
+import { validateVariantOutOfStockStep } from "./steps/validate-variant-out-of-stock"
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+import { createRestockSubscriptionStep } from "./steps/create-restock-subscription"
+import { updateRestockSubscriptionStep } from "./steps/update-restock-subscription"
+
+type CreateRestockSubscriptionWorkflowInput = {
+  variant_id: string
+  sales_channel_id: string
+  customer: {
+    email?: string
+    customer_id?: string
+  }
+}
+
+export const createRestockSubscriptionWorkflow = createWorkflow(
+  "create-restock-subscription",
+  ({
+    variant_id,
+    sales_channel_id,
+    customer,
+  }: CreateRestockSubscriptionWorkflowInput) => {
+    const customerId = transform({
+      customer,
+    }, (data) => {
+      return data.customer.customer_id || ""
+    })
+    const retrievedCustomer = when(
+      "retrieve-customer-by-id",
+      { customer }, 
+      ({ customer }) => {
+        return !customer.email
+      }
+    ).then(() => {
+      // @ts-ignore
+      const { data } = useQueryGraphStep({
+        entity: "customer",
+        fields: ["email"],
+        filters: { id: customerId },
+        options: {
+          throwIfKeyNotFound: true,
+        },
+      }).config({ name: "retrieve-customer" })
+
+      return data
+    })
+    
+    const email = transform({ 
+      retrievedCustomer, 
+      customer,
+    }, (data) => {
+      return data.customer?.email ?? data.retrievedCustomer?.[0].email
+    })
+    
+    // TODO add more steps
+  }
+)
+```
+
+You create a workflow using `createWorkflow` from the Workflows SDK. It accepts the workflow's unique name as a first parameter.
+
+It accepts as a second parameter a constructor function, which is the workflow's implementation. In the workflow, you:
+
+- Use [transform](!docs!/learn/fundamentals/workflows/variable-manipulation) from the Workflows SDK to create a `customerId` variable. Its value is either the ID of the customer passed in the workflow's input if it's not `undefined`, or an empty string.
+- Use [when-then](!docs!/learn/fundamentals/workflows/conditions) from the Workflows SDK that performs steps if a condition is met. If the customer's email isn't set in the workflow's input, you retrieve the customer using `useQueryGraphStep` by its ID.
+- Use `transform` again to create an `email` variable whose value is either the email passed in the workflow's input or the retrieved customer's email.
+
+<Note title="Tip">
+
+A workflow's constructor function has some constraints in implementation, which is why you need to use `transform` for variable manipulation and `when-then` to perform steps based on a condition. Learn more about these constraints in [this documentation](!docs!/learn/fundamentals/workflows/constructor-constraints).
+
+</Note>
+
+Next, replace the `TODO` with the following:
+
+export const subscriptionWorkflow2Highlights = [
+  ["1", "validateVariantOutOfStockStep", "Validate that the variant is out of stock in the specified sales channel."],
+  ["7", "useQueryGraphStep", "Get the restock subscription to check if it already exists."],
+  ["17", "when", "Perform an action if the restock subscription doesn't exist."],
+  ["21", "createRestockSubscriptionStep", "Create the restock subscription if it doesn't exist."],
+  ["29", "when", "Perform an action if the restock subscription exists."],
+  ["33", "updateRestockSubscriptionStep", "Update the restock subscription if it exists."],
+  ["40", "useQueryGraphStep", "Retrieve the restock subscription again to return it."],
+  ["50", "WorkflowResponse", "Return the restock subscription."]
+]
+
+```ts title="src/workflows/create-restock-subscription/index.ts" highlights={subscriptionWorkflow2Highlights}
+validateVariantOutOfStockStep({
+  variant_id,
+  sales_channel_id,
+})
+
+// @ts-ignore
+const { data: restockSubscriptions } = useQueryGraphStep({
+  entity: "restock_subscription",
+  fields: ["*"],
+  filters: {
+    email,
+    variant_id,
+    sales_channel_id,
+  },
+}).config({ name: "retrieve-subscriptions" })
+
+when({ restockSubscriptions }, ({ restockSubscriptions }) => {
+  return restockSubscriptions.length === 0
+})
+.then(() => {
+  createRestockSubscriptionStep({
+    variant_id,
+    sales_channel_id,
+    email,
+    customer_id: customer.customer_id,
+  })
+})
+
+when({ restockSubscriptions }, ({ restockSubscriptions }) => {
+  return restockSubscriptions.length > 0
+})
+.then(() => {
+  updateRestockSubscriptionStep({
+    id: restockSubscriptions[0].id,
+    customer_id: customer.customer_id,
+  })
+})
+
+// @ts-ignore
+const { data: restockSubscription } = useQueryGraphStep({
+  entity: "restock_subscription",
+  fields: ["*"],
+  filters: {
+    email,
+    variant_id,
+    sales_channel_id,
+  },
+}).config({ name: "retrieve-restock-subscription" })
+
+return new WorkflowResponse(
+  restockSubscription
+)
+```
+
+You add the following steps to the workflow:
+
+- `validateVariantOutOfStockStep` to validate that the variant is out of stock in the specified sales channel. If not, an error is thrown, halting the workflow's execution.
+- `useQueryGraphStep` to retrieve the restock subscription in case it already exists.
+- Use [when-then](!docs!/learn/fundamentals/workflows/conditions) to perform an action if a condition is met.
+    - The first when-then block checks if the restock subscription doesn't exist, then creates it using the `createRestockSubscriptionStep`.
+    - The second when-then block checks if the restock subscription already exists, then updates it using the `updateRestockSubscriptionStep`.
+- `useQueryGraphStep` again to retrieve the restock subscription before returning it.
+
+Workflows must return an instance of `WorkflowResponse`, passing as a parameter the data to return to the workflow's executor. The workflow returns the restock subscription.
+
+You'll execute the workflow when you create the API route next.
+
+---
+
+## Step 5: Subscribe to Restock Notifications API Route
+
+Now that you implemented the flow to subscribe customers to a variant's restock notifications, you'll expose this feature through an API route.
+
+An API Route is an endpoint that exposes commerce features to external applications and clients, such as storefronts. You'll create an API route at the path `/store/restock-subscriptions` that executes the workflow from the previous step.
+
+<Note>
+
+Learn more about API routes in [this documentation](!docs!/learn/fundamentals/api-routes).
+
+</Note>
+
+### Implement API Route
+
+An API route is created in a `route.ts` file under a sub-directory of the `src/api` directory.
+
+The path of the API route is the file's path relative to `src/api`. So, to create the `/store/restock-subscriptions` API route, create the file `src/api/store/restock-subscriptions/route.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the route file.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230210/Medusa%20Resources/restock-dir-overview-16_sv7yk2.jpg)
+
+export const routeHighlights = [
+  ["11", "POST", "Define a `POST` API route"],
+  ["12", "req", "The request's details."],
+  ["13", "res", "The object to manipulate and return a response."],
+  ["15", "salesChannelId", "Set the sales channel ID either to the request body parameter or the publishable API key's sales channel."],
+  ["15", "validatedBody", "Access body parameters in `validatedBody`."],
+  ["16", "publishable_key_context", "Access the customer's sales channels based on the specified publishable API key."],
+  ["26", "run", "Execute the `createRestockSubscriptionWorkflow`."],
+  ["27", "input", "Pass input to the workflow."],
+  ["32", "customer_id", "If the customer is logged in, their ID is stored in `req.auth_context.actor_id`."],
+  ["37", "sendStatus", "Return a response with `201` status code."]
+]
+
+```ts title="src/api/store/restock-subscriptions/route.ts" highlights={routeHighlights}
+import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { MedusaError } from "@medusajs/framework/utils"
+import { createRestockSubscriptionWorkflow } from "../../../workflows/create-restock-subscription"
+
+type PostStoreCreateRestockSubscription = {
+  variant_id: string
+  email?: string
+  sales_channel_id?: string
+}
+
+export async function POST(
+  req: AuthenticatedMedusaRequest<PostStoreCreateRestockSubscription>,
+  res: MedusaResponse
+) {
+  const salesChannelId = req.validatedBody.sales_channel_id || (
+    req.publishable_key_context?.sales_channel_ids?.length ? 
+      req.publishable_key_context?.sales_channel_ids[0] : undefined
+  )
+  if (!salesChannelId) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      "At least one sales channel ID is required, either associated with the publishable API key or in the request body."
+    )
+  }
+  const { result } = await createRestockSubscriptionWorkflow(req.scope)
+    .run({
+      input: {
+        variant_id: req.validatedBody.variant_id,
+        sales_channel_id: salesChannelId,
+        customer: {
+          email: req.validatedBody.email,
+          customer_id: req.auth_context?.actor_id,
+        },
+      },
+    })
+
+  return res.sendStatus(201)
+}
+
+```
+
+Since you export a `POST` function in this file, you're exposing a `POST` API route at `/store/restock-subscriptions`. The route handler function accepts two parameters:
+
+1. A request object with details and context on the request, such as body parameters or authenticated customer details.
+2. A response object to manipulate and send the response.
+
+<Note title="Tip">
+
+`AuthenticatedMedusaRequest` accepts the request body's type as a type argument.
+
+</Note>
+
+In the function, you first declare the sales channel ID either based on the parameter specified in the request body or the publishable API key's first sales channel. If the sales channel's ID is not set, an error is thrown.
+
+Then, you execute the `createRestockSubscriptionWorkflow` by invoking it, passing it the Medusa container which is stored in the `scope` property of the request object, and invoking its `run` method.
+
+The `run` method accepts an object having an `input` property, which is the input to pass to the workflow. You pass the following input:
+
+1. `variant_id`: The ID of the variant the customer is subscribing to. You access the request body parameters from the `validatedBody` property of the request object.
+2. `sales_channel_id`: The ID of the sales channel.
+3. `customer`: The subscriber customer's details:
+    - `email`: The email passed in the request body, if available.
+    - `customer_id`: The ID of the customer if they're authenticated.
+
+Finally, you return a `201` response code, indicating that the customer has subscribed to restock notifications of the specified variant.
+
+### Add Validation Schema
+
+The API route accepts the variant ID, and optionally the customer email and sales channel ID as request body parameters. So, you'll create a schema to validate the request body.
+
+In Medusa, you create validation schemas using [Zod](https://zod.dev/) in a TypeScript file under the `src/api` directory. So, create the file `src/api/store/restock-subscriptions/validators.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the validator file.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733229734/Medusa%20Resources/restock-dir-overview-14_au0h15.jpg)
+
+```ts title="src/api/store/restock-subscriptions/validators.ts"
+import { z } from "zod"
+
+export const PostStoreCreateRestockSubscription = z.object({
+  variant_id: z.string(),
+  email: z.string().optional(),
+  sales_channel_id: z.string().optional(),
+})
+```
+
+You create an object schema with the following properties:
+
+- `variant_id`: A required string parameter.
+- `email`: An optional string parameter. The email is optional if the customer is authenticated.
+- `sales_channel_id`: An optional string parameter. By default, every route starting with `/store` must pass the publishable API key, which is linked to one or more sales channels. This parameter takes a precedence over the publishable API key's channel.
+
+<Note>
+
+Learn more about creating schemas in [Zod's documentation](https://zod.dev/).
+
+</Note>
+
+You can now replace the `PostStoreCreateRestockSubscription` type in `src/api/store/restock-subscriptions/route.ts` with the following:
+
+```ts title="src/api/store/restock-subscriptions/route.ts"
+// ...
+import { z } from "zod"
+import { PostStoreCreateRestockSubscription } from "./validators"
+
+type PostStoreCreateRestockSubscription = z.infer<
+  typeof PostStoreCreateRestockSubscription
+>
+// ...
+```
+
+Next, you'll use this schema for validation.
+
+### Add Validation and Auth Middlewares
+
+To use the Zod schema for validation, you apply the `validateAndTransformBody` middleware on the `/store/restock-subscriptions` route. A middleware is a function executed before the API route when a request is sent to it.
+
+<Note>
+
+Learn more about middlewares in [this documentation](!docs!/learn/fundamentals/api-routes/middlewares).
+
+</Note>
+
+To apply middlewares, create the file `src/api/middlewares.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the middlewares file.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733229866/Medusa%20Resources/restock-dir-overview-15_xvwkc0.jpg)
+
+export const middlewaresHighlights = [
+  ["10", "defineMiddlewares", "Export middlewares definition."],
+  ["13", "matcher", "The route to apply the middleware on."],
+  ["14", "method", "The HTTP method that the middleware is applied on for the specified route."],
+  ["15", "middlewares", "The middlewares to apply on the route."],
+  ["16", "authenticate", "Apply this middleware to access the customer's ID if they're logged in."],
+  ["19", "validateAndTransformBody", "Apply the validation schema on the route."]
+]
+
+```ts title="src/api/middlewares.ts" highlights={middlewaresHighlights}
+import { 
+  authenticate, 
+  defineMiddlewares, 
+  validateAndTransformBody,
+} from "@medusajs/framework/http"
+import { 
+  PostStoreCreateRestockSubscription,
+} from "./store/restock-subscriptions/validators"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/store/restock-subscriptions",
+      method: "POST",
+      middlewares: [
+        authenticate("customer", ["bearer", "session"], {
+          allowUnauthenticated: true,
+        }),
+        validateAndTransformBody(PostStoreCreateRestockSubscription),
+      ],
+    },
+  ],
+})
+```
+
+In this file, you export the middlewares definition using `defineMiddlewares` from the Medusa Framework. This function accepts an object having a `routes` property, which is an array of middleware configurations to apply on routes.
+
+You pass in the `routes` array an object having the following properties:
+
+- `matcher`: The route to apply the middleware on.
+- `method`: The HTTP method to apply the middleware on for the specified API route.
+- `middlewares`: An array of the middlewares to apply. You apply two middlewares:
+    - `authenticate`: A middleware that guards and attaches the logged-in customer details to the request object received by the API route handler. The middleware accepts three parameters:
+        - The type of user to authenticate, which is `customer`.
+        - The types of authentication methods allowed.
+        - An optional object of options. You enable the `allowUnauthenticated`, which allows both authenticated and guest customers to access the route, and attaches the authenticated customer's ID to the request object.
+    - `validateAndTransformBody`: A middleware to ensure the received request body is valid against the Zod schema you defined earlier.
+
+Any request sent to `/store/restock-subscriptions` will now automatically fail if its body parameters don't match the `PostStoreCreateRestockSubscription` validation schema.
+
+### Test API Route
+
+To test out this API route, start the Medusa application by running the following command in the root directory of the Medusa application:
+
+```bash npm2yarn
+npm run dev
+```
+
+Before sending the request, you need to obtain a publishable API key. So, open the Medusa Admin at `http://localhost:9000/app` and log in with the user you created earlier.
+
+To access your application's API keys in the admin, go to Settings -> Publishable API Keys. You'll have an API key created by default, which is associated with the default sales channel. You can use this publishable API key in the request header.
+
+![In the admin, click on Publishable API key in the sidebar. A table will show your API keys and allow you to create one.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230421/Medusa%20Resources/Screenshot_2024-12-03_at_2.53.07_PM_gau9jy.png)
+
+Then, to obtain an ID of a variant that's out of stock, access a product from the Products page and:
+
+1. Under Variants, click on the variant you want to edit its inventory quantity.
+
+![The variants table shows a product's variants. Click on a variant to open its details page.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230534/Medusa%20Resources/Screenshot_2024-12-03_at_2.55.11_PM_c1ml9l.png)
+
+2. Under Inventory Items, click on an inventory item.
+
+![The inventory items table shows the variant's items. Click on an item to open its details page.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230649/Medusa%20Resources/Screenshot_2024-12-03_at_2.57.01_PM_ccc9of.png)
+
+3. Under Locations, click on the third-dots icon at the right of a location, then choose Edit from the dropdown.
+
+![The locations are shown in a table. Click on the three-dots at a location's right side, then choose Edit from the dropdown.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230730/Medusa%20Resources/Screenshot_2024-12-03_at_2.58.18_PM_waeepw.png)
+
+4. In the drawer form, enter `0` for the item's in-stock quantity.
+5. Click the Save button.
+
+![In the drawer form, enter `0` in the In stock field, then click the Save button at the bottom.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230822/Medusa%20Resources/Screenshot_2024-12-03_at_2.59.48_PM_vqaige.png)
+
+6. Go back to the variant's page and click on the icon at the right of the JSON section.
+
+![Click on the icon at the right of the JSON section.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230912/Medusa%20Resources/Screenshot_2024-12-03_at_3.01.28_PM_bcau0e.png)
+
+7. In the JSON object, hover over the `id` field and click the copy icon.
+
+![Click on the copy icon next to the ID field.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230981/Medusa%20Resources/Screenshot_2024-12-03_at_3.02.34_PM_ujyv5w.png)
+
+Finally, send a `POST` request to the `/store/restock-subscriptions` API route:
+
+```bash
+curl -X POST http://localhost:9000/store/restock-subscriptions \
+-H 'x-publishable-api-key: {api_key}' \
+--data '{
+    "variant_id": "{variant_id}",
+    "email": "customer@gmail.com"
+}'
+```
+
+Make sure to replace `{api_key}` with the publishable API key you copied from the settings, and `{variant_id}` for the ID of the out-of-stock variant.
+
+You'll receive a `201` response, indicating that the guest customer with email `customer@gmail.com` is now subscribed to restock notifications for the specified variant in the first sales channel associated with the specified publishable API key.
+
+In the next step, you'll implement the functionality to send a notification to the variant's subscribers when it's restocked.
+
+---
+
+## Step 6: Send Restock Notification Workflow
+
+After allowing customers to subscribe to a variant's restock notification, you want to implement the flow that checks the variant is restocked and sends a notification to its subscribers.
+
+In this step, you'll create a workflow that retrieves all restock subscriptions, checks which variants are now restocked, and sends a notification to their subscribers.
+
+The workflow has the following steps:
+
+<WorkflowDiagram
+  workflow={{
+    name: "sendRestockNotificationsWorkflow",
+    steps: [
+      {
+        type: "step",
+        name: "getDistinctSubscriptionsStep",
+        description: "Retrieve restock subscriptions for distinct variant ID and sales channel pairings.",
+        depth: 1
+      },
+      {
+        type: "step",
+        name: "getRestockedStep",
+        description: "Filter out the restock subscriptions to retrieve only ones for restocked variants.",
+        depth: 1,
+        link: "#getrestockedstep"
+      },
+      {
+        type: "step",
+        name: "useQueryGraphStep",
+        description: "Retrieve restocked subscriptions for all subscribers using Query.",
+        depth: 1,
+        link: "/references/helper-steps/useQueryGraphStep"
+      },
+      {
+        type: "step",
+        name: "sendRestockNotificationStep",
+        description: "Send a notification to the subscribers of restock subscriptions.",
+        depth: 1,
+        link: "#sendrestocknotificationstep"
+      },
+      {
+        type: "step",
+        name: "deleteRestockSubscriptionStep",
+        description: "Delete the restock subscriptions from the database.",
+        depth: 1,
+        link: "#deleterestocksubscriptionstep"
+      }
+    ]
+  }}
+/>
+
+The `useQueryGraphStep` is from Medusa's workflows. So, you'll only implement the other steps.
+
+### Optional Prerequisite: Notification Module Provider
+
+Within this workflow, you'll use Medusa's [Notification Module](../../../architectural-modules/notification/page.mdx) to send an email to the customer.
+
+The module delegates the email sending to a module provider, such as [SendGrid](../../../architectural-modules/notification/sendgrid/page.mdx) or [Resend](../../../integrations/guides/resend/page.mdx). You can refer to their linked guides to set up either module providers.
+
+Alternatively, for development and debugging purposes, you can use the default Notification Module Provider that only logs a message in the terminal instead of sending an email. To do that, add the following to the `modules` array in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    // ...
+    {
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/notification-local",
+            id: "local",
+            options: {
+              channels: ["email", "feed"],
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+
+```
+
+## getDistinctSubscriptionsStep
+
+The first step is to retrieve all restock subscriptions to later check which variants have been restocked in their sales channel. However, considering there could be a lot of subscribers to the same variant and sales channel pairing, you'll retrieve subscriptions with distinct variant and sales channel ID pairings.
+
+Before adding the step that does this, you'll add a method in the `RestockModuleService` to retrieve the distinct records from the database. So, add the following to `src/modules/restock/service.ts`:
+
+```ts title="src/modules/restock/service.ts"
+// other imports...
+import { InjectManager, MedusaContext } from "@medusajs/framework/utils"
+import { Context } from "@medusajs/framework/types"
+import { EntityManager } from "@mikro-orm/knex"
+
+class RestockModuleService extends MedusaService({
+  RestockSubscription,
+}) {
+  // ...
+  @InjectManager()
+  async getUniqueSubscriptions(
+    @MedusaContext() context: Context<EntityManager> = {}
+  ) {
+    return await context.manager?.createQueryBuilder("restock_subscription")
+      .select(["variant_id", "sales_channel_id"]).distinct().execute()
+  }
+}
+
+export default RestockModuleService
+```
+
+To perform queries on the database in a method, add the `@InjectManager` decorator to the method. This will inject a [forked MikroORM entity manager](https://mikro-orm.io/docs/identity-map#forking-entity-manager) that you can use in your method.
+
+Methods with the `@InjectManager` decorator accept as a last parameter a context object that has the `@MedusaContext` decorator. The entity manager is injected into the `manager` property of this paramter.
+
+In the method, you use the `createQueryBuilder` to construct a query, passing it the name of the `RestockSubscription`'s table. You then select distinct `variant_id` and `sales_channel` pairings, and execute and return the query's result.
+
+You'll use this method in the step. To create the step, create the file `src/workflows/send-restock-notifications/steps/get-distinct-subscriptions.ts` with the following content:
+
+![Directory structure of the Medusa application after adding the step.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733399774/Medusa%20Resources/restock-dir-overview-22_kzchmm.jpg)
+
+```ts title="src/workflows/send-restock-notifications/steps/get-distinct-subscriptions.ts"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import RestockModuleService from "../../../modules/restock/service"
+import { RESTOCK_MODULE } from "../../../modules/restock"
+
+export const getDistinctSubscriptionsStep = createStep(
+  "get-distinct-subscriptions",
+  async (_, { container }) => {
+    const restockModuleService: RestockModuleService = container.resolve(
+      RESTOCK_MODULE
+    )
+
+    const distinctSubscriptions = await restockModuleService.getUniqueSubscriptions()
+
+    return new StepResponse(distinctSubscriptions)
+  }
+)
+```
+
+In the step, you resolve the Restock Module's service and use the `getUniqueSubscriptions` method to retrieve the distinct subscriptions. You return those subscriptions in the `StepResponse`.
+
+### getRestockedStep
+
+The second step of the workflow receives all restock subscriptions and returns only those whose variants are restocked in the specified sales channel.
+
+Create the file `src/workflows/send-restock-notifications/steps/get-restocked.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the step.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733234506/Medusa%20Resources/restock-dir-overview-17_pdtees.jpg)
+
+```ts title="src/workflows/send-restock-notifications/steps/get-restocked.ts"
+import { getVariantAvailability, promiseAll } from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+
+type GetRestockedStepInput = {
+  variant_id: string
+  sales_channel_id: string
+}[]
+
+export const getRestockedStep = createStep(
+  "get-restocked",
+  async (input: GetRestockedStepInput, { container }) => {
+    const restocked: GetRestockedStepInput = []
+    const query = container.resolve("query")
+    
+    await promiseAll(
+      input.map(async (restockSubscription) => {
+        const variantAvailability = await getVariantAvailability(query, {
+          variant_ids: [restockSubscription.variant_id],
+          sales_channel_id: restockSubscription.sales_channel_id,
+        })
+
+        if (variantAvailability[restockSubscription.variant_id].availability > 0) {
+          restocked.push(restockSubscription)
+        }
+      })
+    )
+
+    return new StepResponse(restocked)
+  }
+)
+```
+
+In this step, you loop over the restock subscriptions and use `getVariantAvailability` from the Medusa Framework to retrieve a variant's quantity in the sales channel.
+
+If the variant isn't out of stock, then the restock subscription is pushed into the `restocked` array, which is returned in the step's response.
+
+### sendRestockNotificationStep
+
+The third step of the workflow receives the subscriptions whose variants have been restocked to send a notification to their subscribers.
+
+Create the file `src/workflows/send-restock-notifications/steps/send-restock-notification.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the step.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733234507/Medusa%20Resources/restock-dir-overview-18_uvlu0l.jpg)
+
+```ts title="src/workflows/send-restock-notifications/steps/send-restock-notification.ts"
+import { promiseAll } from "@medusajs/framework/utils"
+import { createStep } from "@medusajs/framework/workflows-sdk"
+import { InferTypeOf, ProductVariantDTO } from "@medusajs/framework/types"
+import RestockSubscription from "../../../modules/restock/models/restock-subscription"
+
+type SendRestockNotificationStepInput = (InferTypeOf<typeof RestockSubscription> & {
+  product_variant?: ProductVariantDTO
+})[]
+
+export const sendRestockNotificationStep = createStep(
+  "send-restock-notification",
+  async (input: SendRestockNotificationStepInput, { container }) => {
+    const notificationModuleService = container.resolve("notification")
+
+    const notificationData = input.map((subscription) => ({
+      to: subscription.email,
+      channel: "email",
+      template: "variant-restock",
+      data: {
+        variant: subscription.product_variant,
+      },
+    }))
+
+    await notificationModuleService.createNotifications(notificationData)
+  }
+)
+```
+
+This step resolves the Notification Module's service from the Medusa container and, for each subscription, sends a notification to its subscribers.
+
+To send a notification, you use the `createNotifications` method of the Notification Module's service. It accepts an array of notification objects, each having the following properties:
+
+- `to`: The email to send the notification to.
+- `channel`: The channel to send the notification through, which is `email` for sending an email.
+- `template`: The email template to use for this notification.
+- `data`: Data to pass to the template relevant for the notification. Since the email will probably include details about the variant, you pass the variant's details.
+
+### deleteRestockSubscriptionStep
+
+The final step deletes the restock subscriptions whose subscribers have been notified.
+
+Create the file `src/workflows/send-restock-notifications/steps/delete-restock-subscriptions.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the step.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733234506/Medusa%20Resources/restock-dir-overview-19_qfospx.jpg)
+
+```ts title="src/workflows/send-restock-notifications/steps/delete-restock-subscriptions.ts"
+import { InferTypeOf } from "@medusajs/framework/types"
+import RestockSubscription from "../../../modules/restock/models/restock-subscription"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import RestockModuleService from "../../../modules/restock/service"
+import { RESTOCK_MODULE } from "../../../modules/restock"
+
+type DeleteRestockSubscriptionsStepInput = InferTypeOf<typeof RestockSubscription>[]
+
+export const deleteRestockSubscriptionStep = createStep(
+  "delete-restock-subscription",
+  async (
+    restockSubscriptions: DeleteRestockSubscriptionsStepInput, 
+    { container }
+  ) => {
+    const restockModuleService: RestockModuleService = container.resolve(
+      RESTOCK_MODULE
+    )
+
+    await restockModuleService.deleteRestockSubscriptions(
+      restockSubscriptions.map((subscription) => subscription.id)
+    )
+    
+    return new StepResponse(undefined, restockSubscriptions)
+  },
+  async (restockSubscriptions, { container }) => {
+    if (!restockSubscriptions) {
+      return
+    }
+    
+    const restockModuleService: RestockModuleService = container.resolve(
+      RESTOCK_MODULE
+    )
+
+    await restockModuleService.createRestockSubscriptions(restockSubscriptions)
+  }
+)
+```
+
+In the step, you resolve the Restock Module's service and use its `deleteRestockSubscriptions` to delete the restock subscriptions.
+
+In the step's compensation, which receives the deleted restock subscriptions as a parameter, you resolve the Restock Module's service and use its `createRestockSubscriptions` to create these subscriptions again if an error occurs.
+
+### Implement sendRestockNotificationsWorkflow
+
+You can now implement the workflow that sends restock notifications using the above steps.
+
+Create the file `src/workflows/send-restock-notifications/index.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the workflow.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733234507/Medusa%20Resources/restock-dir-overview-20_mcqkkx.jpg)
+
+```ts title="src/workflows/send-restock-notifications/index.ts"
+import { createWorkflow, transform, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+import { getRestockedStep } from "./steps/get-restocked"
+import { sendRestockNotificationStep } from "./steps/send-restock-notification"
+import { deleteRestockSubscriptionStep } from "./steps/delete-restock-subscriptions"
+import { getDistinctSubscriptionsStep } from "./steps/get-distinct-subscriptions"
+
+export const sendRestockNotificationsWorkflow = createWorkflow(
+  "send-restock-notifications",
+  () => {
+    const subscriptions = getDistinctSubscriptionsStep()
+
+    // @ts-ignore
+    const restockedSubscriptions = getRestockedStep(subscriptions)
+
+    const { variant_ids, sales_channel_ids } = transform({
+      restockedSubscriptions,
+    }, (data) => {
+      const filters: Record<string, string[]> = {
+        variant_ids: [],
+        sales_channel_ids: [],
+      }
+      data.restockedSubscriptions.map((subscription) => {
+        filters.variant_ids.push(subscription.variant_id)
+        filters.sales_channel_ids.push(subscription.sales_channel_id)
+      })
+
+      return filters
+    })
+
+    // @ts-ignore
+    const { data: restockedSubscriptionsWithEmails } = useQueryGraphStep({
+      entity: "restock_subscription",
+      fields: ["*", "product_variant.*"],
+      filters: {
+        variant_id: variant_ids,
+        sales_channel_id: sales_channel_ids,
+      },
+    })
+
+    // @ts-ignore
+    sendRestockNotificationStep(restockedSubscriptionsWithEmails)
+
+    // @ts-ignore
+    deleteRestockSubscriptionStep(restockedSubscriptionsWithEmails)
+
+    return new WorkflowResponse({
+      subscriptions: restockedSubscriptionsWithEmails,
+    })
+  }
+)
+```
+
+This workflow has the following steps:
+
+1. `getDistinctSubscriptionsStep` to retrieve the restock subscriptions by distinct variant and sales channel ID pairings.
+2. `getRestockedStep` to filter the subscriptions retrieved by the previous step and return only those whose variants have been restocked.
+1. `useQueryGraphStep` to retrieve all subscriptions that have a restocked variant and sales channel ID pairing using [Query](!docs!/learn/fundamentals/module-links/query). Notice that in the specified `fields` you pass `product_variant.*`, which retrieves the details of the subscription's variant from the Product Module. This is possible due to the module link you created between the `RestockSubscription` and `ProductVariant` models in an earlier step.
+3. `sendRestockNotificationStep` to send the notification to the subscribers of the restocked variants.
+4. `deleteRestockSubscriptionStep` to delete the restock subscriptions since their subscribers have been notified.
+
+The workflow returns the restocked subscriptions, which are now deleted.
+
+You'll execute this workflow in the next section.
+
+---
+
+## Step 7: Send Restock Notifications Daily
+
+Now that you've built the flow to send restock notifications, you want to check for restocked variants and send notifications to their subscribers once a day. To do so, you'll use a scheduled job.
+
+A scheduled job is an asynchronous function that the Medusa application runs at the schedule you specify during the Medusa application's runtime. Scheduled jobs are useful for automating tasks at a fixed schedule.
+
+<Note>
+
+Learn more about scheduled jobs in [this documentation](!docs!/learn/fundamentals/scheduled-jobs).
+
+</Note>
+
+In this step, you'll create a scheduled job that runs once a day to execute the `sendRestockNotificationsWorkflow` from the previous step.
+
+A scheduled job is created in a TypeScript or JavaScript file under the `src/jobs` directory. So, create the file `src/jobs/check-restock.ts` with the following content:
+
+![The directory structure of the Medusa application after adding the scheduled job.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733234524/Medusa%20Resources/restock-dir-overview-21_reaqp3.jpg)
+
+```ts title="src/jobs/check-restock.ts"
+import {
+  MedusaContainer,
+} from "@medusajs/framework/types"
+import { 
+  sendRestockNotificationsWorkflow,
+} from "../workflows/send-restock-notifications"
+
+export default async function myCustomJob(container: MedusaContainer) {
+  await sendRestockNotificationsWorkflow(container)
+    .run()
+}
+
+export const config = {
+  name: "check-restock",
+  schedule: "0 0 * * *", // For debugging, change to `* * * * *`
+}
+```
+
+In this file, you export:
+
+- An asynchronous function, which is the task to execute at the specified schedule.
+- A configuration object having the following properties:
+    - `name`: A unique name for the scheduled job.
+    - `schedule`: A [cron expression](https://crontab.guru/) string indicating the schedule to run the job at. The specified schedule indicates that this job should run every day at midnight.
+
+The scheduled job function accepts the Medusa container as a parameter. In the function, you execute the `sendRestockNotificationsWorkflow` by invoking it, passing it the container, then executing its `run` method.
+
+### Test Scheduled Job
+
+To test out the scheduled job, start the Medusa application:
+
+```bash npm2yarn
+npm run dev
+```
+
+Then, open the Medusa Admin again at `http://localhost:9000/app` and log in. After that:
+
+1. Go to the same product -> variant that you edited earlier to make out of stock.
+2. On the variant's details page, click on an inventory item under the Inventory Items section.
+
+![The inventory items table shows the variant's items. Click on an item to open its details page.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230649/Medusa%20Resources/Screenshot_2024-12-03_at_2.57.01_PM_ccc9of.png)
+
+3. On the inventory item's page, click on the three dots icon next to a location, then choose edit from the dropdown.
+
+![The locations are shown in a table. Click on the three-dots at a location's right side, then choose Edit from the dropdown.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733230730/Medusa%20Resources/Screenshot_2024-12-03_at_2.58.18_PM_waeepw.png)
+
+4. In the drawer form, enter any value greater than `0`.
+5. Click the Save button.
+
+![In the drawer form, enter value greater than `0` in the In stock field, then click the Save button at the bottom.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733234710/Medusa%20Resources/Screenshot_2024-12-03_at_3.53.55_PM_uwt06f.png)
+
+With this change, the variant you previously subscribed to is now restocked. To trigger the scheduled job to run, change its `config` object to run every minute:
+
+```ts title="src/jobs/check-restock.ts"
+// ...
+export const config = {
+  // ...
+  schedule: "* * * * *", // For debugging, change to `* * * * *`
+}
+```
+
+After the application restarts, wait for the scheduled job to execute. If you're using the default Notification Module Provider that logs notifications in the terminal, you'll see a message similar to the following:
+
+```bash
+Attempting to send a notification to: 'customer@gmail.com' on the channel: 'email' with template: 'variant-restock' and data: '{"variant":{"id":"variant_01JE3H6WHFMJ2WS64RM2MV1CJ6",...}}'
+```
+
+---
+
+## Next Steps
+
+You've now implemented restock notifications in Medusa. You can also customize the [storefront](../../../nextjs-starter/page.mdx) to allow customers to subscribe to the restock notification using the new API route you added.
+
+If you're new to Medusa, check out the [main documentation](!docs!/learn), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
+
+To learn more about the commerce features that Medusa provides, check out Medusa's [Commerce Modules](../../../commerce-modules/page.mdx).
+
+For other general guides related to [deployment](../../../deployment/page.mdx), [storefront development](../../../storefront-development/page.mdx), [integrations](../../../integrations/page.mdx), and more, check out the [Development Resources](../../../page.mdx).

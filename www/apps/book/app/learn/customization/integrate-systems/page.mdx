@@ -1,0 +1,25 @@
+export const metadata = {
+  title: `${pageNumber} Integrate Third-Party Systems`,
+}
+
+# {metadata.title}
+
+Commerce applications often connect to third-party systems that provide additional or specialized features. For example, you may integrate a Content-Management System (CMS) for rich content features, a payment provider to process credit-card payments, and a notification service to send emails.
+
+Medusa's framework facilitates integrating these systems and orchestrating operations across them, saving you the effort of managing them yourself. You won't find those capabilities in other commerce platforms that in these scenarios become a bottleneck to building customizations and iterating quickly.
+
+In Medusa, you integrate a third-party system by:
+
+1. Creating a module whose service provides the methods to connect to and perform operations in the third-party system.
+2. Building workflows that complete tasks spanning across systems. You use the module that integrates a third-party system in the workflow's steps.
+3. Executing the workflows you built in an [API route](../../fundamentals/api-routes/page.mdx), at a scheduled time, or when an event is emitted.
+
+---
+
+## Next Chapters: Sync Brands Example
+
+In the previous chapters, you've [added brands](../custom-features/module/page.mdx) to your Medusa application. In the next chapters, you will:
+
+1. Integrate a dummy third-party CMS in the Brand Module.
+2. Sync brands to the CMS when a brand is created.
+2. Sync brands from the CMS at a daily schedule.

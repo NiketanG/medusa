@@ -1,0 +1,135 @@
+import { CardList } from "docs-ui"
+
+export const metadata = {
+  title: `Integrations`,
+}
+
+# {metadata.title}
+
+You can integrate any third-party service to Medusa, including storage services, notification systems, Content-Management Systems (CMS), etc… By integrating third-party services, you build flows and synchronize data around these integrations, making Medusa not only your commerce application, but a middleware layer between your data sources and operations.
+
+Medusa provides integrations out-of-the-box that are listed here, but you can also create your own integrations, such as integrating ERP systems, as explained in [this guide](!docs!/learn/customization/integrate-systems).
+
+## Auth
+
+An Auth Module Provider authenticates users with their account on a third-party service.
+
+<CardList
+  items={[
+    {
+      href: "/commerce-modules/auth/auth-providers/google",
+      title: "Google",
+    },
+    {
+      href: "/commerce-modules/auth/auth-providers/github",
+      title: "GitHub",
+    },
+  ]}
+  className="mb-1"
+/>
+
+Learn how to integrate a custom third-party authentication provider in [this guide](/references/auth/provider).
+
+---
+
+## CMS
+
+Integrate third-party CMS to utilize rich content-related features.
+
+<CardList
+  items={[
+    {
+      href: "/integrations/guides/sanity",
+      title: "Sanity",
+      badge: {
+        variant: "blue",
+        children: "Guide"
+      }
+    },
+  ]}
+  className="mb-1"
+/>
+
+---
+
+## File
+
+A File Module Provider uploads and manages assets, such as product images, on a third-party service.
+
+<CardList
+  items={[
+    {
+      href: "/architectural-modules/file/s3",
+      title: "AWS S3 (and Compatible APIs)"
+    }
+  ]}
+  className="mb-1"
+/>
+
+Learn how to integrate a custom third-party file or storage provider in [this guide](/references/file-provider-module).
+
+---
+
+## Fulfillment
+
+A Fulfillment Module Provider provides fulfillment options during checkout, calculates shipping rates, and processes an order's fulfillments.
+
+<CardList
+  items={[
+    {
+      href: "/integrations/guides/shipstation",
+      title: "ShipStation",
+      badge: {
+        variant: "blue",
+        children: "Guide"
+      }
+    }
+  ]}
+  className="mb-1"
+/>
+
+Learn how to create a Fulfillment Provider Module [this guide](/references/fulfillment/provider).
+
+---
+
+## Notification
+
+A Notification Module Provider sends messages to users and customers in your Medusa application using a third-party service.
+
+<CardList
+  items={[
+    {
+      href: "/architectural-modules/notification/sendgrid",
+      title: "SendGrid"
+    },
+    {
+      href: "/integrations/guides/resend",
+      title: "Resend",
+      badge: {
+        variant: "blue",
+        children: "Guide"
+      }
+    }
+  ]}
+  className="mb-1"
+/>
+
+Learn how to create a notification provider in [this guide](/references/notification-provider-module).
+
+---
+
+## Payment
+
+A Payment Module Provider processes payments made in your Medusa store using a third-party service.
+
+<CardList
+  items={[
+    {
+      href: "/commerce-modules/payment/payment-provider/stripe",
+      title: "Stripe"
+    }
+  ]}
+  className="mb-1"
+/>
+
+Learn how to create a payment provider in [this guide](/references/payment/provider).

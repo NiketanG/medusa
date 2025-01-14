@@ -1,0 +1,64 @@
+{
+  "description": "This component is based on the [Toaster component of the Sonner library](https://sonner.emilkowal.ski/toaster).",
+  "methods": [],
+  "displayName": "Toaster",
+  "props": {
+    "position": {
+      "defaultValue": {
+        "value": "\"bottom-right\"",
+        "computed": false
+      },
+      "description": "The position of the created toasts.",
+      "tsType": {
+        "name": "Position",
+        "elements": [],
+        "raw": "Position"
+      },
+      "required": false
+    },
+    "gap": {
+      "defaultValue": {
+        "value": "12",
+        "computed": false
+      },
+      "description": "The gap between the toast components.",
+      "tsType": {
+        "name": "number"
+      },
+      "required": false
+    },
+    "offset": {
+      "defaultValue": {
+        "value": "24",
+        "computed": false
+      },
+      "description": "The space from the edges of the screen.",
+      "tsType": {
+        "name": "union",
+        "raw": "string \\| number",
+        "elements": [
+          {
+            "name": "string"
+          },
+          {
+            "name": "number"
+          }
+        ]
+      },
+      "required": false
+    },
+    "duration": {
+      "description": "The time in milliseconds that a toast is shown before it's\nautomatically dismissed.\n\n",
+      "tsType": {
+        "name": "number"
+      },
+      "defaultValue": {
+        "value": "4000",
+        "computed": false
+      }
+    }
+  },
+  "composes": [
+    "Omit"
+  ]
+}

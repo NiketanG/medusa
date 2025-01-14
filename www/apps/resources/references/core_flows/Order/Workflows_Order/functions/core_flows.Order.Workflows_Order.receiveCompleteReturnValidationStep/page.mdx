@@ -1,0 +1,40 @@
+---
+slug: /references/medusa-workflows/receiveCompleteReturnValidationStep
+sidebar_label: receiveCompleteReturnValidationStep
+tags:
+  - step
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# receiveCompleteReturnValidationStep - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `receiveCompleteReturnValidationStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This step validates that a return can be received and completed.
+
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { receiveCompleteReturnValidationStep } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const data = receiveCompleteReturnValidationStep({
+      "orderReturn": "{value}",
+      "input": {
+        "return_id": "{value}",
+        "items": [{
+          "id": "id_qRCl2aV4NRHxTL7",
+          "quantity": 11
+        }]
+      }
+    })
+  }
+)
+```
+  
+
+## Input
+
+<TypeList types={[{"name":"orderReturn","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"input","type":"[ReceiveCompleteOrderReturnWorkflowInput](../../../../../types/WorkflowTypes/OrderWorkflow/interfaces/types.WorkflowTypes.OrderWorkflow.ReceiveCompleteOrderReturnWorkflowInput/page.mdx)","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"return_id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"items","type":"[ReceiveReturnItem](../../../../../types/interfaces/types.ReceiveReturnItem/page.mdx)[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"quantity","type":"[BigNumberInput](../../../../../types/types/types.BigNumberInput/page.mdx)","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"internal_note","type":"`string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`null` \\| `Record<string, any>`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"created_by","type":"`string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"description","type":"`string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"internal_note","type":"`string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`null` \\| `Record<string, any>`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="receiveCompleteReturnValidationStep"/>

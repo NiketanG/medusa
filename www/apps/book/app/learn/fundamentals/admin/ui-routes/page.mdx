@@ -1,0 +1,218 @@
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Admin UI Routes`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn how to create a UI route in the admin dashboard.
+
+## What is a UI Route?
+
+The Medusa Admin dashboard is customizable, allowing you to add new pages, called UI routes. You create a UI route as a React component showing custom content that allow admin users to perform custom actions.
+
+For example, you can add a new page to show and manage product reviews, which aren't available natively in Medusa.
+
+---
+
+## How to Create a UI Route?
+
+<Prerequisites
+  items={[{
+    link: "/learn/installation",
+    text: "Medusa application installed"
+  }]}
+/>
+
+You create a UI route in a `page.tsx` file under a sub-directory of `src/admin/routes` directory. The file's path relative to `src/admin/routes` determines its path in the dashboard. The file’s default export must be the UI route’s React component.
+
+For example, create the file `src/admin/routes/custom/page.tsx` with the following content:
+
+![Example of UI route file in the application's directory structure](https://res.cloudinary.com/dza7lstvk/image/upload/v1732867243/Medusa%20Book/ui-route-dir-overview_tgju25.jpg)
+
+```tsx title="src/admin/routes/custom/page.tsx"
+import { Container, Heading } from "@medusajs/ui"
+
+const CustomPage = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">This is my custom route</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export default CustomPage
+```
+
+You add a new route at `http://localhost:9000/app/custom`. The `CustomPage` component holds the page's content, which currently only shows a heading.
+
+In the route, you use [Medusa UI](!ui!), a package that Medusa maintains to allow you to customize the dashboard with the same components used to build it.
+
+<Note title="Important" type="warning">
+
+The UI route component must be created as an arrow function.
+
+</Note>
+
+### Test the UI Route
+
+To test the UI route, start the Medusa application:
+
+```bash npm2yarn
+npm run dev
+```
+
+Then, after logging into the admin dashboard, open the page `http://localhost:9000/app/custom` to see your custom page.
+
+---
+
+## Show UI Route in the Sidebar
+
+To add a sidebar item for your custom UI route, export a configuration object in the UI route's file:
+
+export const highlights = [
+  ["16", "label", "The label of the UI route's sidebar item."],
+  ["17", "icon", "The icon of the UI route's sidebar item."]
+]
+
+```tsx title="src/admin/routes/custom/page.tsx" highlights={highlights}
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { ChatBubbleLeftRight } from "@medusajs/icons"
+import { Container, Heading } from "@medusajs/ui"
+
+const CustomPage = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">This is my custom route</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Custom Route",
+  icon: ChatBubbleLeftRight,
+})
+
+export default CustomPage
+```
+
+The configuration object is created using `defineRouteConfig` from the Medusa Framework. It accepts the following properties:
+
+- `label`: the sidebar item’s label.
+- `icon`: an optional React component used as an icon in the sidebar.
+
+The above example adds a new sidebar item with the label `Custom Route` and an icon from the [Medusa UI Icons package](!ui!/icons/overview).
+
+### Nested UI Routes
+
+Consider that along the UI route above at `src/admin/routes/custom/page.tsx` you create a nested UI route at `src/admin/routes/custom/nested/page.tsx` that also exports route configurations:
+
+![Example of nested UI route file in the application's directory structure](https://res.cloudinary.com/dza7lstvk/image/upload/v1732867243/Medusa%20Book/ui-route-dir-overview_tgju25.jpg)
+
+```tsx title="src/admin/routes/custom/nested/page.tsx"
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { Container, Heading } from "@medusajs/ui"
+
+const NestedCustomPage = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">This is my nested custom route</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Nested Route",
+})
+
+export default NestedCustomPage
+```
+
+This UI route is shown in the sidebar as an item nested in the parent "Custom Route" item. Nested items are only shown when the parent sidebar items (in this case, "Custom Route") are clicked.
+
+#### Caveats
+
+Some caveats for nested UI routes in the sidebar:
+
+- Nested dynamic UI routes, such as one created at `src/admin/routes/custom/[id]/page.tsx` aren't added to the sidebar as it's not possible to link to a dynamic route. If the dynamic route exports route configurations, a warning is logged in the browser's console.
+- Nested routes in setting pages aren't shown in the sidebar to follow the admin's design conventions.
+- The `icon` configuration is ignored for the sidebar item of nested UI route to follow the admin's design conventions.
+
+---
+
+## Create Settings Page
+
+To create a page under the settings section of the admin dashboard, create a UI route under the path `src/admin/routes/settings`.
+
+For example, create a UI route at `src/admin/routes/settings/custom/page.tsx`:
+
+![Example of settings UI route file in the application's directory structure](https://res.cloudinary.com/dza7lstvk/image/upload/v1732867435/Medusa%20Book/setting-ui-route-dir-overview_kytbh8.jpg)
+
+```tsx title="src/admin/routes/settings/custom/page.tsx"
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { Container, Heading } from "@medusajs/ui"
+
+const CustomSettingPage = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h1">Custom Setting Page</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Custom",
+})
+
+export default CustomSettingPage
+```
+
+This adds a page under the path `/app/settings/custom`. An item is also added to the settings sidebar with the label `Custom`.
+
+---
+
+## Path Parameters
+
+A UI route can accept path parameters if the name of any of the directories in its path is of the format `[param]`.
+
+For example, create the file `src/admin/routes/custom/[id]/page.tsx` with the following content:
+
+![Example of UI route file with path parameters in the application's directory structure](https://res.cloudinary.com/dza7lstvk/image/upload/v1732867748/Medusa%20Book/path-param-ui-route-dir-overview_kcfbev.jpg)
+
+```tsx title="src/admin/routes/custom/[id]/page.tsx" highlights={[["5", "", "Retrieve the path parameter."], ["10", "{id}", "Show the path parameter."]]}
+import { useParams } from "react-router-dom"
+import { Container, Heading } from "@medusajs/ui"
+
+const CustomPage = () => {
+  const { id } = useParams()
+
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h1">Passed ID: {id}</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export default CustomPage
+```
+
+You access the passed parameter using `react-router-dom`'s [useParams hook](https://reactrouter.com/en/main/hooks/use-params).
+
+If you run the Medusa application and go to `localhost:9000/app/custom/123`, you'll see `123` printed in the page.
+
+---
+
+## Admin Components List
+
+To build admin customizations that match the Medusa Admin's designs and layouts, refer to [this guide](!resources!/admin-components) to find common components.

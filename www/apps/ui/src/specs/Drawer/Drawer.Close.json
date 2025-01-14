@@ -1,0 +1,6 @@
+{
+  "description": "This component is used to create the close button for the drawer.\nIt accepts props from the [Radix UI Dialog Close](https://www.radix-ui.com/primitives/docs/components/dialog#close) component.",
+  "methods": [],
+  "displayName": "Drawer.Close",
+  "props": {}
+}

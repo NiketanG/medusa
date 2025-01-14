@@ -1,0 +1,42 @@
+---
+slug: /references/medusa-workflows/steps/confirmInventoryStep
+sidebar_label: confirmInventoryStep
+tags:
+  - inventory
+  - step
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# confirmInventoryStep - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `confirmInventoryStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This step confirms for one or more variants that their inventory has a required quantity.
+
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { confirmInventoryStep } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const data = confirmInventoryStep({
+      "items": [{
+        "inventory_item_id": "{value}",
+        "required_quantity": 11,
+        "allow_backorder": false,
+        "quantity": 23,
+        "location_ids": [
+          "{value}"
+        ]
+      }]
+    })
+  }
+)
+```
+  
+
+## Input
+
+<TypeList types={[{"name":"ConfirmVariantInventoryStepInput","type":"[ConfirmVariantInventoryStepInput](../../../../interfaces/core_flows.ConfirmVariantInventoryStepInput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"items","type":"`object`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"inventory_item_id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"required_quantity","type":"`number`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"allow_backorder","type":"`boolean`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"quantity","type":"[BigNumberInput](../../../../../types/types/types.BigNumberInput/page.mdx)","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"value","type":"`string` \\| `number`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"numeric","type":"`number`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"raw","type":"[BigNumberRawValue](../../../../../types/types/types.BigNumberRawValue/page.mdx)","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"bigNumber","type":"`BigNumber`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"location_ids","type":"`string`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="confirmInventoryStep"/>

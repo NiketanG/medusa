@@ -1,0 +1,35 @@
+---
+slug: /references/medusa-workflows/steps/canDeleteSalesChannelsOrThrowStep
+sidebar_label: canDeleteSalesChannelsOrThrowStep
+tags:
+  - step
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# canDeleteSalesChannelsOrThrowStep - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `canDeleteSalesChannelsOrThrowStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { canDeleteSalesChannelsOrThrowStep } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const data = canDeleteSalesChannelsOrThrowStep({
+      "ids": "id_H5DZRryRwhGSYq"
+    })
+  }
+)
+```
+  
+
+## Input
+
+<TypeList types={[{"name":"ids","type":"`string` \\| `string`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="canDeleteSalesChannelsOrThrowStep"/>
+
+## Output
+
+<TypeList types={[{"name":"false & WorkflowDataProperties&#60;false&#62; \\| true & WorkflowDataProperties&#60;true&#62;","type":"`false` & [WorkflowDataProperties](../../../../../workflows/types/workflows.WorkflowDataProperties/page.mdx)&#60;false&#62; \\| `true` & [WorkflowDataProperties](../../../../../workflows/types/workflows.WorkflowDataProperties/page.mdx)&#60;true&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"false & WorkflowDataProperties&#60;false&#62; \\| true & WorkflowDataProperties&#60;true&#62;","type":"`false` & [WorkflowDataProperties](../../../../../workflows/types/workflows.WorkflowDataProperties/page.mdx)&#60;false&#62; \\| `true` & [WorkflowDataProperties](../../../../../workflows/types/workflows.WorkflowDataProperties/page.mdx)&#60;true&#62;","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="canDeleteSalesChannelsOrThrowStep"/>

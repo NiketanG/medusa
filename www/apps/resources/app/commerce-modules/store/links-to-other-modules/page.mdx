@@ -1,0 +1,68 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Store Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Store Module and other commerce modules.
+
+## Summary
+
+The Store Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+- [`Currency` data model \<\> `Currency` data model of Currency Module](#currency-module). (Read-only).
+
+---
+
+## Currency Module
+
+The Store Module has a `Currency` data model that stores the supported currencies of a store. However, these currencies don't hold all the details of a currency, such as its name or symbol.
+
+Instead, Medusa defines a read-only link between the [Currency Module](../../currency/page.mdx)'s `Currency` data model and the Store Module's `Currency` data model. This means you can retrieve the details of a store's supported currencies, but you don't manage the links in a pivot table in the database. The currencies of a store are determined by the `currency_code` of the `Currency` data model in the Store Module.
+
+### Retrieve with Query
+
+To retrieve the details of a store's currencies with [Query](!docs!/learn/fundamentals/module-links/query), pass `supported_currencies.currency.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: stores } = await query.graph({
+  entity: "store",
+  fields: [
+    "supported_currencies.currency.*",
+  ],
+})
+
+// stores.supported_currencies
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: stores } = useQueryGraphStep({
+  entity: "store",
+  fields: [
+    "supported_currencies.currency.*",
+  ],
+})
+
+// stores.supported_currencies
+```
+
+  </CodeTab>
+</CodeTabs>

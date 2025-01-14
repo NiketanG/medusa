@@ -1,0 +1,68 @@
+{
+	"PriceListRule": {
+		"filePath": "packages/modules/pricing/src/models/price-list-rule.ts",
+		"properties": {
+			"id": "The ID of the price list rule.",
+			"attribute": "The attribute of the price list rule. For example, `region_id`.",
+			"value": "The value of the price list rule. For example, `reg_123`.",
+			"price_list": "The associated `PriceList`.\n\n@expandable"
+		}
+	},
+	"PriceList": {
+		"filePath": "packages/modules/pricing/src/models/price-list.ts",
+		"properties": {
+			"id": "The ID of the price list.",
+			"title": "The title of the price list.",
+			"description": "The description of the price list.",
+			"status": "The status of the price list.",
+			"type": "The type of the price list.",
+			"starts_at": "The date the price list starts.",
+			"ends_at": "The date the price list ends.",
+			"rules_count": "The total number of rules of the price list.",
+			"prices": "The associated `Price` records.\n\n@expandable",
+			"price_list_rules": "The associated `PriceListRule` records.\n\n@expandable"
+		}
+	},
+	"PriceRule": {
+		"filePath": "packages/modules/pricing/src/models/price-rule.ts",
+		"properties": {
+			"id": "The ID of the price rule.",
+			"attribute": "The attribute of the price rule. For example, `region_id`.",
+			"value": "The value of the price rule. For example, `reg_123`.",
+			"operator": "The operator of the price rule. For example, `eq`.",
+			"priority": "The priority of the price rule.",
+			"price": "The associated `Price`.\n\n@expandable"
+		}
+	},
+	"PriceSet": {
+		"filePath": "packages/modules/pricing/src/models/price-set.ts",
+		"properties": {
+			"id": "The ID of the price set.",
+			"prices": "The associated `Price` records.\n\n@expandable"
+		}
+	},
+	"Price": {
+		"filePath": "packages/modules/pricing/src/models/price.ts",
+		"properties": {
+			"id": "The ID of the price.",
+			"title": "The title of the price",
+			"currency_code": "The currency code of the price. For example, `usd`.",
+			"amount": "The amount of the price.",
+			"min_quantity": "The minimum quantity that must be available in the cart for the price to be applied.",
+			"max_quantity": "The maximum quantity allowed to be available in the cart for the price to be applied.",
+			"rules_count": "The total number of rules of the price.",
+			"price_set": "The associated `PriceSet`.\n\n@expandable",
+			"price_rules": "The associated `PriceRule` records.\n\n@expandable",
+			"price_list": "The associated `PriceList`.\n\n@expandable"
+		}
+	},
+	"PricePreference": {
+		"filePath": "packages/modules/pricing/src/models/price-preference.ts",
+		"properties": {
+			"id": "The ID of the price preference.",
+			"attribute": "The attribute of the price preference. For example, `region_id`.",
+			"value": "The value of the price preference. For example, `reg_123`.",
+			"is_tax_inclusive": "Whether prices matching this preference include taxes."
+		}
+	}
+}

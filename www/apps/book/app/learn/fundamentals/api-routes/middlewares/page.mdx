@@ -1,0 +1,217 @@
+export const metadata = {
+  title: `${pageNumber} Middlewares`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn about middlewares and how to create them.
+
+## What is a Middleware?
+
+A middleware is a function executed when a request is sent to an API Route. It's executed before the route handler function.
+
+Middlwares are used to guard API routes, parse request content types other than `application/json`, manipulate request data, and more.
+
+<Note title="Tip">
+
+As Medusa's server is based on Express, you can use any [Express middleware](https://expressjs.com/en/resources/middleware.html).
+
+</Note>
+
+---
+
+## How to Create a Middleware?
+
+Middlewares are defined in the special file `src/api/middlewares.ts`. Use the `defineMiddlewares` function from the Medusa Framework to define the middlewares, and export its value.
+
+For example:
+
+```ts title="src/api/middlewares.ts"
+import type { 
+  defineMiddlewares,
+  MedusaNextFunction, 
+  MedusaRequest, 
+  MedusaResponse, 
+} from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/custom*",
+      middlewares: [
+        (
+          req: MedusaRequest, 
+          res: MedusaResponse, 
+          next: MedusaNextFunction
+        ) => {
+          console.log("Received a request!")
+
+          next()
+        },
+      ],
+    },
+  ],
+})
+```
+
+The `defineMiddlewares` function accepts a middleware configurations object that has the property `routes`. `routes`'s value is an array of middleware route objects, each having the following properties:
+
+- `matcher`: a string or regular expression indicating the API route path to apply the middleware on. The regular expression must be compatible with [path-to-regexp](https://github.com/pillarjs/path-to-regexp).
+- `middlewares`: An array of middleware functions.
+
+In the example above, you define a middleware that logs the message `Received a request!` whenever a request is sent to an API route path starting with `/custom`.
+
+---
+
+## Test the Middleware
+
+To test the middleware:
+
+1. Start the application:
+
+```bash npm2yarn
+npm run dev
+```
+
+2. Send a request to any API route starting with `/custom`.
+3. See the following message in the terminal:
+
+```bash
+Received a request!
+```
+
+---
+
+## When to Use Middlewares
+
+<Note type="success" title="Use middlewares when">
+
+- You want to protect API routes by a custom condition.
+- You're modifying the request body.
+
+</Note>
+
+---
+
+## Middleware Function Parameters
+
+The middleware function accepts three parameters:
+
+1. A request object of type `MedusaRequest`.
+2. A response object of type `MedusaResponse`.
+3. A function of type `MedusaNextFunction` that executes the next middleware in the stack.
+
+<Note title="Important">
+
+You must call the `next` function in the middleware. Otherwise, other middlewares and the API route handler won’t execute.
+
+</Note>
+
+---
+
+## Middleware for Routes with Path Parameters
+
+To indicate a path parameter in a middleware's `matcher` pattern, use the format `:{param-name}`.
+
+For example:
+
+export const pathParamHighlights = [["11", ":id", "Indicates that the API route accepts an `id` path parameter."]]
+
+```ts title="src/api/middlewares.ts" collapsibleLines="1-7" expandMoreLabel="Show Imports" highlights={pathParamHighlights}
+import type { 
+  MedusaNextFunction, 
+  MedusaRequest, 
+  MedusaResponse, 
+  defineMiddlewares,
+} from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/custom/:id",
+      middlewares: [
+        // ...
+      ],
+    },
+  ],
+})
+```
+
+This applies a middleware to the routes defined in the file `src/api/custom/[id]/route.ts`.
+
+---
+
+## Restrict HTTP Methods
+
+Restrict which HTTP methods the middleware is applied to using the `method` property of the middleware route object.
+
+For example:
+
+export const highlights = [["12", "method", "Apply the middleware only on `POST` requests"]]
+
+```ts title="src/api/middlewares.ts" highlights={highlights} collapsibleLines="1-7" expandButtonLabel="Show Imports"
+import type { 
+  MedusaNextFunction, 
+  MedusaRequest, 
+  MedusaResponse, 
+  defineMiddlewares,
+} from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/custom*",
+      method: ["POST", "PUT"],
+      middlewares: [
+        // ...
+      ],
+    },
+  ],
+})
+```
+
+`method`'s value is one or more HTTP methods to apply the middleware to.
+
+This example applies the middleware only when a `POST` or `PUT` request is sent to an API route path starting with `/custom`.
+
+---
+
+## Request URLs with Trailing Backslashes
+
+A middleware whose `matcher` pattern doesn't end with a backslash won't be applied for requests to URLs with a trailing backslash.
+
+For example, consider you have the following middleware:
+
+```ts collapsibleLines="1-7" expandMoreLabel="Show Imports"
+import type { 
+  MedusaNextFunction, 
+  MedusaRequest, 
+  MedusaResponse, 
+  defineMiddlewares,
+} from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/custom",
+      middlewares: [
+        (
+          req: MedusaRequest, 
+          res: MedusaResponse, 
+          next: MedusaNextFunction
+        ) => {
+          console.log("Received a request!")
+
+          next()
+        },
+      ],
+    },
+  ],
+})
+```
+
+If you send a request to `http://localhost:9000/custom`, the middleware will run.
+
+However, if you send a request to `http://localhost:9000/custom/`, the middleware won't run.
+
+In general, avoid adding trailing backslashes when sending requests to API routes.

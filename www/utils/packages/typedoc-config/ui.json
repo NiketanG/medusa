@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "extends": [
+    "../../../../packages/design-system/ui/tsconfig.esm.json"
+  ],
+  "include": ["../../../../packages/design-system/ui/src"],
+  "exclude": [
+    "../../../../packages/design-system/ui/dist", 
+    "../../../../packages/design-system/ui/node_modules"
+  ],
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  }
+}

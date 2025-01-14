@@ -1,0 +1,47 @@
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+  Modules,
+} from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+
+export const validateInventoryItemsForCreateStepId =
+  "validate-inventory-items-for-create-step"
+/**
+ * This step checks whether a variant already has an inventory item.
+ */
+export const validateInventoryItemsForCreate = createStep(
+  validateInventoryItemsForCreateStepId,
+  async (
+    input: {
+      tag?: string
+    }[],
+    { container }
+  ) => {
+    const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+
+    const linkService = remoteLink.getLinkModule(
+      Modules.PRODUCT,
+      "variant_id",
+      Modules.INVENTORY,
+      "inventory_item_id"
+    )!
+
+    const existingItems = await linkService.list(
+      { variant_id: input.map((i) => i.tag) },
+      { select: ["variant_id", "inventory_item_id"] }
+    )
+
+    if (existingItems.length) {
+      // @ts-expect-error
+      const ids = existingItems.map((i) => i.variant_id).join(", ")
+
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        `Inventory items already exist for variants with ids: ${ids}`
+      )
+    }
+
+    return new StepResponse(input)
+  }
+)

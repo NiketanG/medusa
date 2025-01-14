@@ -1,0 +1,63 @@
+---
+slug: /references/medusa-workflows/steps/calculateShippingOptionsPricesStep
+sidebar_label: calculateShippingOptionsPricesStep
+tags:
+  - fulfillment
+  - step
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# calculateShippingOptionsPricesStep - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `calculateShippingOptionsPricesStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This step calculates the prices for one or more shipping options.
+
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { calculateShippingOptionsPricesStep } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const data = calculateShippingOptionsPricesStep([{
+      "id": "id_5LJ1g09wXLr6fnMt9Y",
+      "provider_id": "{value}",
+      "optionData": "{value}",
+      "data": "{value}",
+      "context": {
+        "id": "{value}",
+        "shipping_address": "{value}",
+        "items": {
+          "items": "{value}",
+          "variant": {
+            "id": "id_TzevCLnWtAO",
+            "weight": 47,
+            "length": 11,
+            "height": 8,
+            "width": 30,
+            "material": "{value}",
+            "product": {}
+          },
+          "product": {
+            "id": "id_g0bzGbW60G6pSHOia4T",
+            "collection_id": "{value}",
+            "categories": [],
+            "tags": []
+          }
+        }
+      }
+    }])
+  }
+)
+```
+  
+
+## Input
+
+<TypeList types={[{"name":"CalculateShippingOptionPriceDTO[]","type":"[CalculateShippingOptionPriceDTO](../../../../../fulfillment/interfaces/fulfillment.CalculateShippingOptionPriceDTO/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"CalculateShippingOptionPriceDTO","type":"[CalculateShippingOptionPriceDTO](../../../../../fulfillment/interfaces/fulfillment.CalculateShippingOptionPriceDTO/page.mdx)","optional":false,"defaultValue":"","description":"The data needed for the associated fulfillment provider to calculate the price of a shipping option.","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the shipping option.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"provider_id","type":"`string`","description":"The ID of the fulfillment provider.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"optionData","type":"`Record<string, unknown>`","description":"The `data` property of the shipping option.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"The shipping method's `data` property with custom data passed from the frontend.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"context","type":"[CartPropsForFulfillment](../../../../../fulfillment/types/fulfillment.CartPropsForFulfillment/page.mdx) & `object`","description":"The calculation context needed for the associated fulfillment provider to calculate the price of a shipping option.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"[CartDTO](../../../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"id\"`]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"shipping_address","type":"[CartDTO](../../../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"shipping_address\"`]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"items","type":"[CartDTO](../../../../../fulfillment/interfaces/fulfillment.CartDTO/page.mdx)[`\"items\"`] & `object`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"from_location","type":"[StockLocationDTO](../../../../../fulfillment/types/fulfillment.StockLocationDTO/page.mdx)","description":"The location that the items will be shipped from.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="calculateShippingOptionsPricesStep"/>
+
+## Output
+
+<TypeList types={[{"name":"CalculatedShippingOptionPrice[]","type":"[CalculatedShippingOptionPrice](../../../../../fulfillment/types/fulfillment.CalculatedShippingOptionPrice/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"CalculatedShippingOptionPrice","type":"[CalculatedShippingOptionPrice](../../../../../fulfillment/types/fulfillment.CalculatedShippingOptionPrice/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"calculated_amount","type":"`number`","description":"The calculated price.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_calculated_price_tax_inclusive","type":"`boolean`","description":"Whether the calculated price includes taxes. If enabled, Medusa will\ninfer the taxes from the calculated price. If false, Medusa will\nadd taxes to the calculated price.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="calculateShippingOptionsPricesStep"/>

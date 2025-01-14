@@ -1,0 +1,40 @@
+---
+slug: /references/medusa-workflows/steps/removeRulesFromPromotionsStep
+sidebar_label: removeRulesFromPromotionsStep
+tags:
+  - promotion
+  - step
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# removeRulesFromPromotionsStep - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `removeRulesFromPromotionsStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This step removes rules from a promotion.
+
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { removeRulesFromPromotionsStep } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const data = removeRulesFromPromotionsStep({
+      "rule_type": "{value}",
+      "data": {
+        "id": "id_mvAy9iJWhQ",
+        "rule_ids": [
+          "{value}"
+        ]
+      }
+    })
+  }
+)
+```
+  
+
+## Input
+
+<TypeList types={[{"name":"RemovePromotionRulesWorkflowDTO","type":"[RemovePromotionRulesWorkflowDTO](../../../../../types/types/types.RemovePromotionRulesWorkflowDTO/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"rule_type","type":"`PromotionRuleTypes`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`object`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"rule_ids","type":"`string`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="removeRulesFromPromotionsStep"/>

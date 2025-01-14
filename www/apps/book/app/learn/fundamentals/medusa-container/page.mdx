@@ -1,0 +1,180 @@
+export const metadata = {
+  title: `${pageNumber} Medusa Container`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn about the Medusa container and how to use it.
+
+## What is the Medusa Container?
+
+The Medusa container is a registry of framework and commerce tools that's accessible across your application. Medusa automatically registers these tools in the container, including custom ones that you've built, so that you can use them in your customizations.
+
+In other platforms, if you have a resource A (for example, a class) that depends on a resource B, you have to manually add resource B to the container or specify it beforehand as A's dependency, which is often done in a file separate from A's code. This becomes difficult to manage as you maintain larger applications with many changing dependencies.
+
+Medusa simplifies this process by giving you access to the container, with the tools or resources already registered, at all times in your customizations. When you reach a point in your code where you need a tool, you resolve it from the container and use it.
+
+For example, consider you're creating an API route that retrieves products based on filters using [Query](../../fundamentals/module-links/query/page.mdx), a tool that fetches data across the application. In the API route's function, you can resolve Query from the container passed to the API route and use it:
+
+export const highlights = [
+  ["8", "resolve", "A method that resolves resources from the container."],
+  [
+    "8",
+    `"query"`,
+    "Query's registration key in the container.",
+  ],
+]
+
+```ts highlights={highlights}
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+
+export async function GET(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const query = req.scope.resolve("query")
+
+  const { data: products } = await query.graph({
+    entity: "product",
+    fields: ["*"],
+    filters: {
+      id: "prod_123",
+    },
+  })
+
+  res.json({
+    products,
+  })
+}
+```
+
+The API route accepts as a first parameter a request object that has a `scope` property, which is the Medusa container. It has a `resolve` method that resolves a resource from the container by the key it's registered with.
+
+<Note>
+
+You can learn more about how Query works in [this chapter](../../fundamentals/module-links/query/page.mdx).
+
+</Note>
+
+---
+
+## List of Resources Registered in the Medusa Container
+
+Find a full list of the registered resources and their registration key in [this reference](!resources!/medusa-container-resources)
+
+---
+
+## How to Resolve From the Medusa Container
+
+This section gives quick examples of how to resolve resources from the Medusa container in customizations other than an API route, which is covered in the section above.
+
+### Subscriber
+
+A [subscriber](../../fundamentals/events-and-subscribers/page.mdx) function, which is executed when an event is emitted, accepts as a parameter an object with a `container` property, whose value is the Medusa container. Use its `resolve` method to resolve a resource by its registration key:
+
+export const subscriberHighlights = [
+  ["6", "container", "Receive the Medusa container as a parameter"],
+  ["8", "resolve", "Resolve a resource from the container by its key"]
+]
+
+```ts highlights={subscriberHighlights}
+import { SubscriberArgs, type SubscriberConfig } from "@medusajs/framework"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+
+export default async function productCreateHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+  const { data: products } = await query.graph({
+    entity: "product",
+    fields: ["*"],
+    filters: {
+      id: data.id,
+    },
+  })
+
+  console.log(`You created a product with the title ${products[0].title}`)
+}
+
+export const config: SubscriberConfig = {
+  event: `product.created`,
+}
+```
+
+### Scheduled Job
+
+A [scheduled job](../../fundamentals/scheduled-jobs/page.mdx) function, which is executed at a specified interval, accepts the Medusa container as a parameter. Use its `resolve` method to resolve a resource by its registration key:
+
+export const scheduledJobHighlights = [
+  ["5", "container", "Receive the Medusa container as a parameter"],
+  ["7", "resolve", "Resolve a resource from the container by its key"]
+]
+
+```ts highlights={scheduledJobHighlights}
+import { MedusaContainer } from "@medusajs/framework/types"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+
+export default async function myCustomJob(
+  container: MedusaContainer
+) {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+  const { data: products } = await query.graph({
+    entity: "product",
+    fields: ["*"],
+    filters: {
+      id: "prod_123",
+    },
+  })
+
+  console.log(
+    `You have ${products.length} matching your filters.`
+  )
+}
+
+export const config = {
+  name: "every-minute-message",
+  // execute every minute
+  schedule: "* * * * *",
+}
+```
+
+### Workflow Step
+
+A [step in a workflow](../../fundamentals/workflows/page.mdx), which is a special function where you build durable execution logic across multiple modules, accepts in its second parameter a `container` property, whose value is the Medusa container. Use its `resolve` method to resolve a resource by its registration key:
+
+export const workflowStepsHighlight = [
+  ["7", "container", "Receive the Medusa container as a parameter"],
+  ["8", "resolve", "Resolve a resource from the container by its key"]
+]
+
+```ts highlights={workflowStepsHighlight}
+import {
+  createStep,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+
+const step1 = createStep("step-1", async (_, { container }) => {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+  const { data: products } = await query.graph({
+    entity: "product",
+    fields: ["*"],
+    filters: {
+      id: "prod_123",
+    },
+  })
+
+  return new StepResponse(products)
+})
+```
+
+### Module Services and Loaders
+
+A [module](../../fundamentals/modules/page.mdx), which is a package of functionalities for a single feature or domain, has its own container, so it can't resolve resources from the Medusa container.
+
+Learn more about the module's container in [this chapter](../../fundamentals/modules/container/page.mdx).

@@ -1,15 +1,15 @@
-import os from "os"
 import fs from "fs"
-import { join, sep } from "path"
 import isDocker from "is-docker"
+import os from "os"
+import { join, sep } from "path"
 import { v4 as uuidv4 } from "uuid"
 
+import Store from "./store"
 import createFlush from "./util/create-flush"
 import getTermProgram from "./util/get-term-program"
+import { getCIName, isCI } from "./util/is-ci"
 import isTruthy from "./util/is-truthy"
 import showAnalyticsNotification from "./util/show-notification"
-import { isCI, getCIName } from "./util/is-ci"
-import Store from "./store"
 
 const MEDUSA_TELEMETRY_VERBOSE = process.env.MEDUSA_TELEMETRY_VERBOSE || false
 
@@ -24,6 +24,10 @@ class Telemeter {
 
     this.queueSize_ = this.store_.getQueueSize()
     this.queueCount_ = this.store_.getQueueCount()
+
+    this.featureFlags_ = new Set()
+    this.modules_ = new Set()
+    this.plugins_ = []
   }
 
   getMachineId() {
@@ -92,14 +96,9 @@ class Telemeter {
   getCliVersion() {
     try {
       const jsonfile = join(
-        require
-          .resolve(`@medusajs/medusa-cli`) // Resolve where current gatsby-cli would be loaded from.
-          .split(sep)
-          .slice(0, -2) // drop lib/index.js
-          .join(sep),
-        `package.json`
+        require.resolve(`@medusajs/cli`).split(`${sep}dist`).shift(),
+        "package.json"
       )
-
       const { version } = require(jsonfile)
       return version
     } catch (e) {
@@ -130,6 +129,9 @@ class Telemeter {
       os_info: this.getOsInfo(),
       medusa_version: this.getMedusaVersion(),
       cli_version: this.getCliVersion(),
+      feature_flags: Array.from(this.featureFlags_),
+      modules: Array.from(this.modules_),
+      plugins: this.plugins_,
     }
 
     this.store_.addEvent(event)
@@ -150,6 +152,24 @@ class Telemeter {
       if (flush) {
         this.timer = setTimeout(flush, this.flushInterval)
       }
+    }
+  }
+
+  trackFeatureFlag(flag) {
+    if (flag) {
+      this.featureFlags_.add(flag)
+    }
+  }
+
+  trackModule(module) {
+    if (module) {
+      this.modules_.add(module)
+    }
+  }
+
+  trackPlugin(plugin) {
+    if (plugin) {
+      this.plugins_.push(plugin)
     }
   }
 }

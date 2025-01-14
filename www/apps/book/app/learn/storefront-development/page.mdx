@@ -1,0 +1,36 @@
+import { CardList } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Storefront Development`,
+}
+
+# {metadata.title}
+
+The Medusa application is made up of a Node.js server and an admin dashboard. Storefronts are installed, built, and hosted separately from the Medusa application, giving you the flexibility to choose the frontend tech stack that you and your team are proficient in, and implement unique design systems and user experience.
+
+You can build your storefront from scratch with your preferred tech stack, or start with our Next.js Starter storefront. The Next.js Starter storefront provides rich commerce features and a sleek design. Developers and businesses can use it as-is or build on top of it to tailor it for the business's unique use case, design, and customer experience.
+
+<CardList
+  items={[
+    {
+      text: "Install Next.js Starter Storefront",
+      href: "!resources!/nextjs-starter"
+    },
+    {
+      text: "Build Custom Storefront",
+      href: "!resources!/storefront-development"
+    }
+  ]}
+/>
+
+---
+
+## Passing a Publishable API Key in Storefront Requests
+
+When sending a request to an API route starting with `/store`, you must include a publishable API key in the header of your request.
+
+A publishable API key sets the scope of your request to one or more sales channels.
+
+Then, when you retrieve products, only products of those sales channels are retrieved. This also ensures you retrieve correct inventory data, and associate created orders with the scoped sales channel.
+
+Learn more about passing the publishable API key in [this storefront development guide](!resources!/storefront-development/publishable-api-keys).

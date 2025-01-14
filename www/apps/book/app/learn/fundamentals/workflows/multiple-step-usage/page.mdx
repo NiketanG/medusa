@@ -1,0 +1,80 @@
+export const metadata = {
+  title: `${pageNumber} Multiple Step Usage in Workflow`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to use a step multiple times in a workflow.
+
+## Problem Reusing a Step in a Workflow
+
+In some cases, you may need to use a step multiple times in the same workflow.
+
+The most common example is using the `useQueryGraphStep` multiple times in a workflow to retrieve multiple unrelated data, such as customers and products.
+
+Each workflow step must have a unique ID, which is the ID passed as a first parameter when creating the step:
+
+```ts
+const useQueryGraphStep = createStep(
+  "use-query-graph"
+  // ...
+)
+```
+
+This causes an error when you use the same step multiple times in a workflow, as it's registered in the workflow as two steps having the same ID:
+
+```ts
+const helloWorkflow = createWorkflow(
+  "hello",
+  () => {
+    const { data: products } = useQueryGraphStep({
+      entity: "product",
+      fields: ["id"],
+    })
+
+    // ERROR OCCURS HERE: A STEP HAS THE SAME ID AS ANOTHER IN THE WORKFLOW
+    const { data: customers } = useQueryGraphStep({
+      entity: "customer",
+      fields: ["id"],
+    })
+  }
+)
+```
+
+The next section explains how to fix this issue to use the same step multiple times in a workflow.
+
+---
+
+## How to Use a Step Multiple Times in a Workflow?
+
+When you execute a step in a workflow, you can chain a `config` method to it to change the step's config.
+
+Use the `config` method to change a step's ID for a single execution.
+
+So, this is the correct way to write the example above:
+
+export const highlights = [
+  ["13", "name", "Change the step's ID for this execution."]
+]
+
+```ts highlights={highlights}
+const helloWorkflow = createWorkflow(
+  "hello",
+  () => {
+    const { data: products } = useQueryGraphStep({
+      entity: "product",
+      fields: ["id"],
+    })
+
+    // ✓ No error occurs, the step has a different ID.
+    const { data: customers } = useQueryGraphStep({
+      entity: "customer",
+      fields: ["id"],
+    }).config({ name: "fetch-customers" })
+  }
+)
+```
+
+The `config` method accepts an object with a `name` property. Its value is a new ID of the step to use for this execution only.
+
+The first `useQueryGraphStep` usage has the ID `use-query-graph`, and the second `useQueryGraphStep` usage has the ID `fetch-customers`.

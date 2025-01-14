@@ -1,0 +1,415 @@
+---
+tags:
+  - inventory
+  - product
+  - stock location
+  - concept
+---
+
+export const metadata = {
+  title: `Inventory Kits`,
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how inventory kits can be used in the Medusa application to support use cases like multi-part products, bundled products, and shared inventory across products.
+
+## What is an Inventory Kit?
+
+An inventory kit is a collection of inventory items that are linked to a single product variant. These inventory items can be used to represent different parts of a product, or to represent a bundle of products.
+
+The Medusa application links inventory items from the [Inventory Module](../page.mdx) to product variants in the [Product Module](../../product/page.mdx). Each variant can have multiple inventory items, and these inventory items can be re-used or shared across variants.
+
+Using inventory kits, you can implement use cases like:
+
+- [Multi-part products](#multi-part-products): A product that consists of multiple parts, each with its own inventory item.
+- [Bundled products](#bundled-products): A product that is sold as a bundle, where each variant in the bundle product can re-use the inventory items of another product that should be sold as part of the bundle.
+
+---
+
+## Multi-Part Products
+
+Consider your store sells bicycles that consist of a frame, wheels, and seats, and you want to manage the inventory of these parts separately.
+
+To implement this in Medusa, you can:
+
+- Create inventory items for each of the different parts.
+- For each bicycle product, add a variant whose inventory kit consists of the inventory items of each of the parts.
+
+Then, whenever a customer purchases a bicycle, the inventory of each part is updated accordingly. You can also use the `required_quantity` of the variant's inventory items to set how much quantity is consumed of the part's inventory when a bicycle is sold. For example, the bicycle's wheels require 2 wheels inventory items to be sold when a bicycle is sold.
+
+![Diagram showcasing how a variant is linked to multi-part inventory items](https://res.cloudinary.com/dza7lstvk/image/upload/v1736414257/Medusa%20Resources/multi-part-product_kepbnx.jpg)
+
+### Create Multi-Part Product
+
+Using the Medusa Admin, you can create a multi-part product by creating its inventory items first, then assigning these inventory items to the product's variant(s).
+
+Using [workflows](!docs!/learn/fundamentals/workflows), you can implement this by first creating the inventory items:
+
+export const multiPartsHighlights1 = [
+  ["11", "stockLocations", "Retrieve the stock locations to create the inventory items in."],
+  ["19", "inventoryItems", "Create the inventory items."]
+]
+
+```ts highlights={multiPartsHighlights1}
+import { 
+  createInventoryItemsWorkflow, 
+  useQueryGraphStep,
+} from "@medusajs/medusa/core-flows"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+
+export const createMultiPartProductsWorkflow = createWorkflow(
+  "create-multi-part-products",
+  () => {
+    // Alternatively, you can create a stock location
+    const { data: stockLocations } = useQueryGraphStep({
+      entity: "stock_location",
+      fields: ["*"],
+      filters: {
+        name: "European Warehouse",
+      },
+    })
+
+    const inventoryItems = createInventoryItemsWorkflow.runAsStep({
+      input: {
+        items: [
+          {
+            sku: "FRAME",
+            title: "Frame",
+            location_levels: [
+              {
+                stocked_quantity: 100,
+                location_id: stockLocations[0].id,
+              },
+            ],
+          },
+          {
+            sku: "WHEEL",
+            title: "Wheel",
+            location_levels: [
+              {
+                stocked_quantity: 100,
+                location_id: stockLocations[0].id,
+              },
+            ],
+          },
+          {
+            sku: "SEAT",
+            title: "Seat",
+            location_levels: [
+              {
+                stocked_quantity: 100,
+                location_id: stockLocations[0].id,
+              },
+            ],
+          },
+        ],
+      },
+    })
+
+    // TODO create the product
+  }
+)
+```
+
+You start by retrieving the stock location to create the inventory items in. Alternatively, you can [create a stock location](/references/medusa-workflows/createStockLocationsWorkflow).
+
+Then, you create the inventory items that the product variant consists of.
+
+Next, create the product and pass the inventory item's IDs to the product's variant:
+
+export const multiPartHighlights2 = [
+  ["15", "inventoryItemIds", "Create an array of inventory items to pass to the variant."],
+  ["26", "products", "Create the product with the inventory items."],
+  ["43", "inventoryItemIds", "Pass the inventory item IDs as the product variant's inventory items."]
+]
+
+```ts highlights={multiPartHighlights2}
+import { 
+  // ...
+  transform,
+} from "@medusajs/framework/workflows-sdk"
+import { 
+  // ...
+  createProductsWorkflow,
+} from "@medusajs/medusa/core-flows"
+
+export const createMultiPartProductsWorkflow = createWorkflow(
+  "create-multi-part-products",
+  () => {
+    // ...
+
+    const inventoryItemIds = transform({
+      inventoryItems,
+    }, (data) => {
+      return data.inventoryItems.map((inventoryItem) => {
+        return {
+          inventory_item_id: inventoryItem.id,
+          // can also specify required_quantity
+        }
+      })
+    })
+
+    const products = createProductsWorkflow.runAsStep({
+      input: {
+        products: [
+          {
+            title: "Bicycle",
+            variants: [
+              {
+                title: "Bicycle - Small",
+                prices: [
+                  {
+                    amount: 100,
+                    currency_code: "usd",
+                  },
+                ],
+                options: {
+                  "Default Option": "Default Variant",
+                },
+                inventory_items: inventoryItemIds,
+              },
+            ],
+            options: [
+              {
+                title: "Default Option",
+                values: ["Default Variant"],
+              },
+            ],
+          },
+        ],
+      },
+    })
+  }
+)
+```
+
+You prepare the inventory item IDs to pass to the variant using [transform](!docs!/learn/fundamentals/workflows/variable-manipulation) from the Workflows SDK, then pass these IDs to the created product's variant.
+
+You can now [execute the workflow](!docs!/learn/fundamentals/workflows#3-execute-the-workflow) in [API routes](!docs!/learn/fundamentals/api-routes), [scheduled jobs](!docs!/learn/fundamentals/scheduled-jobs), or [subscribers](!docs!/learn/fundamentals/events-and-subscribers).
+
+---
+
+## Bundled Products
+
+Consider you have three products: shirt, pants, and shoes. You sell those products separately, but you also want to offer them as a bundle.
+
+![Diagram showcasing products each having their own variants and inventory](https://res.cloudinary.com/dza7lstvk/image/upload/v1736414787/Medusa%20Resources/bundled-product-1_vmzewk.jpg)
+
+You can do that by creating a product, where each variant re-uses the inventory items of each of the shirt, pants, and shoes products.
+
+Then, when the bundled product's variant is purchased, the inventory quantity of the associated inventory items are updated.
+
+![Diagram showcasing a bundled product using the same inventory as the products part of the bundle](https://res.cloudinary.com/dza7lstvk/image/upload/v1736414780/Medusa%20Resources/bundled-product_x94ca1.jpg)
+
+### Create Bundled Product
+
+You can create a bundled product in the Medusa Admin by creating the products part of the bundle first, each having its own inventory items. Then, you create the bundled product whose variant(s) have inventory kits composed of inventory items from each of the products part of the bundle.
+
+Using [workflows](!docs!/learn/fundamentals/workflows), you can implement this by first creating the products part of the bundle:
+
+export const bundledHighlights1 = [
+  ["11", "products", "Create the products part of the bundle."],
+  ["28", "manage_inventory", "Enabling this without specifying inventory items creates a default inventory item."]
+]
+
+```ts highlights={bundledHighlights1}
+import { 
+  createWorkflow,
+} from "@medusajs/framework/workflows-sdk"
+import { 
+  createProductsWorkflow,
+} from "@medusajs/medusa/core-flows"
+
+export const createBundledProducts = createWorkflow(
+  "create-bundled-products",
+  () => {
+    const products = createProductsWorkflow.runAsStep({
+      input: {
+        products: [
+          {
+            title: "Shirt",
+            variants: [
+              {
+                title: "Shirt",
+                prices: [
+                  {
+                    amount: 10,
+                    currency_code: "usd",
+                  },
+                ],
+                options: {
+                  "Default Option": "Default Variant",
+                },
+                manage_inventory: true,
+              },
+            ],
+            options: [
+              {
+                title: "Default Option",
+                values: ["Default Variant"],
+              },
+            ],
+          },
+          {
+            title: "Pants",
+            variants: [
+              {
+                title: "Pants",
+                prices: [
+                  {
+                    amount: 10,
+                    currency_code: "usd",
+                  },
+                ],
+                options: {
+                  "Default Option": "Default Variant",
+                },
+                manage_inventory: true,
+              },
+            ],
+            options: [
+              {
+                title: "Default Option",
+                values: ["Default Variant"],
+              },
+            ],
+          },
+          {
+            title: "Shoes",
+            variants: [
+              {
+                title: "Shoes",
+                prices: [
+                  {
+                    amount: 10,
+                    currency_code: "usd",
+                  },
+                ],
+                options: {
+                  "Default Option": "Default Variant",
+                },
+                manage_inventory: true,
+              },
+            ],
+            options: [
+              {
+                title: "Default Option",
+                values: ["Default Variant"],
+              },
+            ],
+          },
+        ],
+      },
+    })
+
+    // TODO re-retrieve with inventory
+  }
+)
+```
+
+You create three products and enable `manage_inventory` for their variants, which will create a default inventory item. You can also create the inventory item first for more control over the quantity as explained in [the previous section](#create-multi-part-product).
+
+Next, retrieve the products again but with variant information:
+
+export const bundledHighlights2 = [
+  ["13", "productIds", "Prepare the product IDs to retrieve them with Query."],
+  ["18", "productsWithInventory", "Re-retrieve the products with the inventory items of the product's variant."],
+  ["29", "inventoryItemIds", "Prepare the inventory items to pass to the bundled product's variant."]
+]
+
+```ts highlights={bundledHighlights2}
+import { 
+  // ...
+  transform,
+} from "@medusajs/framework/workflows-sdk"
+import { 
+  useQueryGraphStep,
+} from "@medusajs/medusa/core-flows"
+
+export const createBundledProducts = createWorkflow(
+  "create-bundled-products",
+  () => {
+    // ...
+    const productIds = transform({
+      products,
+    }, (data) => data.products.map((product) => product.id))
+
+    // @ts-ignore
+    const { data: productsWithInventory } = useQueryGraphStep({
+      entity: "product",
+      fields: [
+        "variants.*",
+        "variants.inventory_items.*",
+      ],
+      filters: {
+        id: productIds,
+      },
+    })
+
+    const inventoryItemIds = transform({
+      productsWithInventory,
+    }, (data) => {
+      return data.productsWithInventory.map((product) => {
+        return {
+          inventory_item_id: product.variants[0].inventory_items?.[0]?.inventory_item_id,
+        }
+      })
+    })
+
+    // create bundled product
+  }
+)
+```
+
+Using [Query](!docs!/learn/fundamentals/module-links/query), you retrieve the product again with the inventory items of each variant. Then, you prepare the inventory items to pass to the bundled product's variant.
+
+Finally, create the bundled product:
+
+export const bundledProductHighlights3 = [
+  ["5", "bundledProduct", "Create the bundled product."],
+  ["22", "inventory_items", "Pass the inventory items of the products part of the bundle."]
+]
+
+```ts highlights={bundledProductHighlights3}
+export const createBundledProducts = createWorkflow(
+  "create-bundled-products",
+  () => {
+    // ...
+    const bundledProduct = createProductsWorkflow.runAsStep({
+      input: {
+        products: [
+          {
+            title: "Bundled Clothes",
+            variants: [
+              {
+                title: "Bundle",
+                prices: [
+                  {
+                    amount: 30,
+                    currency_code: "usd",
+                  },
+                ],
+                options: {
+                  "Default Option": "Default Variant",
+                },
+                inventory_items: inventoryItemIds,
+              },
+            ],
+            options: [
+              {
+                title: "Default Option",
+                values: ["Default Variant"],
+              },
+            ],
+          },
+        ],
+      },
+    }).config({ name: "create-bundled-product" })
+  }
+)
+```
+
+The bundled product has the same inventory items as those of the products part of the bundle.
+
+You can now [execute the workflow](!docs!/learn/fundamentals/workflows#3-execute-the-workflow) in [API routes](!docs!/learn/fundamentals/api-routes), [scheduled jobs](!docs!/learn/fundamentals/scheduled-jobs), or [subscribers](!docs!/learn/fundamentals/events-and-subscribers).

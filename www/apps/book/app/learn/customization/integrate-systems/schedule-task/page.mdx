@@ -1,0 +1,345 @@
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Guide: Schedule Syncing Brands from CMS`,
+}
+
+# {metadata.title}
+
+In the previous chapters, you've [integrated a third-party CMS](../service/page.mdx) and implemented the logic to [sync created brands](../handle-event/page.mdx) from Medusa to the CMS.
+
+However, when you integrate a third-party system, you want the data to be in sync between the Medusa application and the system. One way to do so is by automatically syncing the data once a day.
+
+You can create an action to be automatically executed at a specified interval using scheduled jobs. A scheduled job is an asynchronous function with a specified schedule of when the Medusa application should run it. Scheduled jobs are useful to automate repeated tasks.
+
+<Note>
+
+Learn more about scheduled jobs in [this chapter](../../../fundamentals/scheduled-jobs/page.mdx).
+
+</Note>
+
+In this chapter, you'll create a scheduled job that triggers syncing the brands from the third-party CMS to Medusa once a day. You'll implement the syncing logic in a workflow, and execute that workflow in the scheduled job.
+
+<Prerequisites
+  items={[
+    {
+      text: "CMS Module",
+      link: "/learn/customization/integrate-systems/service"
+    }
+  ]}
+/>
+
+---
+
+## 1. Implement Syncing Workflow
+
+You'll start by implementing the syncing logic in a workflow, then execute the workflow later in the scheduled job.
+
+Workflows have a built-in durable execution engine that helps you complete tasks spanning multiple systems. Also, their rollback mechanism ensures that data is consistent across systems even when errors occur during execution.
+
+<Note>
+
+Learn more about workflows in [this chapter](../../../fundamentals/workflows/page.mdx).
+
+</Note>
+
+This workflow will have three steps:
+
+1. `retrieveBrandsFromCmsStep` to retrieve the brands from the CMS.
+2. `createBrandsStep` to create the brands retrieved in the first step that don't exist in Medusa.
+3. `updateBrandsStep` to update the brands retrieved in the first step that exist in Medusa.
+
+### retrieveBrandsFromCmsStep
+
+To create the step that retrieves the brands from the third-party CMS, create the file `src/workflows/sync-brands-from-cms.ts` with the following content:
+
+![Directory structure of the Medusa application after creating the file.](https://res.cloudinary.com/dza7lstvk/image/upload/v1733494196/Medusa%20Book/cms-dir-overview-6_z1omsi.jpg)
+
+```ts title="src/workflows/sync-brands-from-cms.ts" collapsibleLines="1-7" expandButtonLabel="Show Imports"
+import {
+  createStep,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
+import CmsModuleService from "../modules/cms/service"
+import { CMS_MODULE } from "../modules/cms"
+
+const retrieveBrandsFromCmsStep = createStep(
+  "retrieve-brands-from-cms",
+  async (_, { container }) => {
+    const cmsModuleService: CmsModuleService = container.resolve(
+      CMS_MODULE
+    )
+
+    const brands = await cmsModuleService.retrieveBrands()
+
+    return new StepResponse(brands)
+  }
+)
+```
+
+You create a `retrieveBrandsFromCmsStep` that resolves the CMS Module's service and uses its `retrieveBrands` method to retrieve the brands in the CMS. You return those brands in the step's response.
+
+### createBrandsStep
+
+The brands retrieved in the first step may have brands that don't exist in Medusa. So, you'll create a step that creates those brands. Add the step to the same `src/workflows/sync-brands-from-cms.ts` file:
+
+export const createBrandsHighlights = [
+  ["22", "createBrands", "Create the brands in Medusa"],
+  ["35", "deleteBrands", "Delete the brands from Medusa"]
+]
+
+```ts title="src/workflows/sync-brands-from-cms.ts" highlights={createBrandsHighlights} collapsibleLines="1-8" expandButtonLabel="Show Imports"
+// other imports...
+import BrandModuleService from "../modules/brand/service"
+import { BRAND_MODULE } from "../modules/brand"
+
+// ...
+
+type CreateBrand = {
+  name: string
+}
+
+type CreateBrandsInput = {
+  brands: CreateBrand[]
+}
+
+export const createBrandsStep = createStep(
+  "create-brands-step",
+  async (input: CreateBrandsInput, { container }) => {
+    const brandModuleService: BrandModuleService = container.resolve(
+      BRAND_MODULE
+    )
+
+    const brands = await brandModuleService.createBrands(input.brands)
+
+    return new StepResponse(brands, brands)
+  },
+  async (brands, { container }) => {
+    if (!brands) {
+      return
+    }
+
+    const brandModuleService: BrandModuleService = container.resolve(
+      BRAND_MODULE
+    )
+
+    await brandModuleService.deleteBrands(brands.map((brand) => brand.id))
+  }
+)
+```
+
+The `createBrandsStep` accepts the brands to create as an input. It resolves the [Brand Module](../../custom-features/module/page.mdx)'s service and uses the generated `createBrands` method to create the brands.
+
+The step passes the created brands to the compensation function, which deletes those brands if an error occurs during the workflow's execution.
+
+<Note>
+
+Learn more about compensation functions in [this chapter](../../../fundamentals/workflows/compensation-function/page.mdx).
+
+</Note>
+
+### Update Brands Step
+
+The brands retrieved in the first step may also have brands that exist in Medusa. So, you'll create a step that updates their details to match that of the CMS. Add the step to the same `src/workflows/sync-brands-from-cms.ts` file:
+
+export const updateBrandsHighlights = [
+  ["19", "prevUpdatedBrands", "Retrieve the data of the brands before the update."],
+  ["23", "updateBrands", "Update the brands in Medusa."],
+  ["36", "updateBrands", "Revert the update by reverting the brands' details to before the update."]
+]
+
+```ts title="src/workflows/sync-brands-from-cms.ts" highlights={updateBrandsHighlights}
+// ...
+
+type UpdateBrand = {
+  id: string
+  name: string
+}
+
+type UpdateBrandsInput = {
+  brands: UpdateBrand[]
+}
+
+export const updateBrandsStep = createStep(
+  "update-brands-step",
+  async ({ brands }: UpdateBrandsInput, { container }) => {
+    const brandModuleService: BrandModuleService = container.resolve(
+      BRAND_MODULE
+    )
+
+    const prevUpdatedBrands = await brandModuleService.listBrands({
+      id: brands.map((brand) => brand.id),
+    })
+
+    const updatedBrands = await brandModuleService.updateBrands(brands)
+
+    return new StepResponse(updatedBrands, prevUpdatedBrands)
+  },
+  async (prevUpdatedBrands, { container }) => {
+    if (!prevUpdatedBrands) {
+      return
+    }
+
+    const brandModuleService: BrandModuleService = container.resolve(
+      BRAND_MODULE
+    )
+
+    await brandModuleService.updateBrands(prevUpdatedBrands)
+  }
+)
+```
+
+The `updateBrandsStep` receives the brands to update in Medusa. In the step, you retrieve the brand's details in Medusa before the update to pass them to the compensation function. You then update the brands using the Brand Module's `updateBrands` generated method.
+
+In the compensation function, which receives the brand's old data, you revert the update using the same `updateBrands` method.
+
+### Create Workflow
+
+Finally, you'll create the workflow that uses the above steps to sync the brands from the CMS to Medusa. Add to the same `src/workflows/sync-brands-from-cms.ts` file the following:
+
+```ts title="src/workflows/sync-brands-from-cms.ts"
+// other imports...
+import {
+  // ...
+  createWorkflow,
+  transform,
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+// ...
+
+export const syncBrandsFromCmsWorkflow = createWorkflow(
+  "sync-brands-from-system",
+  () => {
+    const brands = retrieveBrandsFromCmsStep()
+
+    // TODO create and update brands
+  }
+)
+```
+
+In the workflow, you only use the `retrieveBrandsFromCmsStep` for now, which retrieves the brands from the third-party CMS.
+
+Next, you need to identify which brands must be created or updated. Since workflows are constructed internally and are only evaluated during execution, you can't access values to perform data manipulation directly. Instead, use [transform](../../../fundamentals/workflows/variable-manipulation/page.mdx) from the Workflows SDK that gives you access to the real-time values of the data, allowing you to create new variables using those values.
+
+<Note>
+
+Learn more about data manipulation using `transform` in [this chapter](../../../fundamentals/workflows/variable-manipulation/page.mdx).
+
+</Note>
+
+So, replace the `TODO` with the following:
+
+```ts title="src/workflows/sync-brands-from-cms.ts"
+const { toCreate, toUpdate } = transform(
+  {
+    brands,
+  },
+  (data) => {
+    const toCreate: CreateBrand[] = []
+    const toUpdate: UpdateBrand[] = []
+
+    data.brands.forEach((brand) => {
+      if (brand.external_id) {
+        toUpdate.push({
+          id: brand.external_id as string,
+          name: brand.name as string,
+        })
+      } else {
+        toCreate.push({
+          name: brand.name as string,
+        })
+      }
+    })
+
+    return { toCreate, toUpdate }
+  }
+)
+
+// TODO create and update the brands
+```
+
+`transform` accepts two parameters:
+
+1. The data to be passed to the function in the second parameter.
+2. A function to execute only when the workflow is executed. Its return value can be consumed by the rest of the workflow.
+
+In `transform`'s function, you loop over the brands array to check which should be created or updated. This logic assumes that a brand in the CMS has an `external_id` property whose value is the brand's ID in Medusa.
+
+You now have the list of brands to create and update. So, replace the new `TODO` with the following:
+
+```ts title="src/workflows/sync-brands-from-cms.ts"
+const created = createBrandsStep({ brands: toCreate })
+const updated = updateBrandsStep({ brands: toUpdate })
+
+return new WorkflowResponse({
+  created,
+  updated,
+})
+```
+
+You first run the `createBrandsStep` to create the brands that don't exist in Medusa, then the `updateBrandsStep` to update the brands that exist in Medusa. You pass the arrays returned by `transform` as the inputs for the steps.
+
+Finally, you return an object of the created and updated brands. You'll execute this workflow in the scheduled job next.
+
+---
+
+## 2. Schedule Syncing Task
+
+You now have the workflow to sync the brands from the CMS to Medusa. Next, you'll create a scheduled job that runs this workflow once a day to ensure the data between Medusa and the CMS are always in sync.
+
+A scheduled job is created in a TypeScript or JavaScript file under the `src/jobs` directory. So, create the file `src/jobs/sync-brands-from-cms.ts` with the following content:
+
+![Directory structure of the Medusa application after adding the scheduled job](https://res.cloudinary.com/dza7lstvk/image/upload/v1733494592/Medusa%20Book/cms-dir-overview-7_dkjb9s.jpg)
+
+```ts title="src/jobs/sync-brands-from-system.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+import { syncBrandsFromCmsWorkflow } from "../workflows/sync-brands-from-cms"
+
+export default async function (container: MedusaContainer) {
+  const logger = container.resolve("logger")
+
+  const { result } = await syncBrandsFromCmsWorkflow(container).run()
+
+  logger.info(
+    `Synced brands from third-party system: ${
+      result.created.length
+    } brands created and ${result.updated.length} brands updated.`)
+}
+
+export const config = {
+  name: "sync-brands-from-system",
+  schedule: "0 0 * * *", // change to * * * * * for debugging
+}
+```
+
+A scheduled job file must export:
+
+- An asynchronous function that will be executed at the specified schedule. This function must be the file's default export.
+- An object of scheduled jobs configuration. It has two properties:
+    - `name`: A unique name for the scheduled job.
+    - `schedule`: A string that holds a [cron expression](https://crontab.guru/) indicating the schedule to run the job.
+
+The scheduled job function accepts as a parameter the [Medusa container](../../../fundamentals/medusa-container/page.mdx) used to resolve framework and commerce tools. You then execute the `syncBrandsFromCmsWorkflow` and use its result to log how many brands were created or updated.
+
+Based on the cron expression specified in `config.schedule`, Medusa will run the scheduled job every day at midnight. You can also change it to `* * * * *` to run it every minute for easier debugging.
+
+---
+
+## Test it Out
+
+To test out the scheduled job, start the Medusa application:
+
+```bash npm2yarn
+npm run dev
+```
+
+If you set the schedule to `* * * * *` for debugging, the scheduled job will run in a minute. You'll see in the logs how many brands were created or updated.
+
+---
+
+## Summary
+
+By following the previous chapters, you utilized Medusa's framework and orchestration tools to perform and automate tasks that span across systems.
+
+With Medusa, you can integrate any service from your commerce ecosystem with ease. You don't have to set up separate applications to manage your different customizations, or worry about data inconsistency across systems. Your efforts only go into implementing the business logic that ties your systems together.

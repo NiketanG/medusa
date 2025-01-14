@@ -1,0 +1,326 @@
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `General Medusa Application Deployment Guide`,
+}
+
+# {metadata.title}
+
+In this document, you'll learn the general steps to deploy your Medusa application. How you apply these steps depend on your chosen hosting provider or platform.
+
+Find how-to guides for specific platforms in [this documentation](!resources!/deployment).
+
+<Note title="Deploy with Medusa Cloud" type="success">
+
+Want Medusa to manage and maintain your infrastructure? [Sign up and learn more about Medusa Cloud](https://medusajs.com/contact)
+
+Medusa Cloud is our managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure. Medusa Cloud hosts your server, Admin dashboard, database, and Redis instance.
+
+With Medusa Cloud, you maintain full customization control as you deploy your own modules and customizations directly from GitHub:
+
+- Push to deploy.
+- Multiple testing environments.
+- Preview environments for new PRs.
+- Test on production-like data.
+
+</Note>
+
+<Prerequisites items={[
+  {
+    text: "Medusa application’s codebase hosted on GitHub repository.",
+    link: "/learn"
+  },
+]} />
+
+## Hosting Provider Requirements
+
+When you deploy your Medusa application, make sure your chosen hosting provider supports deploying the following resources:
+
+1. PostgreSQL database: If your hosting provider doesn't support database hosting, you must find another hosting provider for the PostgreSQL database.
+2. Redis database: If your hosting provider doesn't support database hosting, you must find another hosting provider for the Redis database.
+3. Medusa application in server and worker mode. This means your hosting provider should support deploying two applications or instances from the same codebase.
+4. For optimal experience, the hosting provider and plan must offer at least 2GB of RAM.
+
+---
+
+## 1. Configure Medusa Application
+
+### Worker Mode
+
+The `workerMode` configuration determines which mode the Medusa application runs in.
+
+When you deploy the Medusa application, you deploy two instances: one in server mode, and one in worker mode.
+
+Learn more about the `workerMode` configuration in [this document](!resources!/references/medusa-config#workermode).
+
+So, add the following configuration in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    // ...
+    workerMode: process.env.MEDUSA_WORKER_MODE as "shared" | "worker" | "server",
+  },
+})
+```
+
+Later, you’ll set different values of the `MEDUSA_WORKER_MODE` environment variable for each Medusa application deployment or instance.
+
+### Configure Medusa Admin
+
+You need to disable the Medusa Admin in the worker Medusa application, while keeping it enabled in the server Medusa application. So, add the following configuration in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  admin: {
+    disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
+  },
+})
+```
+
+Later, you’ll set different values of the `DISABLE_MEDUSA_ADMIN` environment variable.
+
+### Configure Redis URL
+
+The `redisUrl` configuration specifies the connection URL to Redis to store the Medusa server's session.
+
+<Note>
+
+Learn more in the [Medusa Configuration documentation](!resources!/references/medusa-config#redisurl).
+
+</Note>
+
+So, add the following configuration in `medusa-config.ts` :
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    // ...
+    redisUrl: process.env.REDIS_URL,
+  },
+})
+```
+
+---
+
+## 2. Add predeploy Script
+
+Before you start the Medusa application in production, you should always run migrations and sync links.
+
+So, add the following script in `package.json`:
+
+```json
+"scripts": {
+  // ...
+  "predeploy": "medusa db:migrate"
+},
+```
+
+---
+
+## 3. Install Production Modules and Providers
+
+By default, your Medusa application uses modules and providers useful for development, such as the In-Memory Cache Module or the Local File Module Provider.
+
+It’s highly recommended to instead use modules and providers suitable for production, including:
+
+- [Redis Cache Module](!resources!/architectural-modules/cache/redis)
+- [Redis Event Bus Module](!resources!/architectural-modules/event/redis)
+- [Workflow Engine Redis Module](!resources!/architectural-modules/workflow-engine/redis)
+- [S3 File Module Provider](!resources!/architectural-modules/file/s3) (or other file module providers production-ready).
+- [SendGrid Notification Module Provider](!resources!/architectural-modules/notification/sendgrid) (or other notification module providers production-ready).
+
+Then, add these modules in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+import { Modules } from "@medusajs/framework/utils"
+
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/cache-redis",
+      options: {
+        redisUrl: process.env.REDIS_URL,
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/event-bus-redis",
+      options: {
+        redisUrl: process.env.REDIS_URL,
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/workflow-engine-redis",
+      options: {
+        redis: {
+          url: process.env.REDIS_URL,
+        },
+      },
+    },
+  ],
+})
+```
+
+<Note title="Tip">
+
+Check out the [Integrations](!resources!/integrations) and [Architectural Modules](!resources!/architectural-modules) documentation for other modules and providers to use.
+
+</Note>
+
+---
+
+## 4. Create PostgreSQL and Redis Databases
+
+Your Medusa application must connect to PostgreSQL and Redis databases. So, before you deploy it, create production PostgreSQL and Redis databases.
+
+If your hosting provider doesn't support databases, you can use [Neon for PostgreSQL database hosting](https://neon.tech/), and [Redis Cloud for the Redis database hosting](https://redis.io/cloud/).
+
+After hosting both databases, keep their connection URLs for the next steps.
+
+---
+
+## 5. Deploy Medusa Application in Server Mode
+
+As mentioned earlier, you'll deploy two instances or create two deployments of your Medusa application: one in server mode, and the other in worker mode.
+
+The deployment steps depend on your hosting provider. This section provides the general steps to perform during the deployment.
+
+### Set Environment Variables
+
+When setting the environment variables of the Medusa application, set the following variables:
+
+```bash
+COOKIE_SECRET=supersecret # TODO GENERATE SECURE SECRET
+JWT_SECRET=supersecret  # TODO GENERATE SECURE SECRET
+STORE_CORS= # STOREFRONT URL
+ADMIN_CORS= # ADMIN URL
+AUTH_CORS= # STOREFRONT AND ADMIN URLS, SEPARATED BY COMMAS
+DISABLE_MEDUSA_ADMIN=false
+MEDUSA_WORKER_MODE=server
+PORT=9000
+DATABASE_URL # POSTGRES DATABASE URL
+REDIS_URL= # REDIS DATABASE URL
+```
+
+Where:
+
+- The value of `COOKIE_SECRET` and `JWT_SECRET` must be a randomly generated secret.
+- `STORE_CORS`'s value is the URL of your storefront. If you don’t have it yet, you can skip adding it for now.
+- `ADMIN_CORS`'s value is the URL of the admin dashboard, which is the same as the server Medusa application. You can add it later if you don't currently have it.
+- `AUTH_CORS`'s value is the URLs of any application authenticating users, customers, or other actor types, such as the storefront and admin URLs. The URLs are separated by commas. If you don’t have the URLs yet, you can set its value later.
+- Set `DISABLE_MEDUSA_ADMIN`'s value to `false` so that the admin is built with the server application.
+- Set the PostgreSQL database's connection URL as the value of `DATABASE_URL`
+- Set the Redis database's connection URL as the value of `REDIS_URL`.
+
+Feel free to add any other relevant environment variables, such as for integrations and architectural modules.
+
+### Set Start Command
+
+The Medusa application's production build, which is created using the `build` command, outputs the Medusa application to `.medusa/server`.
+
+So, you must run the `start` command from the `.medusa/server` directory.
+
+If your hosting provider doesn't support setting a current-working directory, set the start command to the following:
+
+```bash npm2yarn
+cd .medusa/server && npm run predeploy && npm run start
+```
+
+### Set Backend URL in Admin Configuration
+
+After you’ve obtained the Medusa application’s URL, add the following configuration to `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  admin: {
+    // ...
+    backendUrl: process.env.MEDUSA_BACKEND_URL,
+  },
+})
+```
+
+Then, push the changes to the GitHub repository or deployed application.
+
+In your hosting provider, add or modify the following environment variables for the Medusa application in server mode:
+
+```bash
+ADMIN_CORS= # MEDUSA APPLICATION URL
+AUTH_CORS= # ADD MEDUSA APPLICATION URL
+MEDUSA_BACKEND_URL= # URL TO DEPLOYED MEDUSA APPLICATION
+```
+
+Where you set the value of `ADMIN_CORS` and `MEDUSA_BACKEND_URL` to the Medusa application’s URL, and you add the URL to `AUTH_CORS`.
+
+<Note title="Tip">
+
+Remember to separate URLs in `AUTH_CORS` by commas.
+
+</Note>
+
+---
+
+## 6. Deploy Medusa Application in Worker Mode
+
+Next, you'll deploy the Medusa application in worker mode.
+
+As explained in the previous section, the deployment steps depend on your hosting provider. This section provides the general steps to perform during the deployment.
+
+### Set Environment Variables
+
+When setting the environment variables of the Medusa application, set the following variables:
+
+```bash
+COOKIE_SECRET=supersecret # TODO GENERATE SECURE SECRET
+JWT_SECRET=supersecret  # TODO GENERATE SECURE SECRET
+DISABLE_MEDUSA_ADMIN=true
+MEDUSA_WORKER_MODE=worker
+PORT=9000
+DATABASE_URL # POSTGRES DATABASE URL
+REDIS_URL= # REDIS DATABASE URL
+```
+
+Where:
+
+- The value of `COOKIE_SECRET` and `JWT_SECRET` must be a randomly generated secret.
+- Set `DISABLE_MEDUSA_ADMIN`'s value to `true` so that the admin isn't built with the worker application.
+- Set the PostgreSQL database's connection URL as the value of `DATABASE_URL`
+- Set the Redis database's connection URL as the value of `REDIS_URL`.
+
+Feel free to add any other relevant environment variables, such as for integrations and architectural modules.
+
+### Set Start Command
+
+The Medusa application's production build, which is created using the `build` command, outputs the Medusa application to `.medusa/server`.
+
+So, you must run the `start` command from the `.medusa/server` directory.
+
+If your hosting provider doesn't support setting a current-working directory, set the start command to the following:
+
+```bash npm2yarn
+cd .medusa/server && npm run predeploy && npm run start
+```
+
+---
+
+## 7. Test Deployed Application
+
+Once the application is deployed and live, go to `<APP_URL>/health`, where `<APP_URL>` is the URL of the Medusa application in server mode. If the deployment was successful, you’ll see the `OK` response.
+
+The Medusa Admin is also available at `<APP_URL>/app`.
+
+---
+
+## Create Admin User
+
+If your hosting provider supports running commands in your Medusa application's directory, run the following command to create an admin user:
+
+```bash
+npx medusa user -e admin-medusa@test.com -p supersecret
+```
+
+Replace the email `admin-medusa@test.com` and password `supersecret` with the credentials you want.
+
+You can use these credentials to log into the Medusa Admin dashboard.

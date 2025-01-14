@@ -1,0 +1,109 @@
+export const metadata = {
+  title: `${pageNumber} Scheduled Jobs`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn about scheduled jobs and how to use them.
+
+## What is a Scheduled Job?
+
+When building your commerce application, you may need to automate tasks and run them repeatedly at a specific schedule. For example, you need to automatically sync products to a third-party service once a day.
+
+In other commerce platforms, this feature isn't natively supported. Instead, you have to setup a separate application to execute cron jobs, which adds complexity as to how you expose this task to be executed in a cron job, or how do you debug it when it's not running within the platform's tooling.
+
+Medusa removes this overhead by supporting this feature natively with scheduled jobs. A scheduled job is an asynchronous function that the Medusa application runs at the interval you specify during the Medusa application's runtime. Your efforts are only spent on implementing the functionality performed by the job, such as syncing products to an ERP.
+
+<Note title="Don't use scheduled jobs if" type="error">
+
+- You want the action to execute at a specified schedule while the Medusa application **isn't** running. Instead, use the operating system's equivalent of a cron job.
+- You want to execute the action once when the application loads. Use [loaders](../modules/loaders/page.mdx) instead.
+- You want to execute the action if an event occurs. Use [subscribers](../events-and-subscribers/page.mdx) instead.
+
+</Note>
+
+---
+
+## How to Create a Scheduled Job?
+
+You create a scheduled job in a TypeScript or JavaScript file under the `src/jobs` directory. The file exports the asynchronous function to run, and the configurations indicating the schedule to run the function.
+
+For example, create the file `src/jobs/hello-world.ts` with the following content:
+
+![Example of scheduled job file in the application's directory structure](https://res.cloudinary.com/dza7lstvk/image/upload/v1732866423/Medusa%20Book/scheduled-job-dir-overview_ediqgm.jpg)
+
+export const highlights = [
+  ["3", "greetingJob", "The scheduled job function to execute at a specified interval."]
+  ["3", "container", "Receive the Medusa container as a parameter"],
+  ["4", "logger", "Resolve the logger from the container"],
+  ["9", "config", "The scheduled job's configurations."],
+  ["10", "name", "The job's unique name"],
+  ["11", "schedule", "The schedule to run the job on."]
+]
+
+```ts title="src/jobs/hello-world.ts" highlights={highlights}
+import { MedusaContainer } from "@medusajs/framework/types"
+
+export default async function greetingJob(container: MedusaContainer) {
+  const logger = container.resolve("logger")
+
+  logger.info("Greeting!")
+}
+
+export const config = {
+  name: "greeting-every-minute",
+  schedule: "* * * * *",
+}
+```
+
+You export an asynchronous function that receives the [Medusa container](../medusa-container/page.mdx) as a parameter. In the function, you resolve the [Logger utility](../../debugging-and-testing/logging/page.mdx) from the Medusa container and log a message.
+
+You also export a `config` object that has the following properties:
+
+- `name`: A unique name for the job.
+- `schedule`: A string that holds a [cron expression](https://crontab.guru/) indicating the schedule to run the job.
+
+This scheduled job executes every minute and logs into the terminal `Greeting!`.
+
+### Test the Scheduled Job
+
+To test out your scheduled job, start the Medusa application:
+
+```bash npm2yarn
+npm run dev
+```
+
+After a minute, the following message will be logged to the terminal:
+
+```bash
+info:    Greeting!
+```
+
+---
+
+## Example: Sync Products Once a Day
+
+In this section, you'll find a brief example of how you use a scheduled job to sync products to a third-party service.
+
+When implementing flows spanning across systems or [modules](../modules/page.mdx), you use [workflows](../workflows/page.mdx). A workflow is a task made up of a series of steps, and you construct it like you would a regular function, but it's a special function that supports rollback mechanism in case of errors, background execution, and more.
+
+You can learn how to create a workflow in [this chapter](../workflows/page.mdx), but this example assumes you already have a `syncProductToErpWorkflow` implemented. To execute this workflow once a day, create a scheduled job at `src/jobs/sync-products.ts` with the following content:
+
+```ts title="src/jobs/sync-products.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+import { syncProductToErpWorkflow } from "../workflows/sync-products-to-erp"
+
+export default async function syncProductsJob(container: MedusaContainer) {
+  await syncProductToErpWorkflow(container)
+    .run()
+}
+
+export const config = {
+  name: "sync-products-job",
+  schedule: "0 0 * * *",
+}
+```
+
+In the scheduled job function, you execute the `syncProductToErpWorkflow` by invoking it and passing it the container, then invoking the `run` method. You also specify in the exported configurations the schedule `0 0 * * *` which indicates midnight time of every day.
+
+The next time you start the Medusa application, it will run this job every day at midnight.

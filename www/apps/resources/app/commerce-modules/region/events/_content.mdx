@@ -1,0 +1,76 @@
+import { Table } from "docs-ui"
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>Event Name</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+      <Table.HeaderCell className="w-1/3">Payload</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+
+      `region.created`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when regions are created.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+[{
+  id, // The ID of the region
+}]
+```
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `region.updated`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when regions are updated.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+[{
+  id, // The ID of the region
+}]
+```
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `region.deleted`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when regions are deleted.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+[{
+  id, // The ID of the region
+}]
+```
+
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

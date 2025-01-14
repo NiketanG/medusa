@@ -1,0 +1,43 @@
+export const metadata = {
+  title: `Cart Concepts`,
+}
+
+# {metadata.title}
+
+In this document, you’ll get an overview of the main concepts of a cart.
+
+## Shipping and Billing Addresses
+
+A cart has a shipping and billing address. Both of these addresses are represented by the [Address data model](/references/cart/models/Address).
+
+![A diagram showcasing the relation between the Cart and Address data models](https://res.cloudinary.com/dza7lstvk/image/upload/v1711532392/Medusa%20Resources/cart-addresses_ls6qmv.jpg)
+
+---
+
+## Line Items
+
+A line item, represented by the [LineItem](/references/cart/models/LineItem) data model, is a quantity of a product variant added to the cart. A cart has multiple line items.
+
+A line item stores some of the product variant’s properties, such as the `product_title` and `product_description`. It also stores data related to the item’s quantity and price.
+
+<Note>
+
+In the Medusa application, a product variant is implemented in the [Product Module](../../product/page.mdx).
+
+</Note>
+
+---
+
+## Shipping Methods
+
+A shipping method, represented by the [ShippingMethod data model](/references/cart/models/ShippingMethod), is used to fulfill the items in the cart after the order is placed. A cart can have more than one shipping method.
+
+In the Medusa application, the shipping method is created from a shipping option, available through the [Fulfillment Module](../../fulfillment/page.mdx). Its ID is stored in the `shipping_option_id` property of the method.
+
+### data Property
+
+After an order is placed, you can use a third-party fulfillment provider to fulfill its shipments.
+
+If the fulfillment provider requires additional custom data to be passed along from the checkout process, set this data in the `ShippingMethod`'s `data` property.
+
+The `data` property is an object used to store custom data relevant later for fulfillment.

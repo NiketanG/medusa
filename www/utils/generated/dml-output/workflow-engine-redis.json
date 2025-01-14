@@ -1,0 +1,13 @@
+{
+	"WorkflowExecution": {
+		"filePath": "packages/modules/workflow-engine-redis/src/models/workflow-execution.ts",
+		"properties": {
+			"id": "The ID of the workflow execution.",
+			"workflow_id": "The workflow id of the workflow execution",
+			"transaction_id": "The transaction id of the workflow execution",
+			"execution": "The execution of the workflow execution",
+			"context": "The context of the workflow execution",
+			"state": "The state of the workflow execution"
+		}
+	}
+}

@@ -1,0 +1,36 @@
+import { Table } from "docs-ui"
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>Event Name</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+      <Table.HeaderCell className="w-1/3">Payload</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+
+      `auth.password_reset`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when a password of a user, customer, or other actor types is reset.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+{
+  entity_id, // The user's identifier, such as their email
+  token, // The reset token
+  actor_type // `user`, `customer`, or custom type
+}
+```
+
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

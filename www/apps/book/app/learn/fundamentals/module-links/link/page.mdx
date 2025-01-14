@@ -1,0 +1,154 @@
+export const metadata = {
+  title: `${pageNumber} Link`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn what Link is and how to use it to manage links.
+
+<Note>
+
+As of [Medusa v2.2.0](https://github.com/medusajs/medusa/releases/tag/v2.2.0), Remote Link has been deprecated in favor of Link. They have the same usage, so you only need to change the key used to resolve the tool from the Medusa container as explained below.
+
+</Note>
+
+## What is Link?
+
+Link is a class with utility methods to manage links between data models. It’s registered in the Medusa container under the `link` registration name.
+
+For example:
+
+```ts collapsibleLines="1-9" expandButtonLabel="Show Imports"
+import { 
+  MedusaRequest, 
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import { 
+  ContainerRegistrationKeys,
+} from "@medusajs/framework/utils"
+
+export async function POST(
+  req: MedusaRequest,
+  res: MedusaResponse
+): Promise<void> {
+  const link = req.scope.resolve(
+    ContainerRegistrationKeys.LINK
+  )
+    
+  // ...
+}
+```
+
+You can use its methods to manage links, such as create or delete links.
+
+---
+
+## Create Link
+
+To create a link between records of two data models, use the `create` method of Link.
+
+For example:
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  "helloModuleService": {
+    my_custom_id: "mc_123",
+  },
+})
+```
+
+The `create` method accepts as a parameter an object. The object’s keys are the names of the linked modules.
+
+<Note title="Important">
+
+The keys (names of linked modules) must be in the same [direction](../directions/page.mdx) of the link definition.
+
+</Note>
+
+The value of each module’s property is an object, whose keys are of the format `{data_model_snake_name}_id`, and values are the IDs of the linked record.
+
+So, in the example above, you link a record of the `MyCustom` data model in a `hello` module to a `Product` record in the Product Module.
+
+---
+
+## Dismiss Link
+
+To remove a link between records of two data models, use the `dismiss` method of Link.
+
+For example:
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.dismiss({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  "helloModuleService": {
+    my_custom_id: "mc_123",
+  },
+})
+```
+
+The `dismiss` method accepts the same parameter type as the [create method](#create-link).
+
+<Note title="Important">
+
+The keys (names of linked modules) must be in the same [direction](../directions/page.mdx) of the link definition.
+
+</Note>
+
+---
+
+## Cascade Delete Linked Records
+
+If a record is deleted, use the `delete` method of Link to delete all linked records.
+
+For example:
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await productModuleService.deleteVariants([variant.id])
+
+await link.delete({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+})
+```
+
+This deletes all records linked to the deleted product.
+
+---
+
+## Restore Linked Records
+
+If a record that was previously soft-deleted is now restored, use the `restore` method of Link to restore all linked records.
+
+For example:
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await productModuleService.restoreProducts(["prod_123"])
+
+await link.restore({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+})
+```

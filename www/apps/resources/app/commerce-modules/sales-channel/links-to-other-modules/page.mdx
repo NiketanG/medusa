@@ -1,0 +1,394 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Sales Channel Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Sales Channel Module and other commerce modules.
+
+## Summary
+
+The Sales Channel Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+- [`ApiKey` data model of the API Key Module \<\> `SalesChannel` data model](#api-key-module).
+- [`SalesChannel` data model \<\> `Cart` data model of the Cart Module](#cart-module). (Read-only)
+- [`SalesChannel` data model \<\> `Order` data model of the Order Module](#order-module). (Read-only)
+- [`Product` data model of the Product Module \<\> `SalesChannel` data model](#product-module).
+- [`SalesChannel` data model \<\> `StockLocation` data model of the Stock Location Module](#stock-location-module).
+
+---
+
+## API Key Module
+
+A publishable API key allows you to easily specify the sales channel scope in a client request.
+
+Medusa defines a link between the `ApiKey` and the `SalesChannel` data models.
+
+![A diagram showcasing an example of how resources from the Sales Channel and API Key modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1709812064/Medusa%20Resources/sales-channel-api-key_zmqi2l.jpg)
+
+### Retrieve with Query
+
+To retrieve the API keys associated with a sales channel with [Query](!docs!/learn/fundamentals/module-links/query), pass `publishable_api_keys.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: salesChannels } = await query.graph({
+  entity: "sales_channel",
+  fields: [
+    "publishable_api_keys.*",
+  ],
+})
+
+// salesChannels.publishable_api_keys
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: salesChannels } = useQueryGraphStep({
+  entity: "sales_channel",
+  fields: [
+    "publishable_api_keys.*",
+  ],
+})
+
+// salesChannels.publishable_api_keys
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the sales channels of an API key, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.API_KEY]: {
+    api_key_id: "apk_123",
+  },
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.API_KEY]: {
+    api_key_id: "apk_123",
+  },
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Cart Module
+
+Medusa defines a read-only link between the `SalesChannel` data model and the [Cart Module](../../cart/page.mdx)'s `SalesChannel` data model. This means you can retrieve the details of a sales channel's carts, but you don't manage the links in a pivot table in the database. The sales channel of a cart is determined by the `sales_channel_id` property of the `Cart` data model.
+
+### Retrieve with Query
+
+To retrieve the carts of a sales channel with [Query](!docs!/learn/fundamentals/module-links/query), pass `carts.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: salesChannels } = await query.graph({
+  entity: "sales_channel",
+  fields: [
+    "carts.*",
+  ],
+})
+
+// salesChannels.carts
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: salesChannels } = useQueryGraphStep({
+  entity: "sales_channel",
+  fields: [
+    "carts.*",
+  ],
+})
+
+// salesChannels.carts
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Order Module
+
+Medusa defines a read-only link between the `SalesChannel` data model and the [Order Module](../../order/page.mdx)'s `Order` data model. This means you can retrieve the details of a sales channel's orders, but you don't manage the links in a pivot table in the database. The sales channel of an order is determined by the `sales_channel_id` property of the `Order` data model.
+
+### Retrieve with Query
+
+To retrieve the orders of a sales channel with [Query](!docs!/learn/fundamentals/module-links/query), pass `orders.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: salesChannels } = await query.graph({
+  entity: "sales_channel",
+  fields: [
+    "orders.*",
+  ],
+})
+
+// salesChannels.orders
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: salesChannels } = useQueryGraphStep({
+  entity: "sales_channel",
+  fields: [
+    "orders.*",
+  ],
+})
+
+// salesChannels.orders
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Product Module
+
+A product has different availability for different sales channels. Medusa defines a link between the `Product` and the `SalesChannel` data models.
+
+![A diagram showcasing an example of how resources from the Sales Channel and Product modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1709809833/Medusa%20Resources/product-sales-channel_t848ik.jpg)
+
+A product can be available in more than one sales channel. You can retrieve only the products of a sales channel.
+
+### Retrieve with Query
+
+To retrieve the products of a sales channel with [Query](!docs!/learn/fundamentals/module-links/query), pass `products.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: salesChannels } = await query.graph({
+  entity: "sales_channel",
+  fields: [
+    "products.*",
+  ],
+})
+
+// salesChannels.products
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: salesChannels } = useQueryGraphStep({
+  entity: "sales_channel",
+  fields: [
+    "products.*",
+  ],
+})
+
+// salesChannels.products
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the sales channels of a product, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Stock Location Module
+
+A stock location is associated with a sales channel. This scopes inventory quantities associated with that stock location by the associated sales channel.
+
+Medusa defines a link between the `SalesChannel` and `StockLocation` data models.
+
+![A diagram showcasing an example of how resources from the Sales Channel and Stock Location modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1716796872/Medusa%20Resources/sales-channel-location_cqrih1.jpg)
+
+### Retrieve with Query
+
+To retrieve the stock locations of a sales channel with [Query](!docs!/learn/fundamentals/module-links/query), pass `stock_locations.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: salesChannels } = await query.graph({
+  entity: "sales_channel",
+  fields: [
+    "stock_locations.*",
+  ],
+})
+
+// salesChannels.stock_locations
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: salesChannels } = useQueryGraphStep({
+  entity: "sales_channel",
+  fields: [
+    "stock_locations.*",
+  ],
+})
+
+// salesChannels.stock_locations
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the stock locations of a sales channel, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+  [Modules.STOCK_LOCATION]: {
+    sales_channel_id: "sloc_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+  [Modules.STOCK_LOCATION]: {
+    sales_channel_id: "sloc_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>

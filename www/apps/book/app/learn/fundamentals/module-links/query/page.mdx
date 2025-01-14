@@ -1,0 +1,412 @@
+import { TypeList, Tabs, TabsList, TabsTriggerVertical, TabsContent, TabsContentWrapper } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Query`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn about Query and how to use it to fetch data from modules.
+
+## What is Query?
+
+Query fetches data across modules. It’s a set of methods registered in the Medusa container under the `query` key.
+
+In your resources, such as API routes or workflows, you can resolve Query to fetch data across custom modules and Medusa’s commerce modules.
+
+---
+
+## Query Example
+
+For example, create the route `src/api/query/route.ts` with the following content:
+
+export const exampleHighlights = [
+  ["13", "", "Resolve Query from the Medusa container."],
+  ["15", "graph", "Run a query to retrieve data."],
+  ["16", "entity", "The name of the data model you're querying."],
+  ["17", "fields", "An array of the data model’s properties to retrieve in the result."],
+]
+
+```ts title="src/api/query/route.ts" highlights={exampleHighlights} collapsibleLines="1-8" expandButtonLabel="Show Imports"
+import {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import {
+  ContainerRegistrationKeys,
+} from "@medusajs/framework/utils"
+
+export const GET = async (
+  req: MedusaRequest,
+  res: MedusaResponse
+) => {
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+
+  const { data: myCustoms } = await query.graph({
+    entity: "my_custom",
+    fields: ["id", "name"],
+  })
+
+  res.json({ my_customs: myCustoms })
+}
+```
+
+In the above example, you resolve Query from the Medusa container using the `ContainerRegistrationKeys.QUERY` (`query`) key.
+
+Then, you run a query using its `graph` method. This method accepts as a parameter an object with the following required properties:
+
+- `entity`: The data model's name, as specified in the first parameter of the `model.define` method used for the data model's definition.
+- `fields`: An array of the data model’s properties to retrieve in the result.
+
+The method returns an object that has a `data` property, which holds an array of the retrieved data. For example:
+
+```json title="Returned Data"
+{
+  "data": [
+    {
+      "id": "123",
+      "name": "test"
+    }
+  ]
+}
+```
+
+---
+
+## Querying the Graph
+
+When you use the `query.graph` method, you're running a query through an internal graph that the Medusa application creates.
+
+This graph collects data models of all modules in your application, including commerce and custom modules, and identifies relations and links between them.
+
+---
+
+## Retrieve Linked Records
+
+Retrieve the records of a linked data model by passing in `fields` the data model's name suffixed with `.*`.
+
+For example:
+
+```ts highlights={[["6"]]}
+const { data: myCustoms } = await query.graph({
+  entity: "my_custom",
+  fields: [
+    "id", 
+    "name",
+    "product.*",
+  ],
+})
+```
+
+<Note title="Tip">
+
+`.*` means that all of data model's properties should be retrieved. To retrieve a specific property, replace the `*` with the property's name. For example, `product.title`.
+
+</Note>
+
+### Retrieve List Link Records
+
+If the linked data model has `isList` enabled in the link definition, pass in `fields` the data model's plural name suffixed with `.*`.
+
+For example:
+
+```ts highlights={[["6"]]}
+const { data: myCustoms } = await query.graph({
+  entity: "my_custom",
+  fields: [
+    "id", 
+    "name",
+    "products.*",
+  ],
+})
+```
+
+### Apply Filters and Pagination on Linked Records
+
+Consider you want to apply filters or pagination configurations on the product(s) linked to `my_custom`. To do that, you must query the module link's table instead.
+
+As mentioned in the [Module Link](../page.mdx) documentation, Medusa creates a table for your module link. So, not only can you retrieve linked records, but you can also retrieve the records in a module link's table.
+
+A module link's definition, exported by a file under `src/links`, has a special `entryPoint` property. Use this property when specifying the `entity` property in Query's `graph` method.
+
+For example:
+
+export const queryLinkTableHighlights = [
+  ["1", "", "Import the module link."],
+  ["6", "productBrandLink.entryPoint", "Pass the `entryPoint` property of the link to Query"],
+  ["7", `"product.*"`, "Retrieve the fields of a product record linked to a `MyCustom` record."],
+  ["7", `"brand.*"`, "Retrieve the fields of a `MyCustom` record linked to a product record."]
+]
+
+```ts highlights={queryLinkTableHighlights}
+import productCustomLink from "../../../links/product-custom"
+
+// ...
+
+const { data: productCustoms } = await query.graph({
+  entity: productCustomLink.entryPoint,
+  fields: ["*", "product.*", "my_custom.*"],
+  pagination: {
+    take: 5,
+    skip: 0,
+  },
+})
+```
+
+In the object passed to the `graph` method:
+
+- You pass the `entryPoint` property of the link definition as the value for `entity`. So, Query will retrieve records from the module link's table.
+- You pass three items to the `field` property:
+    - `*` to retrieve the link table's fields. This is useful if the link table has [custom columns](../custom-columns/page.mdx).
+    - `product.*` to retrieve the fields of a product record linked to a `MyCustom` record.
+    - `my_custom.*` to retrieve the fields of a `MyCustom` record linked to a product record.
+
+You can then apply any [filters](#apply-filters) or [pagination configurations](#apply-pagination).
+
+The returned `data` is similar to the following:
+
+```json title="Example Result"
+[{
+  "id": "123",
+  "product_id": "prod_123",
+  "my_custom_id": "123",
+  "product": {
+    "id": "prod_123",
+    // other product fields...
+  },
+  "my_custom": {
+    "id": "123",
+    // other my_custom fields...
+  }
+}]
+```
+
+
+
+---
+
+## Apply Filters
+
+```ts highlights={[["6"], ["7"], ["8"], ["9"]]}
+const { data: myCustoms } = await query.graph({
+  entity: "my_custom",
+  fields: ["id", "name"],
+  filters: {
+    id: [
+      "mc_01HWSVWR4D2XVPQ06DQ8X9K7AX",
+      "mc_01HWSVWK3KYHKQEE6QGS2JC3FX",
+    ],
+  },
+})
+```
+
+The `query.graph` function accepts a `filters` property. You can use this property to filter retrieved records.
+
+In the example above, you filter the `my_custom` records by multiple IDs.
+
+<Note>
+
+Filters don't apply on fields of linked data models from other modules.
+
+</Note>
+
+---
+
+## Apply Pagination
+
+```ts highlights={[["8", "skip", "The number of records to skip before fetching the results."], ["9", "take", "The number of records to fetch."]]}
+const { 
+  data: myCustoms,
+  metadata: { count, take, skip },
+} = await query.graph({
+  entity: "my_custom",
+  fields: ["id", "name"],
+  pagination: {
+    skip: 0,
+    take: 10,
+  },
+})
+```
+
+The `graph` method's object parameter accepts a `pagination` property to configure the pagination of retrieved records.
+
+To paginate the returned records, pass the following properties to `pagination`:
+
+- `skip`: (required to apply pagination) The number of records to skip before fetching the results.
+- `take`: The number of records to fetch.
+
+When you provide the pagination fields, the `query.graph` method's returned object has a `metadata` property. Its value is an object having the following properties:
+
+<TypeList types={[
+  {
+    name: "skip",
+    type: "`number`",
+    description: "The number of records skipped."
+  },
+  {
+    name: "take",
+    type: "`number`",
+    description: "The number of records requested to fetch."
+  },
+  {
+    name: "count",
+    type: "`number`",
+    description: "The total number of records."
+  }
+]} sectionTitle="Apply Pagination" />
+
+### Sort Records
+
+```ts highlights={[["5"], ["6"], ["7"]]}
+const { data: myCustoms } = await query.graph({
+  entity: "my_custom",
+  fields: ["id", "name"],
+  pagination: {
+    order: {
+      name: "DESC",
+    },
+  },
+})
+```
+
+<Note>
+
+Sorting doesn't work on fields of linked data models from other modules.
+
+</Note>
+
+To sort returned records, pass an `order` property to `pagination`.
+
+The `order` property is an object whose keys are property names, and values are either:
+
+- `ASC` to sort records by that property in ascending order.
+- `DESC` to sort records by that property in descending order.
+
+---
+
+## Request Query Configurations
+
+For API routes that retrieve a single or list of resources, Medusa provides a `validateAndTransformQuery` middleware that:
+
+- Validates accepted query parameters, as explained in [this documentation](../../../fundamentals/api-routes/validation/page.mdx).
+- Parses configurations that are received as query parameters to be passed to Query.
+
+Using this middleware allows you to have default configurations for retrieved fields and relations or pagination, while allowing clients to customize them per request.
+
+### Step 1: Add Middleware
+
+The first step is to use the `validateAndTransformQuery` middleware on the `GET` route. You add the middleware in `src/api/middlewares.ts`:
+
+```ts title="src/api/middlewares.ts"
+import { 
+  validateAndTransformQuery,
+  defineMiddlewares,
+} from "@medusajs/framework/http"
+import { createFindParams } from "@medusajs/medusa/api/utils/validators"
+
+export const GetCustomSchema = createFindParams()
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/customs",
+      method: "GET",
+      middlewares: [
+        validateAndTransformQuery(
+          GetCustomSchema,
+          {
+            defaults: [
+              "id",
+              "name",
+              "products.*",
+            ],
+            isList: true,
+          }
+        ),
+      ],
+    },
+  ],
+})
+```
+
+The `validateAndTransformQuery` accepts two parameters:
+
+1. A Zod validation schema for the query parameters, which you can learn more about in the [API Route Validation documentation](../../../fundamentals/api-routes/validation/page.mdx). Medusa has a `createFindParams` utility that generates a Zod schema that accepts four query parameters:
+    1. `fields`: The fields and relations to retrieve in the returned resources.
+    2. `offset`: The number of items to skip before retrieving the returned items.
+    3. `limit`: The maximum number of items to return.
+    4. `order`: The fields to order the returned items by in ascending or descending order.
+2. A Query configuration object. It accepts the following properties:
+    1. `defaults`: An array of default fields and relations to retrieve in each resource.
+    2. `isList`: A boolean indicating whether a list of items are returned in the response.
+    3. `allowed`: An array of fields and relations allowed to be passed in the `fields` query parameter.
+    4. `defaultLimit`: A number indicating the default limit to use if no limit is provided. By default, it's `50`.
+
+### Step 2: Use Configurations in API Route
+
+After applying this middleware, your API route now accepts the `fields`, `offset`, `limit`, and `order` query parameters mentioned above.
+
+The middleware transforms these parameters to configurations that you can pass to Query in your API route handler. These configurations are stored in the `queryConfig` parameter of the `MedusaRequest` object.
+
+<Note>
+
+As of [Medusa v2.2.0](https://github.com/medusajs/medusa/releases/tag/v2.2.0), `remoteQueryConfig` has been depercated in favor of `queryConfig`. Their usage is still the same, only the property name has changed.
+
+</Note>
+
+For example, Create the file `src/api/customs/route.ts` with the following content:
+
+export const queryConfigHighlights = [
+  ["17", "req.queryConfig", "Pass the parsed request Query configurations to the Query graph execution."]
+]
+
+```ts title="src/api/customs/route.ts"
+import {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import {
+  ContainerRegistrationKeys,
+} from "@medusajs/framework/utils"
+
+export const GET = async (
+  req: MedusaRequest,
+  res: MedusaResponse
+) => {
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+
+  const { data: myCustoms } = await query.graph({
+    entity: "my_custom",
+    ...req.queryConfig,
+  })
+
+  res.json({ my_customs: myCustoms })
+}
+```
+
+This adds a `GET` API route at `/customs`, which is the API route you added the middleware for.
+
+In the API route, you pass `req.queryConfig` to `query.graph`. `queryConfig` has properties like `fields` and `pagination` to configure the query based on the default values you specified in the middleware, and the query parameters passed in the request.
+
+### Test it Out
+
+To test it out, start your Medusa application and send a `GET` request to the `/customs` API route. A list of records are retrieved with the specified fields in the middleware.
+
+```json title="Returned Data"
+{
+  "my_customs": [
+    {
+      "id": "123",
+      "name": "test"
+    }
+  ]
+}
+```
+
+Try passing one of the Query configuration parameters, like `fields` or `limit`, and you'll see its impact on the returned result.
+
+<Note>
+
+Learn more about [specifing fields and relations](!api!/store#select-fields-and-relations) and [pagination](!api!/store#pagination) in the API reference.
+
+</Note>

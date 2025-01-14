@@ -1,0 +1,43 @@
+---
+slug: /references/medusa-workflows/steps/uploadFilesStep
+sidebar_label: uploadFilesStep
+tags:
+  - file
+  - step
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# uploadFilesStep - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `uploadFilesStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This step uploads one or more files.
+
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { uploadFilesStep } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const data = uploadFilesStep({
+      "files": [{
+        "filename": "{value}",
+        "mimeType": "{value}",
+        "content": "{value}",
+        "access": "{value}"
+      }]
+    })
+  }
+)
+```
+  
+
+## Input
+
+<TypeList types={[{"name":"UploadFilesStepInput","type":"[UploadFilesStepInput](../../../../types/core_flows.UploadFilesStepInput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"files","type":"`object`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"filename","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"mimeType","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"content","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"access","type":"`\"public\"` \\| `\"private\"`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="uploadFilesStep"/>
+
+## Output
+
+<TypeList types={[{"name":"FileDTO[]","type":"[FileDTO](../../../../../types/FileTypes/interfaces/types.FileTypes.FileDTO/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"FileDTO","type":"[FileDTO](../../../../../types/FileTypes/interfaces/types.FileTypes.FileDTO/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the File.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"url","type":"`string`","description":"The URL of the File.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="uploadFilesStep"/>

@@ -1,0 +1,167 @@
+---
+slug: /references/medusa-workflows/cancelOrderWorkflow
+sidebar_label: cancelOrderWorkflow
+tags:
+  - query
+  - inventory
+  - logger
+  - payment
+  - event bus
+  - order
+  - workflow
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# cancelOrderWorkflow - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `cancelOrderWorkflow`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This workflow cancels an order.
+
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/1b86c17b7293f3b810c062d78ec6ef563f968366/packages/core/core-flows/src/order/workflows/cancel-order.ts#L74" />
+
+## Examples
+
+<CodeTabs group="workflow-exection">
+    <CodeTab label="API Route" value="api-route">
+    
+```ts title="src/api/workflow/route.ts"
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import { cancelOrderWorkflow } from "@medusajs/medusa/core-flows"
+
+export async function POST(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const { result } = await cancelOrderWorkflow(req.scope)
+    .run({
+      input: {
+        "order_id": "{value}"
+      }
+    })
+
+  res.send(result)
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Subscriber" value="subscriber">
+    
+```ts title="src/subscribers/order-placed.ts"
+import {
+  type SubscriberConfig,
+  type SubscriberArgs,
+} from "@medusajs/framework"
+import { cancelOrderWorkflow } from "@medusajs/medusa/core-flows"
+
+export default async function handleOrderPlaced({
+  event: { data },
+  container,
+}: SubscriberArgs < { id: string } > ) {
+  const { result } = await cancelOrderWorkflow(container)
+    .run({
+      input: {
+        "order_id": "{value}"
+      }
+    })
+
+  console.log(result)
+}
+
+export const config: SubscriberConfig = {
+  event: "order.placed",
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Scheduled Job" value="scheduled-job">
+    
+```ts title="src/jobs/message-daily.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+import { cancelOrderWorkflow } from "@medusajs/medusa/core-flows"
+
+export default async function myCustomJob(
+  container: MedusaContainer
+) {
+  const { result } = await cancelOrderWorkflow(container)
+    .run({
+      input: {
+        "order_id": "{value}"
+      }
+    })
+
+  console.log(result)
+}
+
+export const config = {
+  name: "run-once-a-day",
+  schedule: "0 0 * * *",
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Another Workflow" value="another-workflow">
+    
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { cancelOrderWorkflow } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const result = cancelOrderWorkflow
+      .runAsStep({
+        input: {
+          "order_id": "{value}"
+        }
+      })
+  }
+)
+```
+
+    </CodeTab>
+  </CodeTabs>
+
+## Steps
+
+<WorkflowDiagram workflow={{"name":"cancelOrderWorkflow","steps":[{"type":"step","name":"useQueryGraphStep","description":"This step fetches data across modules using the Query.\n\nLearn more in the [Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx","depth":1},{"type":"step","name":"cancelValidateOrder","description":"This step validates that an order can be canceled.\n\n","link":"../core_flows.Order.Workflows_Order.cancelValidateOrder/page.mdx","depth":2},{"type":"step","name":"deleteReservationsByLineItemsStep","description":"This step deletes reservations by their associated line items.\n\n","link":"../../../../Reservation/Steps_Reservation/functions/core_flows.Reservation.Steps_Reservation.deleteReservationsByLineItemsStep/page.mdx","depth":3},{"type":"step","name":"cancelPaymentStep","description":"This step cancels one or more payments.\n\n","link":"../../../../Payment/Steps_Payment/functions/core_flows.Payment.Steps_Payment.cancelPaymentStep/page.mdx","depth":3},{"type":"step","name":"emitEventStep","description":"Emit an event.\n\n","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":3},{"type":"when","condition":"{\n      return !!paymentCollectionids?.length\n    }","depth":"4","steps":[{"type":"step","name":"updatePaymentCollectionStep","description":"This step updates payment collections matching the specified filters.\n\n","link":"../../../../Payment_Collection/Steps_Payment_Collection/functions/core_flows.Payment_Collection.Steps_Payment_Collection.updatePaymentCollectionStep/page.mdx","depth":4}]},{"type":"step","name":"cancelOrdersStep","description":"This step cancels one or more orders.\n\n","link":"../../../Steps_Order/functions/core_flows.Order.Steps_Order.cancelOrdersStep/page.mdx","depth":5},{"type":"hook","name":"orderCanceled","description":"This step is a hook that you can inject custom functionality into.\n\n","link":"#orderCanceled","depth":6}]}} />
+
+## Input
+
+<TypeList types={[{"name":"CancelOrderWorkflowInput","type":"[CancelOrderWorkflowInput](../../../../../types/WorkflowTypes/OrderWorkflow/interfaces/types.WorkflowTypes.OrderWorkflow.CancelOrderWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"order_id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"no_notification","type":"`boolean`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"canceled_by","type":"`string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="cancelOrderWorkflow"/>
+
+## Output
+
+<TypeList types={[{"name":"undefined","type":"`undefined`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"undefined","type":"`undefined`","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="cancelOrderWorkflow"/>
+
+## Hooks
+
+Hooks allow you to inject custom functionalities into the workflow. You'll receive data from the workflow, as well as additional data sent through an HTTP request.
+
+Learn more about [Hooks](https://docs.medusajs.com/learn/fundamentals/workflows/workflow-hooks) and [Additional Data](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data).
+
+### orderCanceled
+
+This step is a hook that you can inject custom functionality into.
+
+#### Example
+
+```ts
+import { cancelOrderWorkflow } from "@medusajs/medusa/core-flows"
+
+cancelOrderWorkflow.hooks.orderCanceled(
+  (async ({ order }, { container }) => {
+    //TODO
+  })
+)
+```
+
+#### Input
+
+Handlers consuming this hook accept the following input.
+
+<TypeList types={[{"name":"input","type":"object","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"order","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="orderCanceled"/>

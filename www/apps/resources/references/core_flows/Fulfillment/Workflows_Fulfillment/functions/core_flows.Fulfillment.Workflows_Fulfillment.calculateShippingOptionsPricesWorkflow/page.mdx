@@ -1,0 +1,147 @@
+---
+slug: /references/medusa-workflows/calculateShippingOptionsPricesWorkflow
+sidebar_label: calculateShippingOptionsPricesWorkflow
+tags:
+  - query
+  - fulfillment
+  - workflow
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# calculateShippingOptionsPricesWorkflow - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `calculateShippingOptionsPricesWorkflow`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This workflow calculates the prices for one or more shipping options.
+
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/1b86c17b7293f3b810c062d78ec6ef563f968366/packages/core/core-flows/src/fulfillment/workflows/calculate-shipping-options-prices.ts#L17" />
+
+## Examples
+
+<CodeTabs group="workflow-exection">
+    <CodeTab label="API Route" value="api-route">
+    
+```ts title="src/api/workflow/route.ts"
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import { calculateShippingOptionsPricesWorkflow } from "@medusajs/medusa/core-flows"
+
+export async function POST(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const { result } = await calculateShippingOptionsPricesWorkflow(req.scope)
+    .run({
+      input: {
+        "cart_id": "{value}",
+        "shipping_options": [{
+          "id": "id_8GxyUDoXJE"
+        }]
+      }
+    })
+
+  res.send(result)
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Subscriber" value="subscriber">
+    
+```ts title="src/subscribers/order-placed.ts"
+import {
+  type SubscriberConfig,
+  type SubscriberArgs,
+} from "@medusajs/framework"
+import { calculateShippingOptionsPricesWorkflow } from "@medusajs/medusa/core-flows"
+
+export default async function handleOrderPlaced({
+  event: { data },
+  container,
+}: SubscriberArgs < { id: string } > ) {
+  const { result } = await calculateShippingOptionsPricesWorkflow(container)
+    .run({
+      input: {
+        "cart_id": "{value}",
+        "shipping_options": [{
+          "id": "id_8GxyUDoXJE"
+        }]
+      }
+    })
+
+  console.log(result)
+}
+
+export const config: SubscriberConfig = {
+  event: "order.placed",
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Scheduled Job" value="scheduled-job">
+    
+```ts title="src/jobs/message-daily.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+import { calculateShippingOptionsPricesWorkflow } from "@medusajs/medusa/core-flows"
+
+export default async function myCustomJob(
+  container: MedusaContainer
+) {
+  const { result } = await calculateShippingOptionsPricesWorkflow(container)
+    .run({
+      input: {
+        "cart_id": "{value}",
+        "shipping_options": [{
+          "id": "id_8GxyUDoXJE"
+        }]
+      }
+    })
+
+  console.log(result)
+}
+
+export const config = {
+  name: "run-once-a-day",
+  schedule: "0 0 * * *",
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Another Workflow" value="another-workflow">
+    
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { calculateShippingOptionsPricesWorkflow } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const result = calculateShippingOptionsPricesWorkflow
+      .runAsStep({
+        input: {
+          "cart_id": "{value}",
+          "shipping_options": [{
+            "id": "id_8GxyUDoXJE"
+          }]
+        }
+      })
+  }
+)
+```
+
+    </CodeTab>
+  </CodeTabs>
+
+## Steps
+
+<WorkflowDiagram workflow={{"name":"calculateShippingOptionsPricesWorkflow","steps":[{"type":"step","name":"useQueryGraphStep","description":"This step fetches data across modules using the Query.\n\nLearn more in the [Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx","depth":1},{"type":"step","name":"useQueryGraphStep","description":"This step fetches data across modules using the Query.\n\nLearn more in the [Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx","depth":2},{"type":"step","name":"useQueryGraphStep","description":"This step fetches data across modules using the Query.\n\nLearn more in the [Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx","depth":3},{"type":"step","name":"useQueryGraphStep","description":"This step fetches data across modules using the Query.\n\nLearn more in the [Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx","depth":4},{"type":"step","name":"calculateShippingOptionsPricesStep","description":"This step calculates the prices for one or more shipping options.\n\n","link":"../../../Steps_Fulfillment/functions/core_flows.Fulfillment.Steps_Fulfillment.calculateShippingOptionsPricesStep/page.mdx","depth":5}]}} />
+
+## Input
+
+<TypeList types={[{"name":"CalculateShippingOptionsPricesWorkflowInput","type":"[CalculateShippingOptionsPricesWorkflowInput](../../../../../types/WorkflowTypes/FulfillmentWorkflow/types/types.WorkflowTypes.FulfillmentWorkflow.CalculateShippingOptionsPricesWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"cart_id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"shipping_options","type":"`object`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"data","type":"`Record<string, unknown>`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="calculateShippingOptionsPricesWorkflow"/>
+
+## Output
+
+<TypeList types={[{"name":"CalculateShippingOptionsPricesWorkflowOutput","type":"[CalculateShippingOptionsPricesWorkflowOutput](../../../../../types/WorkflowTypes/FulfillmentWorkflow/types/types.WorkflowTypes.FulfillmentWorkflow.CalculateShippingOptionsPricesWorkflowOutput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"calculated_amount","type":"`number`","description":"The calculated price.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_calculated_price_tax_inclusive","type":"`boolean`","description":"Whether the calculated price includes taxes. If enabled, Medusa will\ninfer the taxes from the calculated price. If false, Medusa will\nadd taxes to the calculated price.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="calculateShippingOptionsPricesWorkflow"/>

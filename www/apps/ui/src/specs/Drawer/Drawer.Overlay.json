@@ -1,0 +1,6 @@
+{
+  "description": "This component is used to create the overlay for the drawer.\nIt accepts props from the [Radix UI Dialog Overlay](https://www.radix-ui.com/primitives/docs/components/dialog#overlay) component.",
+  "methods": [],
+  "displayName": "Drawer.Overlay",
+  "props": {}
+}

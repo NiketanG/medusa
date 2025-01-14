@@ -1,0 +1,178 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Sales Channel Module`,
+}
+
+# {metadata.title}
+
+In this section of the documentation, you will find resources to learn more about the Sales Channel Module and how to use it in your application.
+
+Medusa has sales channel related features available out-of-the-box through the Sales Channel Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in commerce modules, such as this Sales Channel Module.
+
+<Note>
+
+Learn more about why modules are isolated in [this documentation](!docs!/learn/fundamentals/modules/isolation).
+
+</Note>
+
+## What's a Sales Channel?
+
+A sales channel indicates an online or offline channel that you sell products on.
+
+Some use case examples for using a sales channel:
+
+- Implement a B2B Ecommerce Store.
+- Specify different products for each channel you sell in.
+- Support omnichannel in your ecommerce store.
+
+---
+
+## Sales Channel Features
+
+- [Sales Channel Management](/references/sales-channel/models/SalesChannel): Manage sales channels in your store. Each sales channel has different meta information such as name or description, allowing you to easily differentiate between sales channels.
+- [Product Availability](./links-to-other-modules/page.mdx): Medusa uses the Product and Sales Channel modules to allow merchants to specify a product's availability per sales channel.
+- [Cart and Order Scoping](./links-to-other-modules/page.mdx): Carts, available through the Cart Module, are scoped to a sales channel. Paired with the product availability feature, you benefit from more features like allowing only products available in sales channel in a cart.
+- [Inventory Availability Per Sales Channel](./links-to-other-modules/page.mdx): Medusa links sales channels to stock locations, allowing you to retrieve available inventory of products based on the specified sales channel.
+
+---
+
+## How to Use Sales Channel Module's Service
+
+In your Medusa application, you build flows around commerce modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
+
+You can build custom workflows and steps. You can also re-use Medusa's workflows and steps, which are provided by the `@medusajs/medusa/core-flows` package.
+
+For example:
+
+export const highlights = [
+  ["12", "Modules.SALES_CHANNEL", "Resolve the module in a step."]
+]
+
+```ts title="src/workflows/create-sales-channel.ts" highlights={highlights}
+import { 
+  createWorkflow, 
+  WorkflowResponse,
+  createStep,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
+import { Modules } from "@medusajs/framework/utils"
+
+const createSalesChannelStep = createStep(
+  "create-sales-channel",
+  async ({}, { container }) => {
+    const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL)
+
+    const salesChannels = await salesChannelModuleService.createSalesChannels([
+      {
+        name: "B2B",
+      },
+      {
+        name: "Mobile App",
+      },
+    ])
+
+    return new StepResponse({ salesChannels }, salesChannels.map((sc) => sc.id))
+  },
+  async (salesChannelIds, { container }) => {
+    if (!salesChannelIds) {
+      return
+    }
+    const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL)
+
+    await salesChannelModuleService.deleteSalesChannels(
+      salesChannelIds
+    )
+  }
+)
+
+export const createSalesChannelWorkflow = createWorkflow(
+  "create-sales-channel",
+  () => {
+    const { salesChannels } = createSalesChannelStep()
+
+    return new WorkflowResponse({
+      salesChannels,
+    })
+  }
+)
+```
+
+You can then execute the workflow in your custom API routes, scheduled jobs, or subscribers:
+
+<CodeTabs group="resource-types">
+  <CodeTab label="API Route" value="api-route">
+    
+```ts title="src/api/workflow/route.ts" highlights={[["11"], ["12"]]} collapsibleLines="1-6" expandButtonLabel="Show Imports"
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import { createSalesChannelWorkflow } from "../../workflows/create-sales-channel"
+
+export async function GET(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const { result } = await createSalesChannelWorkflow(req.scope)
+    .run()
+
+  res.send(result)
+}
+```
+
+  </CodeTab>
+  <CodeTab label="Subscriber" value="subscriber">
+    
+```ts title="src/subscribers/user-created.ts" highlights={[["11"], ["12"]]} collapsibleLines="1-6" expandButtonLabel="Show Imports"
+import {
+  type SubscriberConfig,
+  type SubscriberArgs,
+} from "@medusajs/framework"
+import { createSalesChannelWorkflow } from "../workflows/create-sales-channel"
+
+export default async function handleUserCreated({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  const { result } = await createSalesChannelWorkflow(container)
+    .run()
+
+  console.log(result)
+}
+
+export const config: SubscriberConfig = {
+  event: "user.created",
+}
+```
+
+  </CodeTab>
+  <CodeTab label="Scheduled Job" value="scheduled-job">
+    
+```ts title="src/jobs/run-daily.ts" highlights={[["7"], ["8"]]}
+import { MedusaContainer } from "@medusajs/framework/types"
+import { createSalesChannelWorkflow } from "../workflows/create-sales-channel"
+
+export default async function myCustomJob(
+  container: MedusaContainer
+) {
+  const { result } = await createSalesChannelWorkflow(container)
+    .run()
+
+  console.log(result)
+}
+
+export const config = {
+  name: "run-once-a-day",
+  schedule: `0 0 * * *`,
+}
+```
+
+  </CodeTab>
+</CodeTabs>
+
+Learn more about workflows in [this documentation](!docs!/learn/fundamentals/workflows).
+
+---
+
+<CommerceModuleSections />

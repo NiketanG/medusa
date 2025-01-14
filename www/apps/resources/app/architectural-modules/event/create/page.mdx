@@ -1,0 +1,254 @@
+import { TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `How to Create an Event Module`,
+}
+
+# {metadata.title}
+
+In this guide, you’ll learn how to create an Event Module.
+
+## 1. Create Module Directory
+
+Start by creating a new directory for your module. For example, `src/modules/my-event`.
+
+---
+
+## 2. Create the Event Service
+
+Create the file `src/modules/my-event/service.ts` that holds the implementation of the event service.
+
+The Event Module's main service must extend the `AbstractEventBusModuleService` class from the Medusa Framework:
+
+```ts title="src/modules/my-event/service.ts"
+import { AbstractEventBusModuleService } from "@medusajs/framework/utils"
+import { Message } from "@medusajs/types"
+
+class MyEventService extends AbstractEventBusModuleService {
+  async emit<T>(data: Message<T> | Message<T>[], options: Record<string, unknown>): Promise<void> {
+    throw new Error("Method not implemented.")
+  }
+  async releaseGroupedEvents(eventGroupId: string): Promise<void> {
+    throw new Error("Method not implemented.")
+  }
+  async clearGroupedEvents(eventGroupId: string): Promise<void> {
+    throw new Error("Method not implemented.")
+  }
+}
+
+export default MyEventService
+```
+
+The service implements the required methods based on the desired publish/subscribe logic.
+
+### eventToSubscribersMap_ Property
+
+The `AbstractEventBusModuleService` has a field `eventToSubscribersMap_`, which is a JavaScript Map. The map's keys are the event names, whereas the value of each key is an array of subscribed handler functions.
+
+In your custom implementation, you can use this property to manage the subscribed handler functions:
+
+```ts
+const eventSubscribers = 
+  this.eventToSubscribersMap_.get(eventName) || []
+```
+
+### emit Method
+
+The `emit` method is used to push an event from the Medusa application into your messaging system. The subscribers to that event would then pick up the message and execute their asynchronous tasks.
+
+An example implementation:
+
+```ts title="src/modules/my-event/service.ts"
+class MyEventService extends AbstractEventBusModuleService {
+  async emit<T>(data: Message<T> | Message<T>[], options: Record<string, unknown>): Promise<void> {
+    const events = Array.isArray(data) ? data : [data]
+
+    for (const event of events) {
+      console.log(`Received the event ${event.name} with data ${event.data}`)
+
+      // TODO push the event somewhere
+    }
+  }
+  // ...
+}
+```
+
+The `emit` method receives the following parameters:
+
+<TypeList
+  types={[
+    {
+      name: "data",
+      type: "`object or array of objects`",
+      description: "The emitted event(s).",
+      optional: false,
+      children: [
+        {
+          name: "name",
+          type: "`string`",
+          description: "The name of the emitted event.",
+          optional: false
+        },
+        {
+          name: "data",
+          type: "`object`",
+          description: "The data payload of the event.",
+          optional: false
+        },
+        {
+          name: "metadata",
+          type: "`object`",
+          description: "Additional details of the emitted event.",
+          optional: false,
+          children: [
+            {
+              name: "eventGroupId",
+              type: "string",
+              description: "A group ID that the event belongs to.",
+              optional: true
+            }
+          ]
+        },
+        {
+          name: "options",
+          type: "`object`",
+          description: "Additional options relevant for the event service.",
+          optional: false
+        }
+      ]
+    }
+  ]}
+/>
+
+### releaseGroupedEvents Method 
+
+Grouped events are useful when you have distributed transactions where you need to explicitly group, release, and clear events upon lifecycle transaction events.
+
+If your Event Module supports grouped events, this method is used to emit all events in a group, then clear that group.
+
+For example:
+
+```ts title="src/modules/my-event/service.ts"
+class MyEventService extends AbstractEventBusModuleService {
+  protected groupedEventsMap_: Map<string, Message[]>
+
+  constructor() {
+    // @ts-ignore
+    super(...arguments)
+
+    this.groupedEventsMap_ = new Map()
+  }
+
+  async releaseGroupedEvents(eventGroupId: string): Promise<void> {
+    const groupedEvents = this.groupedEventsMap_.get(eventGroupId) || []
+
+    for (const event of groupedEvents) {
+      const { options, ...eventBody } = event
+
+      // TODO emit event
+    }
+
+    await this.clearGroupedEvents(eventGroupId)
+  }
+
+  // ...
+}
+```
+
+The `releaseGroupedEvents` receives the group ID as a parameter.
+
+In the example above, you add a `groupedEventsMap_` property to store grouped events. Then, in the method, you emit the events in the group, then clear the grouped events using the `clearGroupedEvents` which you'll learn about next.
+
+To add events to the grouped events map, you can do it in the `emit` method:
+
+```ts title="src/modules/my-event/service.ts"
+class MyEventService extends AbstractEventBusModuleService {
+  // ...
+  async emit<T>(data: Message<T> | Message<T>[], options: Record<string, unknown>): Promise<void> {
+    const events = Array.isArray(data) ? data : [data]
+
+    for (const event of events) {
+      console.log(`Received the event ${event.name} with data ${event.data}`)
+
+      if (event.metadata.eventGroupId) {
+        const groupedEvents = this.groupedEventsMap_.get(
+          event.metadata.eventGroupId
+        ) || []
+
+        groupedEvents.push(event)
+
+        this.groupedEventsMap_.set(event.metadata.eventGroupId, groupedEvents)
+        continue
+      }
+
+      // TODO push the event somewhere
+    }
+  }
+}
+```
+
+### clearGroupedEvents Method
+
+If your Event Module supports grouped events, this method is used to remove the events of a group.
+
+For example:
+
+```ts title="src/modules/my-event/service.ts"
+class MyEventService extends AbstractEventBusModuleService {
+  // from previous section
+  protected groupedEventsMap_: Map<string, Message[]>
+
+  async clearGroupedEvents(eventGroupId: string): Promise<void> {
+    this.groupedEventsMap_.delete(eventGroupId)
+  }
+
+  // ...
+}
+```
+
+The method accepts the group's name as a parameter.
+
+In the method, you delete the group from the `groupedEventsMap_` property (added in the previous section), deleting the stored events of it as well.
+
+---
+
+## 3. Create Module Definition File
+
+Create the file `src/modules/my-event/index.ts` with the following content:
+
+```ts title="src/modules/my-event/index.ts"
+import MyEventService from "./service"
+import { Module } from "@medusajs/framework/utils"
+
+export default Module("my-event", {
+  service: MyEventService,
+})
+```
+
+This exports the module's definition, indicating that the `MyEventService` is the main service of the module.
+
+---
+
+## 4. Use Module
+
+To use your Event Module, add it to the `modules` object exported as part of the configurations in `medusa-config.ts`. An Event Module is added under the `eventBus` key.
+
+For example:
+
+```ts title="medusa-config.ts"
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "./src/modules/my-event",
+      options: { 
+        // any options
+      },
+    },
+  ],
+})
+```

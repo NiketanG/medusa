@@ -1,0 +1,108 @@
+{
+	"PaymentProvider": {
+		"filePath": "packages/modules/payment/src/models/payment-provider.ts",
+		"properties": {
+			"id": "The ID of the payment provider.",
+			"is_enabled": "Whether the payment provider is enabled.",
+			"payment_collections": "The associated payment collections.\n\n@expandable"
+		}
+	},
+	"PaymentSession": {
+		"filePath": "packages/modules/payment/src/models/payment-session.ts",
+		"properties": {
+			"id": "The ID of the payment session.",
+			"currency_code": "The currency code of the payment session.\n\n@example usd",
+			"amount": "The authorized amount.",
+			"provider_id": "The ID of the Payment Module Provider used to process the payment.",
+			"data": "The data of the payment session that's useful for processing with third-party services. Learn more in [this documentation](https://docs.medusajs.com/resources/commerce-modules/payment/payment-session#data-property)",
+			"context": "The context of the payment session, such as the billing address or the customer's email.",
+			"status": "The status of the payment session",
+			"authorized_at": "The date the payment session was authorized.",
+			"payment_collection": "The associated payment collection.\n\n@expandable",
+			"payment": "The associated payment.\n\n@expandable",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	},
+	"PaymentCollection": {
+		"filePath": "packages/modules/payment/src/models/payment-collection.ts",
+		"properties": {
+			"id": "The ID of the payment collection.",
+			"currency_code": "The currency code of the payment collection.\n\n@example usd",
+			"amount": "The amount of the payment collection",
+			"authorized_amount": "The authorized amount of the payment collection",
+			"captured_amount": "The captured amount of the payment collection",
+			"refunded_amount": "The refunded amount of the payment collection",
+			"region_id": "The ID of the payment collection's region.",
+			"completed_at": "The date the payment collection was completed",
+			"status": "The status of the payment collection",
+			"metadata": "Holds custom data in key-value pairs.",
+			"payment_providers": "The associated payment providers.\n\n@expandable",
+			"payment_sessions": "The associated payment sessions.\n\n@expandable",
+			"payments": "The associated payments.\n\n@expandable"
+		}
+	},
+	"RefundReason": {
+		"filePath": "packages/modules/payment/src/models/refund-reason.ts",
+		"properties": {
+			"id": "The ID of the refund reason.",
+			"label": "The label of the refund reason",
+			"description": "The description of the refund reason",
+			"metadata": "Holds custom data in key-value pairs.",
+			"refunds": "The associated refunds.\n\n@expandable"
+		}
+	},
+	"Refund": {
+		"filePath": "packages/modules/payment/src/models/refund.ts",
+		"properties": {
+			"id": "The ID of the refund.",
+			"amount": "The refunded amount.",
+			"payment": "The associated payment.\n\n@expandable",
+			"refund_reason": "The associated refund reason.\n\n@expandable",
+			"note": "A note with more explanation about the refund",
+			"created_by": "The ID of the user that created the refund.",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	},
+	"Payment": {
+		"filePath": "packages/modules/payment/src/models/payment.ts",
+		"properties": {
+			"id": "The ID of the payment.",
+			"amount": "The amount of the payment",
+			"currency_code": "The currency code of the payment.\n\n@example usd",
+			"provider_id": "The ID of the Payment Module Provider used to process the payment.",
+			"cart_id": "The ID of the cart this payment was created for",
+			"order_id": "The ID of the order this payment was created for.",
+			"customer_id": "The ID of the customer making the payment",
+			"data": "The data of the payment that's useful for processing with third-party services. Learn more in [this documentation](https://docs.medusajs.com/resources/commerce-modules/payment/payment-session#data-property)",
+			"metadata": "Holds custom data in key-value pairs.",
+			"captured_at": "The date that the payment was captured.",
+			"canceled_at": "The date that the payment was canceled.",
+			"payment_collection": "The associated payment collection.\n\n@expandable",
+			"payment_session": "The associated payment session.\n\n@expandable",
+			"refunds": "The associated refunds.\n\n@expandable",
+			"captures": "The associated captures.\n\n@expandable"
+		}
+	},
+	"Capture": {
+		"filePath": "packages/modules/payment/src/models/capture.ts",
+		"properties": {
+			"id": "The ID of the capture.",
+			"amount": "The captured amount.",
+			"payment": "The associated payment.\n\n@expandable",
+			"metadata": "Holds custom data in key-value pairs.",
+			"created_by": "The created by of the capture"
+		}
+	},
+	"PaymentMethodToken": {
+		"filePath": "packages/modules/payment/src/models/payment-method-token.ts",
+		"properties": {
+			"id": "The ID of the payment method token.",
+			"provider_id": "The ID of the Payment Module Provider this token belongs to.",
+			"data": "The data of the payment method token useful for retrieving the payment details from the third-party service.",
+			"name": "The name of the associated saved payment method.",
+			"type_detail": "The details of the saved payment method's type.",
+			"description_detail": "The details of the saved payment method's description.",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	}
+}

@@ -1,0 +1,32 @@
+---
+slug: /references/medusa-workflows/steps/addCampaignPromotionsStep
+sidebar_label: addCampaignPromotionsStep
+tags:
+  - promotion
+  - step
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# addCampaignPromotionsStep - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `addCampaignPromotionsStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This step adds promotions to a campaign.
+
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { addCampaignPromotionsStep } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const data = addCampaignPromotionsStep("{value}")
+  }
+)
+```
+  
+
+## Input
+
+<TypeList types={[{"name":"","type":"","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"","type":"","optional":false,"defaultValue":"","description":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="addCampaignPromotionsStep"/>

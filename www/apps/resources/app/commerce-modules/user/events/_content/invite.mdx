@@ -1,0 +1,97 @@
+import { Table } from "docs-ui"
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>Event Name</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+      <Table.HeaderCell className="w-1/3">Payload</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+
+      `invite.accepted`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when an invite is accepted.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+{
+  id, // The ID of the invite
+}
+```
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `invite.created`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when invites are created.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+[{
+  id, // The ID of the invite
+}]
+```
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `invite.deleted`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when invites are deleted.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+[{
+  id, // The ID of the invite
+}]
+```
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `invite.resent`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when invites are resent.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+[{
+  id, // The ID of the invite
+}]
+```
+
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

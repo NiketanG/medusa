@@ -1,0 +1,27 @@
+{
+	"StockLocationAddress": {
+		"filePath": "packages/modules/stock-location/src/models/stock-location-address.ts",
+		"properties": {
+			"id": "The ID of the stock location address.",
+			"address_1": "The first line of the stock location address",
+			"address_2": "The second line of the stock location address",
+			"company": "The company of the stock location address",
+			"city": "The city of the stock location address",
+			"country_code": "The country code of the stock location address.\n\n@example us",
+			"phone": "The phone of the stock location address",
+			"province": "The province of the stock location address",
+			"postal_code": "The postal code of the stock location address",
+			"metadata": "Holds custom data in key-value pairs.",
+			"stock_locations": "The associated stock locations.\n\n@expandable"
+		}
+	},
+	"StockLocation": {
+		"filePath": "packages/modules/stock-location/src/models/stock-location.ts",
+		"properties": {
+			"id": "The ID of the stock location.",
+			"name": "The name of the stock location",
+			"metadata": "Holds custom data in key-value pairs.",
+			"address": "The associated address.\n\n@expandable"
+		}
+	}
+}

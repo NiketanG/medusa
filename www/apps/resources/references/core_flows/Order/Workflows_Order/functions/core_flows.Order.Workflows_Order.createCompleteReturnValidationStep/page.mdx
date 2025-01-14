@@ -1,0 +1,40 @@
+---
+slug: /references/medusa-workflows/createCompleteReturnValidationStep
+sidebar_label: createCompleteReturnValidationStep
+tags:
+  - step
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# createCompleteReturnValidationStep - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `createCompleteReturnValidationStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This step validates that a return can be created and completed for an order.
+
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { createCompleteReturnValidationStep } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const data = createCompleteReturnValidationStep({
+      "order": "{value}",
+      "input": {
+        "order_id": "{value}",
+        "items": [{
+          "id": "id_u2PKibceyV90pRo",
+          "quantity": 41
+        }]
+      }
+    })
+  }
+)
+```
+  
+
+## Input
+
+<TypeList types={[{"name":"order","type":"`any`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"input","type":"[CreateOrderReturnWorkflowInput](../../../../../types/WorkflowTypes/OrderWorkflow/interfaces/types.WorkflowTypes.OrderWorkflow.CreateOrderReturnWorkflowInput/page.mdx)","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"order_id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"items","type":"[CreateReturnItem](../../../../../types/WorkflowTypes/OrderWorkflow/interfaces/types.WorkflowTypes.OrderWorkflow.CreateReturnItem/page.mdx)[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"quantity","type":"[BigNumberInput](../../../../../types/types/types.BigNumberInput/page.mdx)","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"internal_note","type":"`null` \\| `string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"reason_id","type":"`null` \\| `string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"note","type":"`null` \\| `string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`null` \\| `Record<string, any>`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"created_by","type":"`null` \\| `string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"return_shipping","type":"`object`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[{"name":"option_id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"price","type":"`number`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"labels","type":"[CreateFulfillmentLabelWorkflowDTO](../../../../../types/WorkflowTypes/FulfillmentWorkflow/types/types.WorkflowTypes.FulfillmentWorkflow.CreateFulfillmentLabelWorkflowDTO/page.mdx)[]","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"note","type":"`null` \\| `string`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"receive_now","type":"`boolean`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"refund_amount","type":"`number`","description":"","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"location_id","type":"`null` \\| `string`","description":"Default fallback to the shipping option location id","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createCompleteReturnValidationStep"/>

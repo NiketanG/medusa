@@ -1,0 +1,160 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Inventory Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Inventory Module and other commerce modules.
+
+## Summary
+
+The Inventory Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+- [`ProductVariant` data model of Product Module \<\> `InventoryItem` data model](#product-module).
+- [`InventoryLevel` data model \<\> `StockLocation` data model of Stock Location Module](#stock-location-module). (Read-only).
+
+---
+
+## Product Module
+
+Each product variant has different inventory details. Medusa defines a link between the `ProductVariant` and `InventoryItem` data models.
+
+![A diagram showcasing an example of how data models from the Inventory and Product Module are linked.](https://res.cloudinary.com/dza7lstvk/image/upload/v1709658720/Medusa%20Resources/inventory-product_ejnray.jpg)
+
+A product variant whose `manage_inventory` property is enabled has an associated inventory item. Through that inventory's items relations in the Inventory Module, you can manage and check the variant's inventory quantity.
+
+### Retrieve with Query
+
+To retrieve the product variants of an inventory item with [Query](!docs!/learn/fundamentals/module-links/query), pass `variants.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: inventoryItems } = await query.graph({
+  entity: "inventory_item",
+  fields: [
+    "variants.*",
+  ],
+})
+
+// inventoryItems.variants
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: inventoryItems } = useQueryGraphStep({
+  entity: "inventory_item",
+  fields: [
+    "variants.*",
+  ],
+})
+
+// inventoryItems.variants
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the variants of an inventory item, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.PRODUCT]: {
+    variant_id: "variant_123",
+  },
+  [Modules.INVENTORY]: {
+    inventory_item_id: "iitem_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.PRODUCT]: {
+    variant_id: "variant_123",
+  },
+  [Modules.INVENTORY]: {
+    inventory_item_id: "iitem_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Stock Location Module
+
+Medusa defines a read-only link between the `InventoryLevel` data model and the [Stock Location Module](../../stock-location/page.mdx)'s `StockLocation` data model. This means you can retrieve the details of an inventory level's stock locations, but you don't manage the links in a pivot table in the database. The stock location of an inventory level is determined by the `location_id` property of the `InventoryLevel` data model.
+
+### Retrieve with Query
+
+To retrieve the stock locations of an inventory level with [Query](!docs!/learn/fundamentals/module-links/query), pass `stock_locations.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: inventoryLevels } = await query.graph({
+  entity: "inventory_level",
+  fields: [
+    "stock_locations.*",
+  ],
+})
+
+// inventoryLevels.stock_locations
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: inventoryLevels } = useQueryGraphStep({
+  entity: "inventory_level",
+  fields: [
+    "stock_locations.*",
+  ],
+})
+
+// inventoryLevels.stock_locations
+```
+
+  </CodeTab>
+</CodeTabs>

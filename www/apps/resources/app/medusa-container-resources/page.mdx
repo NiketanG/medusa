@@ -1,0 +1,272 @@
+import { Table } from "docs-ui"
+
+export const metadata = {
+  title: `Medusa and Module Container Resources`,
+}
+
+# {metadata.title}
+
+This documentation page includes the list of resources registered in the container of the Medusa application and modules.
+
+## Medusa Container Resources
+
+The following table has a list of all resources that you can resolve in your customizations outside a module (such as API routes or workflows).
+
+<Note>
+
+Learn more about the Medusa Container in [this documentation](!docs!/learn/fundamentals/medusa-container).
+
+</Note>
+
+<Note title="Tip">
+
+Use the `ContainerRegistrationKeys` enum imported from `@medusajs/framework/utils` where specified.
+
+</Note>
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+
+      Resource
+
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+
+      Description
+
+      </Table.HeaderCell>
+
+      <Table.HeaderCell>
+
+      Registration Name
+
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+
+      Configurations
+
+      </Table.Cell>
+      <Table.Cell>
+
+      The configurations that are exported from `medusa-config.ts`.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `configModule` or `ContainerRegistrationKeys.CONFIG_MODULE`
+
+      </Table.Cell>
+    </Table.Row>
+
+    <Table.Row>
+      <Table.Cell>
+
+      Logger
+
+      </Table.Cell>
+      <Table.Cell>
+
+      An instance of Medusa CLI’s logger. You can use it to log messages to the terminal.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `logger` or `ContainerRegistrationKeys.LOGGER`
+
+      </Table.Cell>
+    </Table.Row>
+
+    <Table.Row>
+      <Table.Cell>
+
+      [Query](!docs!/learn/fundamentals/module-links/query)
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Query to retrieve data across modules.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `query` or `ContainerRegistrationKeys.QUERY`
+
+      </Table.Cell>
+    </Table.Row>
+
+    <Table.Row>
+      <Table.Cell>
+
+      [Link](!docs!/learn/fundamentals/module-links/link)
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Link function to manage links between records of two modules' data models.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `link` or `ContainerRegistrationKeys.LINK`
+
+      </Table.Cell>
+    </Table.Row>
+
+    <Table.Row>
+      <Table.Cell>
+
+      Modules' main services
+
+      </Table.Cell>
+      <Table.Cell>
+
+      The main service of every module added in `medusa-config.ts`.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      - For custom modules, the registration name is the key of the module in the `modules` configuration in `medusa-config.ts`.
+      - For Medusa's commerce modules, use the `Modules` enum imported from `@medusajs/framework/utils`.
+
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Module Container Resources
+
+The following table has a list of all resources that you can resolve in a module's services or loaders.
+
+<Note>
+
+Learn more about the Module Container in [this documentation](!docs!/learn/fundamentals/modules/container).
+
+</Note>
+
+<Note>
+
+Use the `ContainerRegistrationKeys` enum imported from `@medusajs/framework/utils` where specified.
+
+</Note>
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+
+      Resource
+
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+
+      Description
+
+      </Table.HeaderCell>
+
+      <Table.HeaderCell>
+
+      Registration Name
+
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+
+      Logger
+
+      </Table.Cell>
+      <Table.Cell>
+
+      An instance of Medusa CLI’s logger. You can use it to log messages to the terminal.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `logger` or `ContainerRegistrationKeys.LOGGER`
+
+      </Table.Cell>
+    </Table.Row>
+
+    <Table.Row>
+      <Table.Cell>
+
+      Entity Manager
+
+      </Table.Cell>
+      <Table.Cell>
+
+      An instance of [MikroORM's entity manager](https://mikro-orm.io/api/5.9/knex/class/EntityManager).
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `manager` or `ContainerRegistrationKeys.MANAGER`
+
+      </Table.Cell>
+    </Table.Row>
+
+    <Table.Row>
+      <Table.Cell>
+
+      Base Repository
+
+      </Table.Cell>
+      <Table.Cell>
+
+      An instance of the base repository, used to run transactions or perform other database operations.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `baseRepository`
+
+      </Table.Cell>
+    </Table.Row>
+
+    <Table.Row>
+      <Table.Cell>
+
+      Configurations
+
+      </Table.Cell>
+      <Table.Cell>
+
+      The configurations exported from `medusa-config.ts`.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `configModule` or `ContainerRegistrationKeys.CONFIG_MODULE`
+
+      </Table.Cell>
+    </Table.Row>
+
+    <Table.Row>
+      <Table.Cell>
+
+      Modules' services
+
+      </Table.Cell>
+      <Table.Cell>
+
+      All services exported by the `services/index.ts` file of a module.
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Each service is registered by its camel-case name. For example, if the service's class name is `ClientService`, its registration name is `clientService`.
+
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

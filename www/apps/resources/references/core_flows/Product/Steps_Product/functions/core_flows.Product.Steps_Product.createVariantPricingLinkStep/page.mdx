@@ -1,0 +1,37 @@
+---
+slug: /references/medusa-workflows/steps/createVariantPricingLinkStep
+sidebar_label: createVariantPricingLinkStep
+tags:
+  - link
+  - step
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# createVariantPricingLinkStep - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `createVariantPricingLinkStep`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This step creates links between variant and price set records.
+
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { createVariantPricingLinkStep } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const data = createVariantPricingLinkStep({
+      "links": [{
+        "variant_id": "{value}",
+        "price_set_id": "{value}"
+      }]
+    })
+  }
+)
+```
+  
+
+## Input
+
+<TypeList types={[{"name":"CreateVariantPricingLinkStepInput","type":"[CreateVariantPricingLinkStepInput](../../../../types/core_flows.CreateVariantPricingLinkStepInput/page.mdx)","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"links","type":"`object`[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"variant_id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"price_set_id","type":"`string`","description":"","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createVariantPricingLinkStep"/>

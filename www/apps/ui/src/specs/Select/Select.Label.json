@@ -1,0 +1,6 @@
+{
+  "description": "Used to label a group of items.\nIt's based on [Radix UI Select Label](https://www.radix-ui.com/primitives/docs/components/select#label).",
+  "methods": [],
+  "displayName": "Select.Label",
+  "props": {}
+}

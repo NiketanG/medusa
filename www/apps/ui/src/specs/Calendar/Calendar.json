@@ -1,0 +1,108 @@
+{
+  "description": "Calendar component used to select a date.\nIts props are based on [React Aria Calendar](https://react-spectrum.adobe.com/react-aria/Calendar.html#calendar-1).",
+  "methods": [],
+  "displayName": "Calendar",
+  "props": {
+    "autoFocus": {
+      "description": "Whether to automatically focus the calendar when it mounts.",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "defaultFocusedValue": {
+      "description": "The date that is focused when the calendar first mounts (uncountrolled).",
+      "required": false,
+      "tsType": {
+        "name": "DateValue",
+        "elements": [],
+        "raw": "DateValue"
+      }
+    },
+    "errorMessage": {
+      "description": "An error message to display when the selected value is invalid.",
+      "required": false,
+      "tsType": {
+        "name": "ReactNode",
+        "elements": [],
+        "raw": "ReactNode"
+      }
+    },
+    "focusedValue": {
+      "description": "Controls the currently focused date within the calendar.",
+      "required": false,
+      "tsType": {
+        "name": "DateValue",
+        "elements": [],
+        "raw": "DateValue"
+      }
+    },
+    "isDisabled": {
+      "description": "Whether the calendar is disabled.",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "isInvalid": {
+      "description": "Whether the current selection is invalid according to application logic.",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "isReadOnly": {
+      "description": "Whether the calendar value is immutable.",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "onFocusChange": {
+      "description": "Handler that is called when the focused date changes.",
+      "required": false,
+      "tsType": {
+        "name": "signature",
+        "type": "function",
+        "raw": "(date: CalendarDate) => void",
+        "signature": {
+          "arguments": [
+            {
+              "name": "date",
+              "type": {
+                "name": "CalendarDate",
+                "elements": [],
+                "raw": "CalendarDate"
+              },
+              "rest": false
+            }
+          ],
+          "return": {
+            "name": "void"
+          }
+        }
+      }
+    },
+    "pageBehavior": {
+      "description": "Controls the behavior of paging. Pagination either works by advancing the visible page by visibleDuration (default) or one unit of visibleDuration.",
+      "required": false,
+      "tsType": {
+        "name": "PageBehavior",
+        "elements": [],
+        "raw": "PageBehavior"
+      }
+    },
+    "validationState": {
+      "description": "Whether the current selection is valid or invalid according to application logic.",
+      "required": false,
+      "tsType": {
+        "name": "ValidationState",
+        "elements": [],
+        "raw": "ValidationState"
+      }
+    }
+  },
+  "composes": [
+    "Omit"
+  ]
+}

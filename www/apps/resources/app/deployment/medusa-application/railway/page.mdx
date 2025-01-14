@@ -1,0 +1,393 @@
+---
+sidebar_label: "Railway"
+---
+
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `Deploy Medusa Application to Railway`,
+}
+
+# {metadata.title}
+
+In this document, you’ll learn how to deploy your Medusa application to [Railway](https://railway.app/).
+
+## What You’ll Deploy
+
+1. PostgreSQL database.
+2. Redis database.
+3. Medusa application in server mode, with the Medusa Admin.
+4. Medusa application in worker mode.
+
+<Note>
+
+The same Medusa project is used to deploy the server and worker modes. Learn more about the `workerMode` configuration in [this document](/references/medusa-config#workermode).
+
+</Note>
+
+---
+
+<Prerequisites items={[
+  {
+    text: "Medusa application’s codebase hosted on GitHub repository.",
+    link: "!docs!/learn/installation"
+  },
+]} />
+
+## 1. Configure Medusa Application
+
+### Worker Mode
+
+The `workerMode` configuration determines which mode the Medusa application runs in. As mentioned at the beginning of this guide, you’ll deploy two Medusa applications: one in server mode, and one in worker mode.
+
+So, add the following configuration in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    // ...
+    workerMode: process.env.MEDUSA_WORKER_MODE as "shared" | "worker" | "server",
+  },
+})
+```
+
+Later, you’ll set different values of the `MEDUSA_WORKER_MODE` environment variable for each Medusa application deployment.
+
+### Configure Medusa Admin
+
+You need to disable the Medusa Admin in the worker Medusa application, while keeping it enabled in the server Medusa application. So, add the following configuration in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  admin: {
+    disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
+  },
+})
+```
+
+Later, you’ll set different values of the `DISABLE_MEDUSA_ADMIN` environment variable.
+
+### Configure Redis URL
+
+The `redisUrl` configuration specifies the connection URL to Redis to store the Medusa server's session.
+
+<Note>
+
+Learn more in the [Medusa Configuration documentation](/references/medusa-config#redisurl).
+
+</Note>
+
+Add the following configuration in `medusa-config.ts` :
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    // ...
+    redisUrl: process.env.REDIS_URL,
+  },
+})
+```
+
+---
+
+## 2. Add predeploy Script
+
+Before you start the Medusa application in production, you should always run migrations and sync links.
+
+So, add the following script in `package.json`:
+
+```json
+"scripts": {
+  // ...
+  "predeploy": "medusa db:migrate"
+},
+```
+
+---
+
+## 3. Install Production Modules and Providers
+
+By default, your Medusa application uses modules and providers useful for development, such as the In-Memory Cache Module or the Local File Module Provider.
+
+It’s highly recommended to instead use modules and providers suitable for production, including:
+
+- [Redis Cache Module](../../../architectural-modules/cache/redis/page.mdx)
+- [Redis Event Bus Module](../../../architectural-modules/event/redis/page.mdx)
+- [Workflow Engine Redis Module](../../../architectural-modules/workflow-engine/redis/page.mdx)
+- [S3 File Module Provider](../../../architectural-modules/file/s3/page.mdx) (or other file module providers production-ready).
+- [SendGrid Notification Module Provider](../../../architectural-modules/notification/sendgrid/page.mdx) (or other notification module providers production-ready).
+
+Then, add these modules in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+import { Modules } from "@medusajs/framework/utils"
+
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/cache-redis",
+      options: {
+        redisUrl: process.env.REDIS_URL,
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/event-bus-redis",
+      options: {
+        redisUrl: process.env.REDIS_URL,
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/workflow-engine-redis",
+      options: {
+        redis: {
+          url: process.env.REDIS_URL,
+        },
+      },
+    },
+  ],
+})
+```
+
+<Note title="Tip">
+
+Check out the [Integrations](../../../integrations/page.mdx) and [Architectural Modules](../../../architectural-modules/page.mdx) documentation for other modules and providers to use.
+
+</Note>
+
+---
+
+## 4. Create Railway Project and Host PostgreSQL Database
+
+<Note>
+
+Push all changes you’ve made in the previous step to the GitHub repository before proceeding.
+
+</Note>
+
+To create a Railway project:
+
+1. Go to [Railway](https://railway.app/), and log in or create an account.
+2. In your account dashboard, click the New Project button.
+3. Choose Database → Deploy PostgreSQL
+
+This creates a new project with just a PostgreSQL database. You’ll add more services in the next steps.
+
+---
+
+## 5. Add Redis Database to Project
+
+To add a Redis database service to your project:
+
+1. Click on the Create button at the top right.
+2. Choose Database → Add Redis
+
+---
+
+## 6. Deploy the Medusa Application in Server Mode
+
+In this section, you’ll add a Medusa application service in server mode to the Railway project, configure, and deploy it.
+
+### Create Service
+
+To create the service for the Medusa application in server mode:
+
+1. Click on the Create button.
+2. Choose GitHub Repo.
+3. Choose the repository of your Medusa application.
+
+This adds a new service to your project.
+
+### Add Environment Variables
+
+To add environment variables to the Medusa application in server mode:
+
+1. Click on its card in the project dashboard.
+2. Choose the Variables tab.
+3. Click on RAW Editor, and paste the following in the editor:
+
+```bash
+COOKIE_SECRET=supersecret # TODO GENERATE SECURE SECRET
+JWT_SECRET=supersecret  # TODO GENERATE SECURE SECRET
+STORE_CORS= # STOREFRONT URL
+ADMIN_CORS= # ADMIN URL
+AUTH_CORS= # STOREFRONT AND ADMIN URLS, SEPARATED BY COMMAS
+DISABLE_MEDUSA_ADMIN=false
+MEDUSA_WORKER_MODE=server
+PORT=9000
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+REDIS_URL=${{Redis.REDIS_URL}}?family=0
+```
+
+Where:
+
+- The value of `COOKIE_SECRET` and `JWT_SECRET` must be a randomly generated secret.
+- `STORE_CORS`'s value is the URL of your storefront. If you don’t have it yet, you can skip adding it for now.
+- `ADMIN_CORS`'s value is the URL of the admin dashboard, which is the same as the server Medusa application. You can add it later if you don't currently have it.
+- `AUTH_CORS`'s value is the URLs of any application authenticating users, customers, or other actor types, such as the storefront and admin URLs. The URLs are separated by commas. If you don’t have the URLs yet, you can set its value later.
+- Set `DISABLE_MEDUSA_ADMIN`'s value to `false` so that the admin is built with the server application.
+- `REDIS_URL`'s value is automatically generated using Railway’s template syntax. You add the `?family=0` to the connection string to support both IPv6 and IPv4 connections.
+
+Feel free to add any other relevant environment variables. Once you’re done, click the Update Variables button.
+
+### Set Start Command
+
+To set the `start` command of your Medusa application in server mode:
+
+1. Click on its card in the project dashboard.
+2. Choose the Settings tab.
+3. Scroll down to the Deploy section.
+4. For the “Custom Start Command” field, enter the following and click the check mark button:
+
+```bash npm2yarn
+cd .medusa/server && npm run predeploy && npm run start
+```
+
+### Deploy Changes
+
+To deploy the changes of the Medusa application in server mode, click on the Deploy button at the top center of the project. This takes a couple of minutes.
+
+### Set Domain Name
+
+You can either generate a random domain name or set a custom one. To do that:
+
+1. Click on the Medusa application running in server mode.
+2. Choose the Settings tab.
+3. Scroll down to the Networking section.
+4. Under Public Networking, click on Generate domain to generate a domain name or Custom domain to add your custom domain.
+   1. Choose the `9000` port.
+5. Save the changes.
+
+### Set Backend URL in Admin Configuration
+
+After you’ve obtained the Medusa application’s URL, add the following configuration to `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  admin: {
+    // ...
+    backendUrl: process.env.MEDUSA_BACKEND_URL,
+  },
+})
+```
+
+Then, push the changes to the GitHub repository.
+
+In Railway, add / modify the following environment variables for the Medusa application in server mode:
+
+```bash
+ADMIN_CORS= # MEDUSA APPLICATION URL
+AUTH_CORS= # ADD MEDUSA APPLICATION URL
+MEDUSA_BACKEND_URL=https://${{RAILWAY_PUBLIC_DOMAIN}}
+```
+
+Where you set the value of `ADMIN_CORS` and `MEDUSA_BACKEND_URL` to the Medusa application’s URL you got from the previous step, and you add the URL to `AUTH_CORS`.
+
+<Note title="Tip">
+
+Remember to separate URLs in `AUTH_CORS` by commas.
+
+</Note>
+
+---
+
+## 7. Deploy the Medusa Application in Worker Mode
+
+In this section, you’ll add the Medusa application in worker mode to the Railway project, configure, and deploy it.
+
+The process is similar to deploying the application in server mode, with slight changes in the configuration.
+
+### Create Service
+
+To create the service for the Medusa application in worker mode:
+
+1. Click on the Create button.
+2. Choose GitHub Repo.
+3. Choose the repository of your Medusa application.
+
+This adds a new service to your project.
+
+### Add Environment Variables
+
+To add environment variables to the Medusa application in worker mode:
+
+1. Click on its card in the project dashboard.
+2. Choose the Variables tab.
+3. Click on RAW Editor, and paste the following in the editor:
+
+```bash
+COOKIE_SECRET=supersecret # TODO GENERATE SECURE SECRET
+JWT_SECRET=supersecret  # TODO GENERATE SECURE SECRET
+DISABLE_MEDUSA_ADMIN=true
+MEDUSA_WORKER_MODE=worker
+PORT=9000
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+REDIS_URL=${{Redis.REDIS_URL}}?family=0
+```
+
+Where:
+
+- The value of `COOKIE_SECRET` and `JWT_SECRET` must be a randomly generated secret.
+- Set `DISABLE_MEDUSA_ADMIN`'s value to `true` so that the admin isn't built with the worker application.
+- `REDIS_URL`'s value is automatically generated using Railway’s template syntax. You add the `?family=0` to the connection string to support both IPv6 and IPv4 connections.
+
+Feel free to add any other relevant environment variables. Once you’re done, click the Update Variables button.
+
+### Set Start Command
+
+To set the `start` command of your Medusa application in worker mode:
+
+1. Click on its card in the project dashboard.
+2. Choose the Settings tab.
+3. Scroll down to the Deploy section.
+4. For the “Custom Start Command” field, enter the following and click the check mark button:
+
+```bash npm2yarn
+cd .medusa/server && npm run start
+```
+
+### Deploy Changes
+
+To deploy the changes of the Medusa application in working mode, click on the Deploy button at the top center of the project. This takes a couple of minutes.
+
+---
+
+## 8. Test Deployed Application
+
+To test out the deployed application, go to `<APP_URL>/health`, where `<APP_URL>` is the URL of the Medusa application in server mode. If the deployment was successful, you’ll see the `OK` response.
+
+The Medusa Admin is also available at `<APP_URL>/app`.
+
+---
+
+## Create Admin User
+
+To create an admin user, install the [Railway CLI tool](https://docs.railway.app/guides/cli). Then, log in and link the Railway project to the local directory of the Medusa application.
+
+<Note>
+
+Make sure to link it to the Railway service of the Medusa application in server mode.
+
+</Note>
+
+Then, in your local directory of the Medusa application, run the following command:
+
+```bash
+railway run npx medusa user -e admin-medusa@test.com -p supersecret
+```
+
+Replace the email `admin-medusa@test.com` and password `supersecret` with the credentials you want.
+
+You can use these credentials to log into the Medusa Admin dashboard.
+
+---
+
+## Troubleshooting
+
+To check issues or errors in your deployed Medusa application:
+
+1. Click on the card of the Medusa application in server mode.
+2. Click on the Deployments tab.
+3. Click on the View Logs button.

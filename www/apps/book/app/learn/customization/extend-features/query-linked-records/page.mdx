@@ -1,0 +1,171 @@
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Guide: Query Product's Brands`,
+}
+
+# {metadata.title}
+
+In the previous chapters, you [defined a link](../define-link/page.mdx) between the [custom Brand Module](../../custom-features/module/page.mdx) and Medusa's [Product Module](!resources!/commerce-modules/product), then [extended the create-product flow](../extend-create-product/page.mdx) to link a product to a brand.
+
+In this chapter, you'll learn how to retrieve a product's brand (and vice-versa) in two ways: Using Medusa's existing API route, or in customizations, such as a custom API route.
+
+<Prerequisites
+  items={[
+    {
+      text: "Brand Module",
+      link: "/learn/customization/custom-features/module"
+    },
+    {
+      text: "Defined link between the Brand and Product data models.",
+      link: "/learn/customization/extend-features/define-link"
+    }
+  ]}
+/>
+
+---
+
+## Approach 1: Retrieve Brands in Existing API Routes
+
+Medusa's existing API routes accept a `fields` query parameter that allows you to specify the fields and relations of a model to retrieve. So, when you send a request to the [List Products](!api!/admin#products_getproducts), [Get Product](!api!/admin#products_getproductsid), or any product-related store or admin routes that accept a `fields` query parameter, you can specify in this parameter to return the product's brands.
+
+<Note>
+
+Learn more about selecting fields and relations in the [API Reference](!api!/admin#select-fields-and-relations).
+
+</Note>
+
+For example, send the following request to retrieve the list of products with their brands:
+
+```bash
+curl 'http://localhost:9000/admin/products?fields=+brand.*' \
+--header 'Authorization: Bearer {token}'
+```
+
+<Note title="Tip">
+
+Make sure to replace `{token}` with your admin user's authentication token. Learn how to retrieve it in the [API reference](!api!/store#authentication).
+
+</Note>
+
+Any product that is linked to a brand will have a `brand` property in its object:
+
+```json title="Example Product Object"
+{
+  "id": "prod_123",
+  // ...
+  "brand": {
+    "id": "01JEB44M61BRM3ARM2RRMK7GJF",
+    "name": "Acme",
+    "created_at": "2024-12-05T09:59:08.737Z",
+    "updated_at": "2024-12-05T09:59:08.737Z",
+    "deleted_at": null
+  }
+}
+```
+
+By using the `fields` query parameter, you don't have to re-create existing API routes to get custom data models that you linked to core data models.
+
+---
+
+## Approach 2: Use Query to Retrieve Linked Records
+
+You can also retrieve linked records using Query. Query allows you to retrieve data across modules with filters, pagination, and more. You can resolve Query from the Medusa container and use it in your API route or workflow.
+
+<Note>
+
+Learn more about Query in [this chapter](../../../fundamentals/module-links/query/page.mdx).
+
+</Note>
+
+For example, you can create an API route that retrieves brands and their products. If you followed the [Create Brands API route chapter](../../custom-features/api-route/page.mdx), you'll have the file `src/api/admin/brands/route.ts` with a `POST` API route. Add a new `GET` function to the same file:
+
+export const highlights = [
+  ["11", "resolve", "Resolve Query from the Medusa container."],
+  ["13", "graph", "Run a query to retrieve brands with their linked products."],
+  ["14", "entity", "The name of the model to query."],
+  ["15", "fields", "The fields and relations to retrieve."]
+]
+
+```ts title="src/api/admin/brands/route.ts" highlights={highlights}
+// other imports...
+import {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+
+export const GET = async (
+  req: MedusaRequest,
+  res: MedusaResponse
+) => {
+  const query = req.scope.resolve("query")
+  
+  const { data: brands } = await query.graph({
+    entity: "brand",
+    fields: ["*", "products.*"],
+  })
+
+  res.json({ brands })
+}
+```
+
+This adds a `GET` API route at `/admin/brands`. In the API route, you resolve Query from the Medusa container. Query has a `graph` method that runs a query to retrieve data. It accepts an object having the following properties:
+
+- `entity`: The data model's name as specified in the first parameter of `model.define`.
+- `fields`: An array of properties and relations to retrieve. You can pass:
+    - A property's name, such as `id`, or `*` for all properties.
+    - A relation or linked model's name, such as `products` (use the plural name since brands are linked to list of products). You suffix the name with `.*` to retrieve all its properties.
+
+`graph` returns an object having a `data` property, which is the retrieved brands. You return the brands in the response.
+
+### Test it Out
+
+To test the API route out, send a `GET` request to `/admin/brands`:
+
+```bash
+curl 'http://localhost:9000/admin/brands' \
+-H 'Authorization: Bearer {token}'
+```
+
+<Note title="Tip">
+
+Make sure to replace `{token}` with your admin user's authentication token. Learn how to retrieve it in the [API reference](!api!/store#authentication).
+
+</Note>
+
+This returns the brands in your store with their linked products. For example:
+
+```json title="Example Response"
+{
+  "brands": [
+    {
+      "id": "123",
+      // ...
+      "products": [
+        {
+          "id": "prod_123",
+          // ...
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## Summary
+
+By following the examples of the previous chapters, you:
+
+- Defined a link between the Brand and Product modules's data models, allowing you to associate a product with a brand.
+- Extended the create-product workflow and route to allow setting the product's brand while creating the product.
+- Queried a product's brand, and vice versa.
+
+---
+
+## Next Steps: Customize Medusa Admin
+
+Clients, such as the Medusa Admin dashboard, can now use brand-related features, such as creating a brand or setting the brand of a product.
+
+In the next chapters, you'll learn how to customize the Medusa Admin to show a product's brand on its details page, and to show a new page with the list of brands in your store.
