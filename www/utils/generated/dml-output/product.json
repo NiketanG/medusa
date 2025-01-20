@@ -1,0 +1,133 @@
+{
+	"ProductTag": {
+		"filePath": "packages/modules/product/src/models/product-tag.ts",
+		"properties": {
+			"id": "The ID of the product tag.",
+			"value": "The value of the product tag",
+			"metadata": "Holds custom data in key-value pairs.",
+			"products": "The associated products.\n\n@expandable"
+		}
+	},
+	"ProductType": {
+		"filePath": "packages/modules/product/src/models/product-type.ts",
+		"properties": {
+			"id": "The ID of the product type.",
+			"value": "The value of the product type",
+			"metadata": "Holds custom data in key-value pairs.",
+			"product": "The associated product.\n\n@expandable"
+		}
+	},
+	"ProductImage": {
+		"filePath": "packages/modules/product/src/models/product-image.ts",
+		"properties": {
+			"id": "The ID of the product image.",
+			"url": "The URL of the product image",
+			"metadata": "Holds custom data in key-value pairs.",
+			"rank": "The rank of the product image among its sibling images.",
+			"product": "The associated product.\n\n@expandable"
+		}
+	},
+	"ProductOptionValue": {
+		"filePath": "packages/modules/product/src/models/product-option-value.ts",
+		"properties": {
+			"id": "The ID of the product option value.",
+			"value": "The value of the product option.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"option": "The associated option.\n\n@expandable",
+			"variants": "The associated variants.\n\n@expandable"
+		}
+	},
+	"ProductOption": {
+		"filePath": "packages/modules/product/src/models/product-option.ts",
+		"properties": {
+			"id": "The ID of the product option.",
+			"title": "The title of the product option.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"product": "The associated product.\n\n@expandable",
+			"values": "The associated values.\n\n@expandable"
+		}
+	},
+	"ProductVariant": {
+		"filePath": "packages/modules/product/src/models/product-variant.ts",
+		"properties": {
+			"id": "The ID of the product variant.",
+			"title": "The title of the product variant",
+			"sku": "The SKU of the product variant",
+			"barcode": "The barcode of the product variant",
+			"ean": "The EAN of the product variant",
+			"upc": "The UPC of the product variant",
+			"allow_backorder": "Whether customers can purchase this variant even if it's out of stock.",
+			"manage_inventory": "Whether Medusa manages the variant's inventory. If disabled, the variant is always considered in stock.",
+			"hs_code": "The HS code of the product variant",
+			"origin_country": "The origin country of the product variant",
+			"mid_code": "The MID code of the product variant",
+			"material": "The material of the product variant",
+			"weight": "The weight of the product variant",
+			"length": "The length of the product variant",
+			"height": "The height of the product variant",
+			"width": "The width of the product variant",
+			"metadata": "Holds custom data in key-value pairs.",
+			"variant_rank": "The variant's rank among its siblings.",
+			"product": "The associated product.\n\n@expandable",
+			"options": "The associated options.\n\n@expandable"
+		}
+	},
+	"ProductCategory": {
+		"filePath": "packages/modules/product/src/models/product-category.ts",
+		"properties": {
+			"id": "The ID of the product category.",
+			"name": "The name of the product category",
+			"description": "The description of the product category",
+			"handle": "The unique handle of the product category",
+			"mpath": "The mpath of the product category",
+			"is_active": "Whether the product category is active.",
+			"is_internal": "Whether the product category is internal, meaning it's only available for admin users.",
+			"rank": "The rank of the product category among its siblings.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"parent_category": "The associated parent_category.\n\n@expandable",
+			"category_children": "The associated category_children.\n\n@expandable",
+			"products": "The associated products.\n\n@expandable"
+		}
+	},
+	"ProductCollection": {
+		"filePath": "packages/modules/product/src/models/product-collection.ts",
+		"properties": {
+			"id": "The ID of the product collection.",
+			"title": "The title of the product collection",
+			"handle": "The unique handle of the product collection",
+			"metadata": "Holds custom data in key-value pairs.",
+			"products": "The associated products.\n\n@expandable"
+		}
+	},
+	"Product": {
+		"filePath": "packages/modules/product/src/models/product.ts",
+		"properties": {
+			"id": "The ID of the product.",
+			"title": "The title of the product",
+			"handle": "The unique handle of the product",
+			"subtitle": "The subtitle of the product",
+			"description": "The description of the product",
+			"is_giftcard": "Whether the product is a giftcard.",
+			"status": "The status of the product",
+			"thumbnail": "The thumbnail URL of the product",
+			"weight": "The weight of the product",
+			"length": "The length of the product",
+			"height": "The height of the product",
+			"width": "The width of the product",
+			"origin_country": "The origin country of the product",
+			"hs_code": "The HS code of the product",
+			"mid_code": "The MID code of the product",
+			"material": "The material of the product",
+			"discountable": "Whether the product is discountable.",
+			"external_id": "The external ID of the product, used to store the product's ID in an external system.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"variants": "The associated variants.\n\n@expandable",
+			"type": "The associated type.\n\n@expandable",
+			"tags": "The associated tags.\n\n@expandable",
+			"options": "The associated options.\n\n@expandable",
+			"images": "The associated images.\n\n@expandable",
+			"collection": "The associated collection.\n\n@expandable",
+			"categories": "The associated categories.\n\n@expandable"
+		}
+	}
+}

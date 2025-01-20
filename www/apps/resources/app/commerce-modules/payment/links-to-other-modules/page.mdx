@@ -1,0 +1,297 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Payment Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Payment Module and other commerce modules.
+
+## Summary
+
+The Payment Module has the following links to other modules:
+
+- [`Cart` data model of Cart Module \<\> `PaymentCollection` data model](#cart-module).
+- [`Order` data model of Order Module \<\> `PaymentCollection` data model](#order-module).
+- [`OrderClaim` data model of Order Module \<\> `PaymentCollection` data model](#order-module).
+- [`OrderExchange` data model of Order Module \<\> `PaymentCollection` data model](#order-module).
+- [`Region` data model of Region Module \<\> `PaymentProvider` data model](#region-module).
+
+---
+
+## Cart Module
+
+The Cart Module provides cart-related features, but not payment processing.
+
+Medusa defines a link between the `Cart` and `PaymentCollection` data models. A cart has a payment collection which holds all the authorized payment sessions and payments made related to the cart.
+
+Learn more about this relation in [this documentation](../payment-collection/page.mdx#usage-with-the-cart-module).
+
+### Retrieve with Query
+
+To retrieve the cart associated with the payment collection with [Query](!docs!/learn/fundamentals/module-links/query), pass `cart.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: paymentCollections } = await query.graph({
+  entity: "payment_collection",
+  fields: [
+    "cart.*",
+  ],
+})
+
+// paymentCollections.cart
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: paymentCollections } = useQueryGraphStep({
+  entity: "payment_collection",
+  fields: [
+    "cart.*",
+  ],
+})
+
+// paymentCollections.cart
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the payment collection of a cart, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.CART]: {
+    cart_id: "cart_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_collection_id: "paycol_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.CART]: {
+    cart_id: "cart_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_collection_id: "paycol_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Order Module
+
+An order's payment details are stored in a payment collection. This also applies for claims and exchanges.
+
+So, Medusa defines links between the `PaymentCollection` data model and the `Order`, `OrderClaim`, and `OrderExchange` data models.
+
+![A diagram showcasing an example of how data models from the Order and Payment modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1716554726/Medusa%20Resources/order-payment_ubdwok.jpg)
+
+### Retrieve with Query
+
+To retrieve the order of a payment collection with [Query](!docs!/learn/fundamentals/module-links/query), pass `order.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: paymentCollections } = await query.graph({
+  entity: "payment_collection",
+  fields: [
+    "order.*",
+  ],
+})
+
+// paymentCollections.order
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: paymentCollections } = useQueryGraphStep({
+  entity: "payment_collection",
+  fields: [
+    "order.*",
+  ],
+})
+
+// paymentCollections.order
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the payment collections of an order, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_collection_id: "paycol_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_collection_id: "paycol_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Region Module
+
+You can specify for each region which payment providers are available. The Medusa application defines a link between the `PaymentProvider` and the `Region` data models.
+
+![A diagram showcasing an example of how resources from the Payment and Region modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1711569520/Medusa%20Resources/payment-region_jyo2dz.jpg)
+
+This increases the flexibility of your store. For example, you only show during checkout the payment providers associated with the cart's region.
+
+### Retrieve with Query
+
+To retrieve the regions of a payment provider with [Query](!docs!/learn/fundamentals/module-links/query), pass `regions.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: paymentProviders } = await query.graph({
+  entity: "payment_provider",
+  fields: [
+    "regions.*",
+  ],
+})
+
+// paymentProviders.regions
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: paymentProviders } = useQueryGraphStep({
+  entity: "payment_provider",
+  fields: [
+    "regions.*",
+  ],
+})
+
+// paymentProviders.regions
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the payment providers in a region, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.REGION]: {
+    region_id: "reg_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_provider_id: "pp_stripe_stripe",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.REGION]: {
+    region_id: "reg_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_provider_id: "pp_stripe_stripe",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>

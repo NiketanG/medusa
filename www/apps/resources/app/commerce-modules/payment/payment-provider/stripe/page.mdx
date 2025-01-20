@@ -1,0 +1,317 @@
+---
+sidebar_label: "Stripe"
+---
+
+import { Table, Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `Stripe Module Provider`,
+}
+
+# {metadata.title}
+
+In this document, you’ll learn about the Stripe Module Provider and how to configure it in the Payment Module.
+
+## Register the Stripe Module Provider
+
+<Prerequisites items={[
+  {
+    text: "Stripe account",
+    link: "https://stripe.com/"
+  },
+  {
+    text: "Stripe Secret API Key",
+    link: "https://support.stripe.com/questions/locate-api-keys-in-the-dashboard"
+  },
+  {
+    text: "For deployed Medusa applications, a Stripe webhook secret. Refer to the end of this guide for details on the URL and events.",
+    link: "https://docs.stripe.com/webhooks#add-a-webhook-endpoint"
+  }
+]} />
+
+The Stripe Module Provider is installed by default in your application. To use it, add it to the array of providers passed to the Payment Module in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/payment-stripe",
+            id: "stripe",
+            options: {
+              apiKey: process.env.STRIPE_API_KEY,
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+```
+
+### Environment Variables
+
+Make sure to add the necessary environment variables for the above options in `.env`:
+
+```bash
+STRIPE_API_KEY=<YOUR_STRIPE_API_KEY>
+```
+
+### Module Options
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>Option</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+      <Table.HeaderCell>Required</Table.HeaderCell>
+      <Table.HeaderCell>Default</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+      
+      `apiKey`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      A string indicating the Stripe Secret API key.
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      Yes
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      \-
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `webhookSecret`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      A string indicating the Stripe webhook secret. This is only useful for deployed Medusa applications.
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      Yes
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      \-
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `capture`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      Whether to automatically capture payment after authorization.
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      No
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `false`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `automatic_payment_methods`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      A boolean value indicating whether to enable Stripe's automatic payment methods. This is useful if you integrate services like Apple pay or Google pay.
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      No
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `false`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `payment_description`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      A string used as the default description of a payment if none is available in cart.context.payment_description.
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      No
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      \-
+      
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Setup Stripe Webhooks
+
+For production applications, you must set up webhooks in Stripe that inform Medusa of changes and updates to payments. Refer to [Stripe's documentation](https://docs.stripe.com/webhooks#add-a-webhook-endpoint) on how to setup webhooks.
+
+### Webhook URL
+
+Medusa has a `{server_url}/hooks/payment/{provider_id}` API route that you can use to register webhooks in Stripe, where:
+
+- `{server_url}` is the URL to your deployed Medusa application in server mode.
+- `{provider_id}` is the ID of the provider, such as `stripe_stripe` for basic payments.
+
+The Stripe Module Provider supports the following payment types, and the webhook endpoint URL is different for each:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>Stripe Payment Type</Table.HeaderCell>
+      <Table.HeaderCell>Webhook Endpoint URL</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+      
+      Basic Stripe Payment
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `{server_url}/hooks/payment/stripe_stripe`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      Bancontact Payments
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `{server_url}/hooks/payment/stripe-bancontact_stripe`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      BLIK Payments
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `{server_url}/hooks/payment/stripe-blik_stripe`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      giropay Payments
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `{server_url}/hooks/payment/stripe-giropay_stripe`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      iDEAL Payments
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `{server_url}/hooks/payment/stripe-ideal_stripe`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      Przelewy24 Payments
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `{server_url}/hooks/payment/stripe-przelewy24_stripe`
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      PromptPay Payments
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `{server_url}/hooks/payment/stripe-promptpay_stripe`
+      
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+### Webhook Events
+
+When you set up the webhook in Stripe, choose the following events to listen to:
+
+- `payment_intent.amount_capturable_updated`
+- `payment_intent.succeeded`
+- `payment_intent.payment_failed`
+
+---
+
+## Useful Guides
+
+- [Storefront guide: Add Stripe payment method during checkout](../../../../storefront-development/checkout/payment/stripe/page.mdx).
+- [Integrate in Next.js Starter](../../../../nextjs-starter/page.mdx#stripe-integration).
+- [Customize Stripe Integration in Next.js Starter](../../../../nextjs-starter/guides/customize-stripe/page.mdx).

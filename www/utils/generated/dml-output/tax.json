@@ -1,0 +1,50 @@
+{
+	"TaxRateRule": {
+		"filePath": "packages/modules/tax/src/models/tax-rate-rule.ts",
+		"properties": {
+			"id": "The ID of the tax rate rule.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"created_by": "The ID of the user that created the tax rate rule",
+			"tax_rate": "The associated tax rate.\n\n@expandable",
+			"reference": "The name of the table this rule references.\n\n@example product_type",
+			"reference_id": "The id of a record in the table that this rule references.\n\n@example ptyp_1"
+		}
+	},
+	"TaxProvider": {
+		"filePath": "packages/modules/tax/src/models/tax-provider.ts",
+		"properties": {
+			"id": "The ID of the tax provider.",
+			"is_enabled": "Whether the tax provider is enabled.",
+			"regions": "The regions that use this provider to calculate taxes.\n\n@expandable"
+		}
+	},
+	"TaxRegion": {
+		"filePath": "packages/modules/tax/src/models/tax-region.ts",
+		"properties": {
+			"id": "The ID of the tax region.",
+			"country_code": "The country code of the tax region.\n\n@example us",
+			"province_code": "The province code of the tax region",
+			"metadata": "Holds custom data in key-value pairs.",
+			"created_by": "The ID of the user that created the tax region",
+			"provider": "The provider that calculates taxes in this region.\n\n@expandable",
+			"parent": "The tax region's parent.\n\n@expandable",
+			"children": "The tax region's children..\n\n@expandable",
+			"tax_rates": "The associated tax rates.\n\n@expandable"
+		}
+	},
+	"TaxRate": {
+		"filePath": "packages/modules/tax/src/models/tax-rate.ts",
+		"properties": {
+			"id": "The ID of the tax rate.",
+			"rate": "The rate to charge.\n\n@example 10",
+			"code": "The code the tax rate is identified by.",
+			"name": "The name of the tax rate",
+			"is_default": "Whether this tax rate is the default in the tax region.",
+			"is_combinable": "Whether the tax rate should be combined with parent rates. Learn more in [this documentation](https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates).",
+			"tax_region": "The associated tax region.\n\n@expandable",
+			"rules": "The associated rules.\n\n@expandable",
+			"metadata": "Holds custom data in key-value pairs.",
+			"created_by": "The ID of the user that created the tax rate"
+		}
+	}
+}

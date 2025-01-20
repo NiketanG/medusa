@@ -1,0 +1,25 @@
+{{#ifReactQueryType}}
+
+{{> member.react-query.signature}}
+
+{{else}}
+
+{{#ifWorkflow}}
+
+{{> member.workflow}}
+
+{{else}}
+
+{{#ifWorkflowStep}}
+
+{{> member.step}}
+
+{{else}}
+
+{{> member.signature}}
+
+{{/ifWorkflowStep}}
+
+{{/ifWorkflow}}
+
+{{/ifReactQueryType}}

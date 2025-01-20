@@ -1,0 +1,76 @@
+import { Table } from "docs-ui"
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>Event Name</Table.HeaderCell>
+      <Table.HeaderCell>Description</Table.HeaderCell>
+      <Table.HeaderCell className="w-1/3">Payload</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+
+      `product-collection.created`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when product collections are created.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+[{
+  id, // The ID of the collection
+}]
+```
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `product-collection.updated`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when product collections are updated.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+[{
+  id, // The ID of the collection
+}]
+```
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `product-collection.deleted`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Emitted when product collections are deleted.
+
+      </Table.Cell>
+      <Table.Cell>
+
+```ts blockStyle="inline"
+[{
+  id, // The ID of the collection
+}]
+```
+
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>

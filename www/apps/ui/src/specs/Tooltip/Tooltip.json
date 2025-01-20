@@ -1,0 +1,94 @@
+{
+  "description": "This component is based on the [Radix UI Tooltip](https://www.radix-ui.com/primitives/docs/components/tooltip) primitive.",
+  "methods": [],
+  "displayName": "Tooltip",
+  "props": {
+    "maxWidth": {
+      "required": false,
+      "tsType": {
+        "name": "number"
+      },
+      "description": "The maximum width of the tooltip.",
+      "defaultValue": {
+        "value": "220",
+        "computed": false
+      }
+    },
+    "aria-label": {
+      "description": "A more descriptive label for accessibility purpose",
+      "required": false,
+      "tsType": {
+        "name": "string"
+      }
+    },
+    "delayDuration": {
+      "description": "The duration from when the pointer enters the trigger until the tooltip gets opened. This will\noverride the prop with the same name passed to Provider.",
+      "required": false,
+      "tsType": {
+        "name": "number"
+      }
+    },
+    "forceMount": {
+      "description": "Used to force mounting when more control is needed. Useful when\ncontrolling animation with React animation libraries.",
+      "required": false,
+      "tsType": {
+        "name": "literal",
+        "value": "true"
+      }
+    },
+    "onEscapeKeyDown": {
+      "description": "Event handler called when the escape key is down.\nCan be prevented.",
+      "required": false,
+      "tsType": {
+        "name": "signature",
+        "type": "function",
+        "raw": "(event: KeyboardEvent) => void",
+        "signature": {
+          "arguments": [
+            {
+              "name": "event",
+              "type": {
+                "name": "KeyboardEvent",
+                "elements": [],
+                "raw": "KeyboardEvent"
+              },
+              "rest": false
+            }
+          ],
+          "return": {
+            "name": "void"
+          }
+        }
+      }
+    },
+    "onPointerDownOutside": {
+      "description": "Event handler called when the a `pointerdown` event happens outside of the `Tooltip`.\nCan be prevented.",
+      "required": false,
+      "tsType": {
+        "name": "signature",
+        "type": "function",
+        "raw": "(event: PointerDownOutsideEvent) => void",
+        "signature": {
+          "arguments": [
+            {
+              "name": "event",
+              "type": {
+                "name": "PointerDownOutsideEvent",
+                "elements": [],
+                "raw": "PointerDownOutsideEvent"
+              },
+              "rest": false
+            }
+          ],
+          "return": {
+            "name": "void"
+          }
+        }
+      }
+    }
+  },
+  "composes": [
+    "Omit",
+    "Pick"
+  ]
+}

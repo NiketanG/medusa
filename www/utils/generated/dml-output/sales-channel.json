@@ -1,0 +1,12 @@
+{
+	"SalesChannel": {
+		"filePath": "packages/modules/sales-channel/src/models/sales-channel.ts",
+		"properties": {
+			"id": "The ID of the sales channel.",
+			"name": "The name of the sales channel",
+			"description": "The description of the sales channel",
+			"is_disabled": "Whether the sales channel is disabled.",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	}
+}

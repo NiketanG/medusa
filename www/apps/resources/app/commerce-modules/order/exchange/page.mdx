@@ -1,0 +1,100 @@
+import { Table } from "docs-ui"
+
+export const metadata = {
+  title: `Order Exchange`,
+}
+
+# {metadata.title}
+
+In this document, you’ll learn about order exchanges.
+
+## What is an Exchange?
+
+An exchange is the replacement of an item that the customer ordered with another.
+
+A merchant creates the exchange, specifying the items to be replaced and the new items to be sent.
+
+The [OrderExchange data model](/references/order/models/OrderExchange) represents an exchange.
+
+---
+
+## Returned and New Items
+
+When the exchange is created, a return, represented by the [Return data model](/references/order/models/Return), is created to handle receiving the items back from the customer.
+
+<Note>
+
+Learn more about returns in [this guide](../return/page.mdx).
+
+</Note>
+
+The [OrderExchangeItem data model](/references/order/models/OrderExchangeItem) represents the new items to be sent to the customer.
+
+---
+
+## Exchange Shipping Methods
+
+An exchange has shipping methods used to send the new items to the customer. They’re represented by the [OrderShippingMethod data model](/references/order/models/OrderShippingMethod).
+
+The shipping methods for the returned items are associated with the exchange's return, as explained in [this guide](../return/page.mdx#return-shipping-methods).
+
+---
+
+## Exchange Payment
+
+The `Exchange` data model has a `difference_due` property that stores the outstanding amount.
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>Condition</Table.HeaderCell>
+      <Table.HeaderCell>Result</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        
+      `difference_due < 0`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Merchant owes the customer a refund of the `difference_due` amount.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        
+      `difference_due > 0`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      Merchant requires additional payment from the customer of the `difference_due` amount.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        
+      `difference_due = 0`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      No payment processing is required.
+
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+Any payment or refund made is stored in the [Transaction data model](/references/order/models/OrderTransaction).
+
+---
+
+## How Exchanges Impact an Order’s Version
+
+When an exchange is confirmed, the order’s version is incremented.

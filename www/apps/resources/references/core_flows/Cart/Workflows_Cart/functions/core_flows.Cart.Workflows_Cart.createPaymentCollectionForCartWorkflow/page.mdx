@@ -1,0 +1,148 @@
+---
+slug: /references/medusa-workflows/createPaymentCollectionForCartWorkflow
+sidebar_label: createPaymentCollectionForCartWorkflow
+sidebar_description: Create payment collection for cart.
+tags:
+  - remote query
+  - payment
+  - link
+  - workflow
+---
+
+import { TypeList, WorkflowDiagram } from "docs-ui"
+
+# createPaymentCollectionForCartWorkflow - Medusa Core Workflows Reference
+
+This documentation provides a reference to the `createPaymentCollectionForCartWorkflow`. It belongs to the `@medusajs/medusa/core-flows` package.
+
+This workflow creates a payment collection for a cart. It's executed by the
+[Create Payment Collection Store API Route](https://docs.medusajs.com/api/store#payment-collections\_postpaymentcollections).
+
+You can use this workflow within your own customizations or custom workflows, allowing you to wrap custom logic around adding creating a payment collection for a cart.
+
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/644c8b9d3022fb4bc4ec6760ee4fed93b92d1b96/packages/core/core-flows/src/cart/workflows/create-payment-collection-for-cart.ts#L81" />
+
+## Examples
+
+<CodeTabs group="workflow-exection">
+    <CodeTab label="API Route" value="api-route">
+    
+```ts title="src/api/workflow/route.ts"
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import { createPaymentCollectionForCartWorkflow } from "@medusajs/medusa/core-flows"
+
+export async function POST(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const { result } = await createPaymentCollectionForCartWorkflow(req.scope)
+    .run({
+      input: {
+        cart_id: "cart_123",
+        metadata: {
+          sandbox: true
+        }
+      }
+    })
+
+  res.send(result)
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Subscriber" value="subscriber">
+    
+```ts title="src/subscribers/order-placed.ts"
+import {
+  type SubscriberConfig,
+  type SubscriberArgs,
+} from "@medusajs/framework"
+import { createPaymentCollectionForCartWorkflow } from "@medusajs/medusa/core-flows"
+
+export default async function handleOrderPlaced({
+  event: { data },
+  container,
+}: SubscriberArgs < { id: string } > ) {
+  const { result } = await createPaymentCollectionForCartWorkflow(container)
+    .run({
+      input: {
+        cart_id: "cart_123",
+        metadata: {
+          sandbox: true
+        }
+      }
+    })
+
+  console.log(result)
+}
+
+export const config: SubscriberConfig = {
+  event: "order.placed",
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Scheduled Job" value="scheduled-job">
+    
+```ts title="src/jobs/message-daily.ts"
+import { MedusaContainer } from "@medusajs/framework/types"
+import { createPaymentCollectionForCartWorkflow } from "@medusajs/medusa/core-flows"
+
+export default async function myCustomJob(
+  container: MedusaContainer
+) {
+  const { result } = await createPaymentCollectionForCartWorkflow(container)
+    .run({
+      input: {
+        cart_id: "cart_123",
+        metadata: {
+          sandbox: true
+        }
+      }
+    })
+
+  console.log(result)
+}
+
+export const config = {
+  name: "run-once-a-day",
+  schedule: "0 0 * * *",
+}
+```
+
+    </CodeTab>
+    <CodeTab label="Another Workflow" value="another-workflow">
+    
+```ts title="src/workflows/my-workflow.ts"
+import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+import { createPaymentCollectionForCartWorkflow } from "@medusajs/medusa/core-flows"
+
+const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    const result = createPaymentCollectionForCartWorkflow
+      .runAsStep({
+        input: {
+          cart_id: "cart_123",
+          metadata: {
+            sandbox: true
+          }
+        }
+      })
+  }
+)
+```
+
+    </CodeTab>
+  </CodeTabs>
+
+## Steps
+
+<WorkflowDiagram workflow={{"name":"createPaymentCollectionForCartWorkflow","steps":[{"type":"step","name":"useRemoteQueryStep","description":"This step fetches data across modules using the remote query.\n\nLearn more in the [Remote Query documentation](https://docs.medusajs.com/learn/fundamentals/module-links/query).\n\n:::note\n\nThis step is deprecated. Use [useQueryGraphStep](../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useQueryGraphStep/page.mdx) instead.\n\n:::","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.useRemoteQueryStep/page.mdx","depth":1},{"type":"step","name":"validateCartStep","description":"This step validates a cart to ensure it exists and is not completed.\nIf not valid, the step throws an error.\n\n:::tip\n\nYou can use the [retrieveCartStep](../../../Steps_Cart/functions/core_flows.Cart.Steps_Cart.retrieveCartStep/page.mdx) to retrieve a cart's details.\n\n:::","link":"../../../Steps_Cart/functions/core_flows.Cart.Steps_Cart.validateCartStep/page.mdx","depth":2},{"type":"step","name":"validateExistingPaymentCollectionStep","description":"This step validates that a cart doesn't have a payment collection.\nIf the cart has a payment collection, the step throws an error.\n\n:::tip\n\nYou can use the retrieveCartStep to retrieve a cart's details.\n\n:::","link":"../core_flows.Cart.Workflows_Cart.validateExistingPaymentCollectionStep/page.mdx","depth":2},{"type":"step","name":"createPaymentCollectionsStep","description":"This step creates payment collections in a cart.","link":"../../../Steps_Cart/functions/core_flows.Cart.Steps_Cart.createPaymentCollectionsStep/page.mdx","depth":3},{"type":"step","name":"createRemoteLinkStep","description":"This step creates remote links between two records of linked data models.\n\nLearn more in the [Remote Link documentation.](https://docs.medusajs.com/learn/fundamentals/module-links/remote-link#create-link).","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.createRemoteLinkStep/page.mdx","depth":4}]}} />
+
+## Input
+
+<TypeList types={[{"name":"CreatePaymentCollectionForCartWorkflowInputDTO","type":"[CreatePaymentCollectionForCartWorkflowInputDTO](../../../../../types/interfaces/types.CreatePaymentCollectionForCartWorkflowInputDTO/page.mdx)","optional":false,"defaultValue":"","description":"The details to create the payment collection.","expandable":false,"children":[{"name":"cart_id","type":"`string`","description":"The ID of the cart to create a payment collection for.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`Record<string, unknown>`","description":"Custom key-value pairs to store in the payment collection.","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createPaymentCollectionForCartWorkflow"/>

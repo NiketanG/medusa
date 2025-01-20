@@ -1,0 +1,140 @@
+---
+tags:
+  - product
+  - product category
+  - storefront
+---
+
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Retrieve Nested Categories in Storefront`,
+}
+
+# {metadata.title}
+
+A product category has parent and child categories.
+
+To retrieve the child or nested categories of a category in your storefront, pass to the [Get a Category API Route](!api!/store#product-categories_getproductcategoriesid) the following query parameters:
+
+- `include_descendants_tree=true` to retrieve each category's nested categories at all levels.
+- Add `category_children` to `fields`, which is the field that will hold a category's nested categories. You can either pass `*category_children` to retrieve all fields of a child category, or specify the fields specifically to avoid a large response size. For example, `field=category_children.id,category_children.name`.
+- `parent_category_id=null` to retrieve only the categories that don't have a parent. This avoids retrieving the child categories multiple times in the response since child categories are now set in their parent's object.
+
+For example:
+
+<CodeTabs group="store-request">
+  <CodeTab label="Fetch API" value="fetch">
+
+export const fetchHighlights = [
+  ["2", `"category_children.id,category_children.name"`, "Select the fields of category children"],
+  ["3", `"include_descendants_tree"`, "Indicate that all nested categories should be retrieved."],
+  ["4", "parent_category_id", "Since each category will have its children, you only retrieve categories that don't have a parent."]
+]
+
+  ```ts highlights={fetchHighlights}
+  const searchParams = new URLSearchParams({
+    fields: "category_children.id,category_children.name",
+    include_descendants_tree: true,
+    parent_category_id: null,
+  })
+
+  fetch(`http://localhost:9000/store/product-categories/${id}?${
+    searchParams.toString()
+  }`, {
+    credentials: "include",
+    headers: {
+      "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "temp",
+    },
+  })
+  .then((res) => res.json())
+  .then(({ product_category }) => {
+    // use the product category's children...
+    console.log(product_category.category_children)
+  })
+  ```
+
+  </CodeTab>
+  <CodeTab label="React" value="react">
+
+export const highlights = [
+  ["22", `fields`, "Select the fields of category children"],
+  ["23", "parent_category_id", "Since each category will have its children, you only retrieve categories that don't have a parent."],
+  ["26"], ["27"], ["28"], 
+  ["29"], ["30"], ["31"], ["32"], ["33"], ["34"], ["35"], ["36"], ["37"], ["38"],
+  ["52", "", "Show the nested categories."],
+]
+
+  ```tsx highlights={highlights}
+  "use client" // include with Next.js 13+
+
+  import { useEffect, useState } from "react"
+  import { HttpTypes } from "@medusajs/types"
+
+  type Props = {
+    id: string
+  }
+
+  export default function Category({ id }: Props) {
+    const [loading, setLoading] = useState(true)
+    const [category, setCategory] = useState<
+      HttpTypes.StoreProductCategory | undefined
+    >()
+
+    useEffect(() => {
+      if (!loading) {
+        return 
+      }
+
+      const searchParams = new URLSearchParams({
+        fields: "category_children.id,category_children.name",
+        parent_category_id: null,
+      })
+
+      fetch(`http://localhost:9000/store/product-categories/${id}?${
+        searchParams.toString()
+      }`, {
+        credentials: "include",
+        headers: {
+          "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "temp",
+        },
+      })
+      .then((res) => res.json())
+      .then(({ product_category }) => {
+        setCategory(product_category)
+        setLoading(false)
+      })
+    }, [loading])
+
+    return (
+      <div>
+        {loading && <span>Loading...</span>}
+        {category && (
+          <>
+            <h1>{category.name}</h1>
+            <p>{category.description}</p>
+            {(category.category_children?.length || 0) > 0 && (
+              <>
+                <span>Child Categories</span>
+                <ul>
+                  {category.category_children!.map(
+                    (childCategory) => (
+                      <li key={childCategory.id}>
+                        {childCategory.name}
+                      </li>
+                    )
+                  )}
+                </ul>
+              </>
+            )}
+          </>
+        )}
+      </div>
+    )
+  }
+  ```
+
+  </CodeTab>
+</CodeTabs>
+
+The `product_category` field in the response has a `category_children` field. It's an array of [product category objects](!api!/store/#product-categories_productcategory_schema).

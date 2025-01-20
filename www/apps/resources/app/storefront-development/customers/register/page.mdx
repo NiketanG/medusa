@@ -1,0 +1,295 @@
+---
+tags:
+  - customer
+  - storefront
+  - auth
+---
+
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Register Customer in Storefront`,
+}
+
+# {metadata.title}
+
+To register a customer, you implement the following steps:
+
+1. Show the customer a form to enter their details.
+2. Send a `POST` request to the `/auth/customer/emailpass/register` API route to obtain a JWT token.
+3. Send a request to the [Create Customer API route](!api!/store#customers_postcustomers) pass the JWT token in the header.
+
+However, a customer may enter an email that's already used either by an admin user, another customer, or a [custom actor type](../../../commerce-modules/auth/auth-identity-and-actor-types/page.mdx). To handle this scenario:
+
+- Try to obtain a login token by sending a `POST` request to the `/auth/customer/emailpass` API route. The customer is only allowed to register if their email and password match the existing identity. This allows admin users to log in or register as customers.
+- If you obtained the login token successfully, create the customer using the login JWT token instead of the registration token. This will not remove the existing identity. So, for example, an admin user can also become a customer.
+
+An example implemetation of the registration flow in a storefront:
+
+<CodeTabs group="store-request">
+  <CodeTab label="Fetch API" value="fetch">
+
+export const fetchHighlights = [
+  ["3", "fetch", "Send a request to obtain a registration JWT token."],
+  ["20", "", "Another identity exists with the same email."],
+  ["25", "fetch", "Try to obtain a login JWT token."],
+  ["41", "", "The existing account belongs to another customer, so authentication failed."],
+  ["50", "token", "Set the token to either the registration or login JWT token"],
+  ["53", "fetch", "Send a request to create the customer."],
+  ["60", "token", "Pass as a Bearer token in the authorization header."],
+  ["72", "", "Handle registration failure"],
+  ["77", "TODO", "Redirect the customer to the log in page."]
+]
+
+  ```ts highlights={fetchHighlights}
+  const handleRegistration = async () => {
+    // obtain JWT token
+    let registerResponse = await fetch(
+      `http://localhost:9000/auth/customer/emailpass/register`,
+      {
+        credentials: "include",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      }
+    )
+    .then((res) => res.json())
+
+    if (!registerResponse.token) {
+      if (registerResponse.type === "unauthorized" && registerResponse.message === "Identity with email already exists") {
+        // another identity (for example, admin user)
+        // exists with the same email. It can also be another customer
+        // with the same email. In that case, obtaining the login token 
+        // will fail due to incorrect password.
+        registerResponse = await fetch(
+          `http://localhost:9000/auth/customer/emailpass`,
+          {
+            credentials: "include",
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+          }
+        )
+        .then((res) => res.json())
+
+        if (!registerResponse.token) {
+          alert("Error: " + registerResponse.message)
+          return
+        }
+      } else {
+        alert("Error: " + registerResponse.message)
+      }
+    }
+
+    const token = registerResponse.token as string
+
+    // create customer
+    const customerResponse = await fetch(
+      `http://localhost:9000/store/customers`,
+      {
+        credentials: "include",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "temp",
+        },
+        body: JSON.stringify({
+          first_name: firstName,
+          last_name: lastName,
+          email,
+        }),
+      }
+    )
+    .then((res) => res.json())
+
+    if (!customerResponse.customer) {
+      alert("Error: " + customerResponse.message)
+      return
+    }
+
+    console.log(customerResponse.customer)
+    // TODO redirect to login page
+  }
+  ```
+
+  </CodeTab>
+  <CodeTab label="React" value="react">
+
+export const highlights = [
+  ["22", "fetch", "Send a request to obtain a registration JWT token."],
+  ["39", "", "Another identity exists with the same email."],
+  ["44", "fetch", "Try to obtain a login JWT token."],
+  ["60", "", "The existing account belongs to another customer, so authentication failed."],
+  ["69", "token", "Set the token to either the registration or login JWT token"],
+  ["72", "fetch", "Send a request to create the customer."],
+  ["79", "token", "Pass as a Bearer token in the authorization header."],
+  ["93", "", "Handle registration failure"],
+  ["98", "TODO", "Redirect the customer to the log in page."]
+]
+
+  ```tsx highlights={highlights} collapsibleLines="101-140" expandButtonLabel="Show form"
+  "use client" // include with Next.js 13+
+
+  import { useState } from "react"
+
+  export default function Register() {
+    const [loading, setLoading] = useState(false)
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+
+    const handleRegistration = async (
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+      e.preventDefault()
+      if (!firstName || !lastName || !email || !password) {
+        return
+      }
+      setLoading(true)
+
+      // obtain JWT token
+      let registerResponse = await fetch(
+        `http://localhost:9000/auth/customer/emailpass/register`,
+        {
+          credentials: "include",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      )
+      .then((res) => res.json())
+
+      if (!registerResponse.token) {
+        if (registerResponse.type === "unauthorized" && registerResponse.message === "Identity with email already exists") {
+        // another identity (for example, admin user)
+        // exists with the same email. It can also be another customer
+        // with the same email. In that case, obtaining the login token 
+        // will fail due to incorrect password.
+          registerResponse = await fetch(
+            `http://localhost:9000/auth/customer/emailpass`,
+            {
+              credentials: "include",
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email,
+                password,
+              }),
+            }
+          )
+          .then((res) => res.json())
+
+          if (!registerResponse.token) {
+            alert("Error: " + registerResponse.message)
+            return
+          }
+        } else {
+          alert("Error: " + registerResponse.message)
+        }
+      }
+
+      const token = registerResponse.token as string
+
+      // create customer
+      const customerResponse = await fetch(
+        `http://localhost:9000/store/customers`,
+        {
+          credentials: "include",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+            "x-publishable-api-key": process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || "temp",
+          },
+          body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName,
+            email,
+          }),
+        }
+      )
+      .then((res) => res.json())
+
+      setLoading(false)
+
+      if (!customerResponse.customer) {
+        alert("Error: " + customerResponse.message)
+        return
+      }
+
+      console.log(customerResponse.customer)
+      // TODO redirect to login page
+    }
+
+    return (
+      <form>
+        <input 
+          type="text" 
+          name="first_name"
+          value={firstName}
+          placeholder="First Name"
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+        <input 
+          type="text" 
+          name="last_name"
+          value={lastName}
+          placeholder="Last Name"
+          onChange={(e) => setLastName(e.target.value)}
+        />
+        <input 
+          type="email" 
+          name="email"
+          value={email}
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input 
+          type="password" 
+          name="password"
+          value={password}
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button
+          disabled={loading}
+          onClick={handleRegistration}
+        >
+          Register
+        </button>
+      </form>
+    )
+  }
+  ```
+
+  </CodeTab>
+</CodeTabs>
+
+In the above example, you create a `handleRegistration` function that:
+
+- Obtains a JWT token from the `/auth/customer/emailpass/register` API route.
+- If an error is returned instead of a token:
+    - If the error is an existing identity error, try retrieving the login JWT token from `/auth/customer/emailpass` API route. This will fail if the existing identity has a different password, which doesn't allow the customer from registering.
+    - For other errors, show an alert and exit execution.
+- Send a request to the Create Customer API route, and pass the registration or login JWT token as a Bearer token in the authorization header.
+- If an error occurs, show an alert and exit execution.
+- Once the customer is registered successfully, you can either redirect the customer to the login page or log them in automatically as explained in this guide.

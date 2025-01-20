@@ -1,0 +1,112 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Customer Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Customer Module and other commerce modules.
+
+## Summary
+
+The Customer Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+- [`Cart` data model of Cart Module \<\> `Customer` data model](#cart-module). (Read-only).
+- [`Order` data model of Order Module \<\> `Customer` data model](#order-module). (Read-only).
+
+---
+
+## Cart Module
+
+Medusa defines a read-only link between the `Customer` data model and the [Cart Module](../../cart/page.mdx)'s `Cart` data model. This means you can retrieve the details of a customer's carts, but you don't manage the links in a pivot table in the database. The customer of a cart is determined by the `customer_id` property of the `Cart` data model.
+
+### Retrieve with Query
+
+To retrieve a customer's carts with [Query](!docs!/learn/fundamentals/module-links/query), pass `carts.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: customers } = await query.graph({
+  entity: "customer",
+  fields: [
+    "carts.*",
+  ],
+})
+
+// customers.carts
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: customers } = useQueryGraphStep({
+  entity: "customer",
+  fields: [
+    "carts.*",
+  ],
+})
+
+// customers.carts
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Order Module
+
+Medusa defines a read-only link between the `Customer` data model and the [Order Module](../../order/page.mdx)'s `Order` data model. This means you can retrieve the details of a customer's orders, but you don't manage the links in a pivot table in the database. The customer of an order is determined by the `customer_id` property of the `Order` data model.
+
+### Retrieve with Query
+
+To retrieve a customer's orders with [Query](!docs!/learn/fundamentals/module-links/query), pass `orders.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: customers } = await query.graph({
+  entity: "customer",
+  fields: [
+    "orders.*",
+  ],
+})
+
+// customers.orders
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: customers } = useQueryGraphStep({
+  entity: "customer",
+  fields: [
+    "orders.*",
+  ],
+})
+
+// customers.orders
+```
+
+  </CodeTab>
+</CodeTabs>

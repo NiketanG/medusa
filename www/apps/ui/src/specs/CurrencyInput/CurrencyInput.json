@@ -1,0 +1,264 @@
+{
+  "description": "This component is based on the input element and supports all of its props",
+  "methods": [],
+  "displayName": "CurrencyInput",
+  "props": {
+    "symbol": {
+      "required": true,
+      "tsType": {
+        "name": "string"
+      },
+      "description": "The symbol to show in the input."
+    },
+    "code": {
+      "required": true,
+      "tsType": {
+        "name": "string"
+      },
+      "description": "The currency code to show in the input."
+    },
+    "size": {
+      "defaultValue": {
+        "value": "\"base\"",
+        "computed": false
+      },
+      "description": "The input's size.",
+      "tsType": {
+        "name": "union",
+        "raw": "\"small\" \\| \"base\"",
+        "elements": [
+          {
+            "name": "literal",
+            "value": "\"small\""
+          },
+          {
+            "name": "literal",
+            "value": "\"base\""
+          }
+        ]
+      },
+      "required": false
+    },
+    "allowDecimals": {
+      "description": "Allow decimals\n\nDefault = true",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "allowNegativeValue": {
+      "description": "Allow user to enter negative value\n\nDefault = true",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "className": {
+      "description": "Class names",
+      "required": false,
+      "tsType": {
+        "name": "string"
+      }
+    },
+    "customInput": {
+      "description": "Custom component\n\nDefault = <input/>",
+      "required": false,
+      "tsType": {
+        "name": "ElementType",
+        "elements": [],
+        "raw": "ElementType"
+      }
+    },
+    "decimalScale": {
+      "description": "Specify decimal scale for padding/trimming\n\nExample:\n  1.5 -> 1.50\n  1.234 -> 1.23",
+      "required": false,
+      "tsType": {
+        "name": "number"
+      }
+    },
+    "decimalSeparator": {
+      "description": "Separator between integer part and fractional part of value.\n\nThis cannot be a number",
+      "required": false,
+      "tsType": {
+        "name": "string"
+      }
+    },
+    "decimalsLimit": {
+      "description": "Limit length of decimals allowed\n\nDefault = 2",
+      "required": false,
+      "tsType": {
+        "name": "number"
+      }
+    },
+    "defaultValue": {
+      "description": "Default value if not passing in value via props",
+      "required": false,
+      "tsType": {
+        "name": "union",
+        "raw": "string \\| number",
+        "elements": [
+          {
+            "name": "string"
+          },
+          {
+            "name": "number"
+          }
+        ]
+      }
+    },
+    "disableAbbreviations": {
+      "description": "Disable abbreviations (m, k, b)\n\nDefault = false",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "disabled": {
+      "description": "Disabled\n\nDefault = false",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "disableGroupSeparators": {
+      "description": "Disable auto adding separator between values eg. 1000 -> 1,000\n\nDefault = false",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "fixedDecimalLength": {
+      "description": "Value will always have the specified length of decimals\n\nExample:\n  123 -> 1.23\n\nNote: This formatting only happens onBlur",
+      "required": false,
+      "tsType": {
+        "name": "number"
+      }
+    },
+    "formatValueOnBlur": {
+      "description": "When set to false, the formatValueOnBlur flag disables the application of the __onValueChange__ function\nspecifically on blur events. If disabled or set to false, the onValueChange will not trigger on blur.\nDefault = true",
+      "required": false,
+      "tsType": {
+        "name": "boolean"
+      }
+    },
+    "groupSeparator": {
+      "description": "Separator between thousand, million and billion\n\nThis cannot be a number",
+      "required": false,
+      "tsType": {
+        "name": "string"
+      }
+    },
+    "id": {
+      "description": "Component id",
+      "required": false,
+      "tsType": {
+        "name": "string"
+      }
+    },
+    "intlConfig": {
+      "description": "International locale config, examples:\n  { locale: 'ja-JP', currency: 'JPY' }\n  { locale: 'en-IN', currency: 'INR' }\n\nAny prefix, groupSeparator or decimalSeparator options passed in\nwill override Intl Locale config",
+      "required": false,
+      "tsType": {
+        "name": "IntlConfig",
+        "elements": [],
+        "raw": "IntlConfig"
+      }
+    },
+    "maxLength": {
+      "description": "Maximum characters the user can enter",
+      "required": false,
+      "tsType": {
+        "name": "number"
+      }
+    },
+    "onValueChange": {
+      "description": "Handle change in value",
+      "required": false,
+      "tsType": {
+        "name": "signature",
+        "type": "function",
+        "raw": "(value: undefined \\| string, name?: string, values?: CurrencyInputOnChangeValues) => void",
+        "signature": {
+          "arguments": [
+            {
+              "name": "value",
+              "type": {
+                "name": "union",
+                "raw": "undefined \\| string",
+                "elements": [
+                  {
+                    "name": "undefined"
+                  },
+                  {
+                    "name": "string"
+                  }
+                ]
+              },
+              "rest": false
+            },
+            {
+              "name": "name",
+              "type": {
+                "name": "string"
+              },
+              "rest": false
+            },
+            {
+              "name": "values",
+              "type": {
+                "name": "CurrencyInputOnChangeValues",
+                "elements": [],
+                "raw": "CurrencyInputOnChangeValues"
+              },
+              "rest": false
+            }
+          ],
+          "return": {
+            "name": "void"
+          }
+        }
+      }
+    },
+    "placeholder": {
+      "description": "Placeholder if there is no value",
+      "required": false,
+      "tsType": {
+        "name": "string"
+      }
+    },
+    "step": {
+      "description": "Incremental value change on arrow down and arrow up key press",
+      "required": false,
+      "tsType": {
+        "name": "number"
+      }
+    },
+    "transformRawValue": {
+      "description": "Transform the raw value form the input before parsing",
+      "required": false,
+      "tsType": {
+        "name": "signature",
+        "type": "function",
+        "raw": "(rawValue: string) => string",
+        "signature": {
+          "arguments": [
+            {
+              "name": "rawValue",
+              "type": {
+                "name": "string"
+              },
+              "rest": false
+            }
+          ],
+          "return": {
+            "name": "string"
+          }
+        }
+      }
+    }
+  },
+  "composes": [
+    "Omit",
+    "VariantProps"
+  ]
+}

@@ -1,0 +1,141 @@
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Admin Widgets`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn more about widgets and how to use them.
+
+## What is an Admin Widget?
+
+The Medusa Admin dashboard's pages are customizable to insert widgets of custom content in pre-defined injection zones. You create these widgets as React components that allow admin users to perform custom actions.
+
+For example, you can add a widget on the product details page that allow admin users to sync products to a third-party service.
+
+---
+
+## How to Create a Widget?
+
+<Prerequisites
+  items={[{
+    link: "/learn/installation",
+    text: "Medusa application installed"
+  }]}
+/>
+
+You create a widget in a `.tsx` file under the `src/admin/widgets` directory. The file’s default export must be the widget, which is the React component that renders the custom content. The file must also export the widget’s configurations indicating where to insert the widget.
+
+For example, create the file `src/admin/widgets/product-widget.tsx` with the following content:
+
+![Example of widget file in the application's directory structure](https://res.cloudinary.com/dza7lstvk/image/upload/v1732867137/Medusa%20Book/widget-dir-overview_dqsbct.jpg)
+
+export const widgetHighlights = [
+  ["5", "ProductWidget", "The React component of the product widget."], 
+  ["17", "zone", "The zone to inject the widget to."]
+]
+
+```tsx title="src/admin/widgets/product-widget.tsx" highlights={widgetHighlights}
+import { defineWidgetConfig } from "@medusajs/admin-sdk"
+import { Container, Heading } from "@medusajs/ui"
+
+// The widget
+const ProductWidget = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">Product Widget</Heading>
+      </div>
+    </Container>
+  )
+}
+
+// The widget's configurations
+export const config = defineWidgetConfig({
+  zone: "product.details.before",
+})
+
+export default ProductWidget
+```
+
+You export the `ProductWidget` component, which shows the heading `Product Widget`. In the widget, you use [Medusa UI](!ui!), a package that Medusa maintains to allow you to customize the dashboard with the same components used to build it.
+
+To export the widget's configurations, you use `defineWidgetConfig` from the Admin Extension SDK. It accepts as a parameter an object with the `zone` property, whose value is a string or an array of strings, each being the name of the zone to inject the widget into.
+
+In the example above, the widget is injected at the top of a product’s details.
+
+<Note title="Important" type="warning">
+
+The widget component must be created as an arrow function.
+
+</Note>
+
+### Test the Widget
+
+To test out the widget, start the Medusa application:
+
+```bash npm2yarn
+npm run dev
+```
+
+Then, open a product’s details page. You’ll find your custom widget at the top of the page.
+
+---
+
+## Props Passed in Detail Pages
+
+Widgets that are injected into a details page receive a `data` prop, which is the main data of the details page.
+
+For example, a widget injected into the `product.details.before` zone receives the product's details in the `data` prop:
+
+export const detailHighlights = [
+  ["10", "data", "Receive the data as a prop."],
+  ["11", "AdminProduct", "Pass the expected type of `data` as a type argument."],
+  ["16", "data.title", "Show the product's title."]
+]
+
+```tsx title="src/admin/widgets/product-widget.tsx" highlights={detailHighlights}
+import { defineWidgetConfig } from "@medusajs/admin-sdk"
+import { Container, Heading } from "@medusajs/ui"
+import { 
+  DetailWidgetProps, 
+  AdminProduct,
+} from "@medusajs/framework/types"
+
+// The widget
+const ProductWidget = ({ 
+  data,
+}: DetailWidgetProps<AdminProduct>) => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">
+          Product Widget {data.title}
+        </Heading>
+      </div>
+    </Container>
+  )
+}
+
+// The widget's configurations
+export const config = defineWidgetConfig({
+  zone: "product.details.before",
+})
+
+export default ProductWidget
+```
+
+The props type is `DetailWidgetProps`, and it accepts as a type argument the expected type of `data`. For the product details page, it's `AdminProduct`.
+
+---
+
+## Injection Zone
+
+Refer to [this reference](!resources!/admin-widget-injection-zones) for the full list of injection zones and their props.
+
+---
+
+## Admin Components List
+
+To build admin customizations that match the Medusa Admin's designs and layouts, refer to [this guide](!resources!/admin-components) to find common components.

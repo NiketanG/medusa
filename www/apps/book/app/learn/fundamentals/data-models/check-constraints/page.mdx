@@ -1,0 +1,86 @@
+export const metadata = {
+  title: `${pageNumber} Add Data Model Check Constraints`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to add check constraints to your data model.
+
+## What is a Check Constraint?
+
+A check constraint is a condition that must be satisfied by records inserted into a database table, otherwise an error is thrown.
+
+For example, if you have a data model with a `price` property, you want to only allow positive number values. So, you add a check constraint that fails when inserting a record with a negative price value.
+
+---
+
+## How to Set a Check Constraint?
+
+To set check constraints on a data model, use the `checks` method. This method accepts an array of check constraints to apply on the data model.
+
+For example, to set a check constraint on a `price` property that ensures its value can only be a positive number:
+
+export const checks1Highlights = [
+  ["7", "checks", "Add check constraints to the data model."],
+  ["8", "columns", "An object of column names for each property."],
+  ["8", "`${columns.price} >= 0`", "Return a SQL check constraint expression."]
+]
+
+```ts highlights={checks1Highlights}
+import { model } from "@medusajs/framework/utils"
+
+const CustomProduct = model.define("custom_product", {
+  // ...
+  price: model.bigNumber(),
+})
+.checks([
+  (columns) => `${columns.price} >= 0`,
+])
+```
+
+The item passed in the array parameter of `checks` can be a callback function that accepts as a parameter an object whose keys are the names of the properties in the data model schema, and values the respective column name in the database. 
+
+The function returns a string indicating the [SQL check constraint expression](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS). In the expression, use the `columns` parameter to access a property's column name.
+
+You can also pass an object to the `checks` method:
+
+export const checks2Highlights = [
+  ["7", "checks", "Add check constraints to the data model."],
+  ["9", "name", "The check constraint's name."],
+  ["10", "expression", "A function that returns the SQL check constraint expression."]
+]
+
+```ts highlights={checks2Highlights}
+import { model } from "@medusajs/framework/utils"
+
+const CustomProduct = model.define("custom_product", {
+  // ...
+  price: model.bigNumber(),
+})
+.checks([
+  {
+    name: "custom_product_price_check",
+    expression: (columns) => `${columns.price} >= 0`,
+  },
+])
+```
+
+The object accepts the following properties:
+
+- `name`: The check constraint's name.
+- `expression`: A function similar to the one that can be passed to the array. It accepts an object of columns and returns an [SQL check constraint expression](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS).
+
+---
+
+## Apply in Migrations
+
+After adding the check constraint, make sure to generate and run migrations if you already have the table in the database. Otherwise, the check constraint won't be reflected.
+
+To generate a migration for the data model's module then reflect it on the database, run the following command:
+
+```bash
+npx medusa db:generate custom_module
+npx medusa db:migrate
+```
+
+The first command generates the migration under the `migrations` directory of your module's directory, and the second reflects it on the database.

@@ -1,0 +1,75 @@
+export const metadata = {
+  title: `Auth Identity and Actor Types`,
+}
+
+# {metadata.title}
+
+In this document, you’ll learn about concepts related to identity and actors in the Auth Module.
+
+## What is an Auth Identity?
+
+The [AuthIdentity data model](/references/auth/models/AuthIdentity) represents a user registered by an [authentication provider](../auth-providers/page.mdx). When a user is registered using an authentication provider, the provider creates a record of `AuthIdentity`.
+
+Then, when the user logs-in in the future with the same authentication provider, the associated auth identity is used to validate their credentials.
+
+---
+
+## Actor Types
+
+An actor type is a type of user that can be authenticated. The Auth Module doesn't store or manage any user-like models, such as for customers or users. Instead, the user types are created and managed by other modules. For example, a customer is managed by the [Customer Module](../../customer/page.mdx).
+
+Then, when an auth identity is created for the actor type, the ID of the user is stored in the `app_metadata` property of the auth identity.
+
+For example, an auth identity of a customer has the following `app_metadata` property:
+
+```json
+{
+  "app_metadata": {
+    "customer_id": "cus_123"
+  }
+}
+```
+
+The ID of the user is stored in the key `{actor_type}_id` of the `app_metadata` property.
+
+---
+
+## Protect Routes by Actor Type
+
+When you protect routes with the `authenticate` middleware, you specify in its first parameter the actor type that must be authenticated to access the specified API routes.
+
+For example:
+
+export const highlights = [
+  ["11", `"user"`, "The actor type that must be authenticated to access the specified routes."]
+]
+
+```ts title="src/api/middlewares.ts" highlights={highlights}
+import { 
+  defineMiddlewares,
+  authenticate,
+} from "@medusajs/framework/http"
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/custom/admin*",
+      middlewares: [
+        authenticate("user", ["session", "bearer", "api-key"]),
+      ],
+    },
+  ],
+})
+```
+
+By specifying `user` as the first parameter of `authenticate`, only authenticated users of actor type `user` (admin users) can access API routes starting with `/custom/admin`.
+
+---
+
+## Custom Actor Types
+
+You can define custom actor types that allows a custom user, managed by your custom module, to authenticate into Medusa.
+
+For example, if you have a custom module with a `Manager` data model, you can authenticate managers with the `manager` actor type.
+
+Learn how to create a custom actor type in [this guide](../create-actor-type/page.mdx).

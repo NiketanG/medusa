@@ -1,0 +1,598 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Order Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Order Module and other commerce modules.
+
+## Summary
+
+The Order Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+- [`Order` data model \<\> `Customer` data model of Customer Module](#customer-module). (Read-only).
+- [`Order` data model \<\> `Cart` data model of Cart Module](#cart-module).
+- [`Order` data model \<\> `Fulfillment` data model of Fulfillment Module](#fulfillment-module).
+- [`Return` data model \<\> `Fulfillment` data model of Fulfillment Module](#fulfillment-module).
+- [`Order` data model \<\> `PaymentCollection` data model of Payment Module](#payment-module).
+- [`OrderClaim` data model \<\> `PaymentCollection` data model of Payment Module](#payment-module).
+- [`OrderExchange` data model \<\> `PaymentCollection` data model of Payment Module](#payment-module).
+- [`Order` data model \<\> `Product` data model of Product Module](#product-module). (Read-only).
+- [`Order` data model \<\> `Promotion` data model of Promotion Module](#promotion-module).
+- [`Order` data model \<\> `Region` data model of Region Module](#region-module). (Read-only).
+- [`Order` data model \<\> `SalesChannel` data model of Sales Channel Module](#sales-channel-module). (Read-only).
+
+---
+
+## Customer Module
+
+Medusa defines a read-only link between the `Order` data model and the [Customer Module](../../customer/page.mdx)'s `Customer` data model. This means you can retrieve the details of an order's customer, but you don't manage the links in a pivot table in the database. The customer of an order is determined by the `customer_id` property of the `Order` data model.
+
+### Retrieve with Query
+
+To retrieve the customer of an order with [Query](!docs!/learn/fundamentals/module-links/query), pass `customer.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: orders } = await query.graph({
+  entity: "order",
+  fields: [
+    "customer.*",
+  ],
+})
+
+// orders.customer
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: orders } = useQueryGraphStep({
+  entity: "order",
+  fields: [
+    "customer.*",
+  ],
+})
+
+// orders.customer
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Cart Module
+
+The [Cart Module](../../cart/page.mdx) provides cart-management features.
+
+Medusa defines a link between the `Order` and `Cart` data models. The order is linked to the cart used for the purchased.
+
+![A diagram showcasing an example of how data models from the Cart and Order modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1728375735/Medusa%20Resources/cart-order_ijwmfs.jpg)
+
+### Retrieve with Query
+
+To retrieve the cart of an order with [Query](!docs!/learn/fundamentals/module-links/query), pass `cart.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: orders } = await query.graph({
+  entity: "order",
+  fields: [
+    "cart.*",
+  ],
+})
+
+// orders.cart
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: orders } = useQueryGraphStep({
+  entity: "order",
+  fields: [
+    "cart.*",
+  ],
+})
+
+// orders.cart
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the cart of an order, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.CART]: {
+    cart_id: "cart_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.CART]: {
+    cart_id: "cart_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Fulfillment Module
+
+A fulfillment is created for an orders' items. Medusa defines a link between the `Fulfillment` and `Order` data models.
+
+![A diagram showcasing an example of how data models from the Fulfillment and Order modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1716549903/Medusa%20Resources/order-fulfillment_h0vlps.jpg)
+
+A fulfillment is also created for a return's items. So, Medusa defines a link between the `Fulfillment` and `Return` data models.
+
+![A diagram showcasing an example of how data models from the Fulfillment and Order modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1728399052/Medusa%20Resources/Social_Media_Graphics_2024_Order_Return_vetimk.jpg)
+
+### Retrieve with Query
+
+To retrieve the fulfillments of an order with [Query](!docs!/learn/fundamentals/module-links/query), pass `fulfillments.*` in `fields`:
+
+<Note>
+
+To retrieve the fulfillments of a return, pass `fulfillments.*` in `fields`.
+
+</Note>
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: orders } = await query.graph({
+  entity: "order",
+  fields: [
+    "fulfillments.*",
+  ],
+})
+
+// orders.fulfillments
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: orders } = useQueryGraphStep({
+  entity: "order",
+  fields: [
+    "fulfillments.*",
+  ],
+})
+
+// orders.fulfillments
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the fulfillments of an order, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.FULFILLMENT]: {
+    fulfillment_id: "ful_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.FULFILLMENT]: {
+    fulfillment_id: "ful_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Payment Module
+
+An order's payment details are stored in a payment collection. This also applies for claims and exchanges.
+
+So, Medusa defines links between the `PaymentCollection` data model and the `Order`, `OrderClaim`, and `OrderExchange` data models.
+
+![A diagram showcasing an example of how data models from the Order and Payment modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1716554726/Medusa%20Resources/order-payment_ubdwok.jpg)
+
+### Retrieve with Query
+
+To retrieve the payment collections of an order, order exchange, or order claim with [Query](!docs!/learn/fundamentals/module-links/query), pass `payment_collections.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: orders } = await query.graph({
+  entity: "order",
+  fields: [
+    "payment_collections.*",
+  ],
+})
+
+// orders.payment_collections
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: orders } = useQueryGraphStep({
+  entity: "order",
+  fields: [
+    "payment_collections.*",
+  ],
+})
+
+// orders.payment_collections
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the payment collections of an order, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_collection_id: "paycol_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_collection_id: "paycol_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Product Module
+
+Medusa defines read-only links between:
+
+- the `OrderLineItem` data model and the [Product Module](../../product/page.mdx)'s `Product` data model. This means you can retrieve the details of a line item's product, but you don't manage the links in a pivot table in the database. The product of a line item is determined by the `product_id` property of the `OrderLineItem` data model.
+- the `OrderLineItem` data model and the [Product Module](../../product/page.mdx)'s `ProductVariant` data model. This means you can retrieve the details of a line item's variant, but you don't manage the links in a pivot table in the database. The variant of a line item is determined by the `variant_id` property of the `OrderLineItem` data model.
+
+### Retrieve with Query
+
+To retrieve the variant of a line item with [Query](!docs!/learn/fundamentals/module-links/query), pass `variant.*` in `fields`:
+
+<Note>
+
+To retrieve the product, pass `product.*` in `fields`.
+
+</Note>
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: lineItems } = await query.graph({
+  entity: "order_line_item",
+  fields: [
+    "variant.*",
+  ],
+})
+
+// lineItems.variant
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: lineItems } = useQueryGraphStep({
+  entity: "order_line_item",
+  fields: [
+    "variant.*",
+  ],
+})
+
+// lineItems.variant
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Promotion Module
+
+An order is associated with the promotion applied on it. Medusa defines a link between the `Order` and `Promotion` data models.
+
+![A diagram showcasing an example of how data models from the Order and Promotion modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1716555015/Medusa%20Resources/order-promotion_dgjzzd.jpg)
+
+### Retrieve with Query
+
+To retrieve the promotion applied on an order with [Query](!docs!/learn/fundamentals/module-links/query), pass `promotion.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: orders } = await query.graph({
+  entity: "order",
+  fields: [
+    "promotion.*",
+  ],
+})
+
+// orders.promotion
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: orders } = useQueryGraphStep({
+  entity: "order",
+  fields: [
+    "promotion.*",
+  ],
+})
+
+// orders.promotion
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the promotion of an order, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.PROMOTION]: {
+    promotion_id: "promo_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.PROMOTION]: {
+    promotion_id: "promo_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Region Module
+
+Medusa defines a read-only link between the `Order` data model and the [Region Module](../../region/page.mdx)'s `Region` data model. This means you can retrieve the details of an order's region, but you don't manage the links in a pivot table in the database. The region of an order is determined by the `region_id` property of the `Order` data model.
+
+### Retrieve with Query
+
+To retrieve the region of an order with [Query](!docs!/learn/fundamentals/module-links/query), pass `region.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: orders } = await query.graph({
+  entity: "order",
+  fields: [
+    "region.*",
+  ],
+})
+
+// orders.region
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: orders } = useQueryGraphStep({
+  entity: "order",
+  fields: [
+    "region.*",
+  ],
+})
+
+// orders.region
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Sales Channel Module
+
+Medusa defines a read-only link between the `Order` data model and the [Sales Channel Module](../../sales-channel/page.mdx)'s `SalesChannel` data model. This means you can retrieve the details of an order's sales channel, but you don't manage the links in a pivot table in the database. The sales channel of an order is determined by the `sales_channel_id` property of the `Order` data model.
+
+### Retrieve with Query
+
+To retrieve the sales channel of an order with [Query](!docs!/learn/fundamentals/module-links/query), pass `sales_channel.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: orders } = await query.graph({
+  entity: "order",
+  fields: [
+    "sales_channel.*",
+  ],
+})
+
+// orders.sales_channel
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: orders } = useQueryGraphStep({
+  entity: "order",
+  fields: [
+    "sales_channel.*",
+  ],
+})
+
+// orders.sales_channel
+```
+
+  </CodeTab>
+</CodeTabs>

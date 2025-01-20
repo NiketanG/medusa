@@ -1,0 +1,42 @@
+import { CardList } from "docs-ui"
+
+export const metadata = {
+  title: `File Module Providers`,
+}
+
+# {metadata.title}
+
+## What is a File Module Provider?
+
+The File Module exposes the functionalities to upload assets, such as product images, to the Medusa application. A file module provider implements the underlying logic of handling uploads and downloads of assets, such as integrating third-party services. The File Module must have one file module provider configured.
+
+By default, Medusa uses the Local File Module. This module uploads files to the `uploads` directory of your Medusa application.
+
+This is useful for development. However, for production, it’s highly recommended to use other File Modules, such as the S3 Module.
+
+<CardList
+  items={[
+    {
+      title: "Local",
+      href: "/architectural-modules/file/local",
+      badge: {
+        variant: "neutral",
+        children: "For Development"
+      }
+    },
+    {
+      title: "AWS S3 (and Compatible APIs)",
+      href: "/architectural-modules/file/s3",
+      badge: {
+        variant: "green",
+        children: "For Production"
+      }
+    }
+  ]}
+/>
+
+---
+
+## Create a File Module Provider
+
+To create a file module provider, refer to [this guide](/references/file-provider-module).

@@ -1,0 +1,213 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Promotion Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Promotion Module and other commerce modules.
+
+## Summary
+
+The Promotion Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+- [`Cart` data model of the Cart Module \<\> `Promotion` data model](#cart-module).
+- [`LineItemAdjustment` data model of the Cart Module \<\> `Promotion` data model](#cart-module). (Read-only).
+- [`Order` data model of the Order Module \<\> `Promotion` data model](#order-module).
+
+---
+
+## Cart Module
+
+A promotion can be applied on line items and shipping methods of a cart. Medusa defines a link between the `Cart` and `Promotion` data models.
+
+![A diagram showcasing an example of how data models from the Cart and Promotion modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1711538015/Medusa%20Resources/cart-promotion_kuh9vm.jpg)
+
+Medusa also defines a read-only link between the `Promotion` data model and the [Cart Module](../../cart/page.mdx)'s `LineItemAdjustment` data model. This means you can retrieve the details of the promotion applied on a line item, but you don't manage the links in a pivot table in the database. The promotion of a line item is determined by the `promotion_id` property of the `LineItemAdjustment` data model.
+
+### Retrieve with Query
+
+To retrieve the carts that a promotion is applied on with [Query](!docs!/learn/fundamentals/module-links/query), pass `carts.*` in `fields`:
+
+<Note>
+
+To retrieve the line item adjustments of a promotion, pass `line_item_adjustments.*` in `fields`.
+
+</Note>
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: promotions } = await query.graph({
+  entity: "promotion",
+  fields: [
+    "carts.*",
+  ],
+})
+
+// promotions.carts
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: promotions } = useQueryGraphStep({
+  entity: "promotion",
+  fields: [
+    "carts.*",
+  ],
+})
+
+// promotions.carts
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the promotions of a cart, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.CART]: {
+    cart_id: "cart_123",
+  },
+  [Modules.PROMOTION]: {
+    promotion_id: "promo_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.CART]: {
+    cart_id: "cart_123",
+  },
+  [Modules.PROMOTION]: {
+    promotion_id: "promo_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Order Module
+
+An order is associated with the promotion applied on it. Medusa defines a link between the `Order` and `Promotion` data models.
+
+![A diagram showcasing an example of how data models from the Order and Promotion modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1716555015/Medusa%20Resources/order-promotion_dgjzzd.jpg)
+
+### Retrieve with Query
+
+To retrieve the orders a promotion is applied on with [Query](!docs!/learn/fundamentals/module-links/query), pass `orders.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: promotions } = await query.graph({
+  entity: "promotion",
+  fields: [
+    "orders.*",
+  ],
+})
+
+// promotions.orders
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: promotions } = useQueryGraphStep({
+  entity: "promotion",
+  fields: [
+    "orders.*",
+  ],
+})
+
+// promotions.orders
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the promotion of an order, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.PROMOTION]: {
+    promotion_id: "promo_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.PROMOTION]: {
+    promotion_id: "promo_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>

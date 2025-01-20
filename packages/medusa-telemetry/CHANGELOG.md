@@ -1,7 +1,81 @@
 # Change Log
 
+## 2.3.1
+
+## 2.3.0
+
+## 2.2.0
+
+## 2.1.3
+
+## 2.1.2
+
+## 2.1.1
+
+## 2.1.0
+
+## 2.0.7
+
+## 2.0.6
+
+## 2.0.5
+
+## 2.0.4
+
+## 2.0.3
+
+## 2.0.2
+
+### Patch Changes
+
+- [#9939](https://github.com/medusajs/medusa/pull/9939) [`de228d209f30dfbb5b500d5cb49932b63e06f52a`](https://github.com/medusajs/medusa/commit/de228d209f30dfbb5b500d5cb49932b63e06f52a) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(telemetry): Pointing and resolving packages wrongly
+
+## 2.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- [#7341](https://github.com/medusajs/medusa/pull/7341) [`2e42e053d4c9d5445d227bdc268c66713aad8e2e`](https://github.com/medusajs/medusa/commit/2e42e053d4c9d5445d227bdc268c66713aad8e2e) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Medusa 2.0
+
+## 0.0.17
+
+### Patch Changes
+
+- [#4817](https://github.com/medusajs/medusa/pull/4817) [`c58588904`](https://github.com/medusajs/medusa/commit/c58588904c5631111603b15afacf7cdc4c738cc4) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(medusa-telemetry): added missing babel dependencies
+
+## 0.0.16
+
+### Patch Changes
+
+- [#3025](https://github.com/medusajs/medusa/pull/3025) [`93d0dc1bd`](https://github.com/medusajs/medusa/commit/93d0dc1bdcb54cf6e87428a7bb9b0dac196b4de2) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(medusa): test, build and watch scripts
+
+## 0.0.15
+
+### Patch Changes
+
+- [#2590](https://github.com/medusajs/medusa/pull/2590) [`a76762418`](https://github.com/medusajs/medusa/commit/a76762418877e675977540dc95e095492873af44) Thanks [@fPolic](https://github.com/fPolic)! - Add missing changeset
+
+## 0.0.14
+
+### Patch Changes
+
+- [#2574](https://github.com/medusajs/medusa/pull/2574) [`cfb24d72f`](https://github.com/medusajs/medusa/commit/cfb24d72fa303a6755e8579c46d3c7f36278b120) Thanks [@olivermrbl](https://github.com/olivermrbl)! - Fix incorrect import
+
+## 0.0.13
+
+### Patch Changes
+
+- [#2017](https://github.com/medusajs/medusa/pull/2017) [`900260c5b`](https://github.com/medusajs/medusa/commit/900260c5b9df4f4f927db5bb6921e5e139ff269a) Thanks [@olivermrbl](https://github.com/olivermrbl)! - Adds enabled features flags to tracking event in `medusa-telemetry`
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [0.0.11](https://github.com/medusajs/medusa/compare/medusa-telemetry@0.0.10...medusa-telemetry@0.0.11) (2021-12-08)
+
+### Features
+
+- medusa-source-shopify loader ([#563](https://github.com/medusajs/medusa/issues/563)) ([577bcc2](https://github.com/medusajs/medusa/commit/577bcc23d44c87b91b2b685fd4ddfc5d21a0aa47))
 
 ## [0.0.10](https://github.com/medusajs/medusa/compare/medusa-telemetry@0.0.9...medusa-telemetry@0.0.10) (2021-11-11)
 

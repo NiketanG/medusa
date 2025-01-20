@@ -1,0 +1,265 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Stock Location Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Stock Location Module and other commerce modules.
+
+## Summary
+
+The Stock Location Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+- [`FulfillmentSet` data model of the Fulfillment Module \<\> `StockLocation` data model](#fulfillment-module).
+- [`FulfillmentProvider` data model of the Fulfillment Module \<\> `StockLocation` data model](#fulfillment-module).
+- [`StockLocation` data model \<\> `Inventory` data model of the Inventory Module](#inventory-module).
+- [`SalesChannel` data model of the Sales Channel Module \<\> `StockLocation` data model](#sales-channel-module).
+
+---
+
+## Fulfillment Module
+
+A fulfillment set can be conditioned to a specific stock location.
+
+Medusa defines a link between the `FulfillmentSet` and `StockLocation` data models.
+
+![A diagram showcasing an example of how data models from the Fulfillment and Stock Location modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1712567101/Medusa%20Resources/fulfillment-stock-location_nlkf7e.jpg)
+
+Medusa also defines a link between the `FulfillmentProvider` and `StockLocation` data models to indicate the providers that can be used in a location.
+
+![A diagram showcasing an example of how data models from the Fulfillment and Stock Location modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1728399492/Medusa%20Resources/fulfillment-provider-stock-location_b0mulo.jpg)
+
+### Retrieve with Query
+
+To retrieve the fulfillment sets of a stock location with [Query](!docs!/learn/fundamentals/module-links/query), pass `fulfillment_sets.*` in `fields`:
+
+<Note>
+
+To retrieve the fulfillment providers, pass `fulfillment_providers.*` in `fields`.
+
+</Note>
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: stockLocations } = await query.graph({
+  entity: "stock_location",
+  fields: [
+    "fulfillment_sets.*",
+  ],
+})
+
+// stockLocations.fulfillment_sets
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: stockLocations } = useQueryGraphStep({
+  entity: "stock_location",
+  fields: [
+    "fulfillment_sets.*",
+  ],
+})
+
+// stockLocations.fulfillment_sets
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the stock location of a fulfillment set, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.STOCK_LOCATION]: {
+    stock_location_id: "sloc_123",
+  },
+  [Modules.FULFILLMENT]: {
+    fulfillment_set_id: "fset_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.STOCK_LOCATION]: {
+    stock_location_id: "sloc_123",
+  },
+  [Modules.FULFILLMENT]: {
+    fulfillment_set_id: "fset_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Inventory Module
+
+Medusa defines a read-only link between the `StockLocation` data model and the [Inventory Module](../../inventory/page.mdx)'s `InventoryLevel` data model. This means you can retrieve the details of a stock location's inventory levels, but you don't manage the links in a pivot table in the database. The stock location of an inventory level is determined by the `location_id` property of the `InventoryLevel` data model.
+
+### Retrieve with Query
+
+To retrieve the inventory levels of a stock location with [Query](!docs!/learn/fundamentals/module-links/query), pass `inventory_levels.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: stockLocations } = await query.graph({
+  entity: "stock_location",
+  fields: [
+    "inventory_levels.*",
+  ],
+})
+
+// stockLocations.inventory_levels
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: stockLocations } = useQueryGraphStep({
+  entity: "stock_location",
+  fields: [
+    "inventory_levels.*",
+  ],
+})
+
+// stockLocations.inventory_levels
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Sales Channel Module
+
+A stock location is associated with a sales channel. This scopes inventory quantities in a stock location by the associated sales channel.
+
+Medusa defines a link between the `SalesChannel` and `StockLocation` data models.
+
+![A diagram showcasing an example of how resources from the Sales Channel and Stock Location modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1716796872/Medusa%20Resources/sales-channel-location_cqrih1.jpg)
+
+### Retrieve with Query
+
+To retrieve the sales channels of a stock location with [Query](!docs!/learn/fundamentals/module-links/query), pass `sales_channels.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: stockLocations } = await query.graph({
+  entity: "stock_location",
+  fields: [
+    "sales_channels.*",
+  ],
+})
+
+// stockLocations.sales_channels
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: stockLocations } = useQueryGraphStep({
+  entity: "stock_location",
+  fields: [
+    "sales_channels.*",
+  ],
+})
+
+// stockLocations.sales_channels
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the stock locations of a sales channel, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+  [Modules.STOCK_LOCATION]: {
+    sales_channel_id: "sloc_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+  [Modules.STOCK_LOCATION]: {
+    sales_channel_id: "sloc_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>

@@ -1,0 +1,47 @@
+name: i18n Validation
+
+on:
+  pull_request:
+    paths:
+      - packages/admin/dashboard/src/i18n/translations/**
+
+
+jobs:
+  i18n-validation-admin-dashboard:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        working-directory: packages/admin/dashboard
+        run: yarn install
+
+      - name: Validate i18n translations
+        working-directory: packages/admin/dashboard
+        run: |
+          git diff --name-only --diff-filter=A origin/develop HEAD -- src/i18n/translations > i18n_added_files.txt
+          
+          cat i18n_added_files.txt
+          
+          while read -r file; do
+            # Get the base name of the file
+            filename=$(basename "$file")
+          
+            # Skip those items
+            if [ "$filename" = "\$schema.json" ] || [ "$filename" = "index.ts" ] || [ -d "$file" ]; then
+              continue
+            fi
+          
+            # Run validation on the file
+            yarn i18n:validate "$filename"
+          done < i18n_added_files.txt

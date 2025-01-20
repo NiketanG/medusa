@@ -1,0 +1,63 @@
+export const metadata = {
+  title: `${pageNumber} Medusa Deployment Overview`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn the general approach to deploying the Medusa application.
+
+## Medusa Project Components
+
+A standard Medusa project is made up of:
+
+- Medusa application: The Medusa server and the Medusa Admin.
+- One or more storefronts
+
+![Diagram showcasing the connection between the three deployed components](https://res.cloudinary.com/dza7lstvk/image/upload/v1708600807/Medusa%20Book/deployment-options_ceuuvo.jpg)
+
+You deploy the Medusa application, with the server and admin, separately from the storefront.
+
+---
+
+## Deploying the Medusa Application
+
+You must deploy the Medusa application before the storefront, as it connects to the server and won’t work without a deployed Medusa server URL.
+
+The Medusa application must be deployed to a hosting provider supporting Node.js server deployments, such as Railway, DigitalOcean, AWS, Heroku, etc…
+
+![Diagram showcasing how the Medusa server and its associated services would be deployed](https://res.cloudinary.com/dza7lstvk/image/upload/v1708600972/Medusa%20Book/backend_deployment_pgexo3.jpg)
+
+Your server connects to a PostgreSQL database, Redis, and other services relevant for your setup. Most hosting providers support deploying and managing these databases along with your Medusa server (such as Railway and DigitalOcean).
+
+When you deploy your Medusa application, you also deploy the Medusa Admin. For optimal experience, your hosting provider and plan must offer at least 2GB of RAM.
+
+### How to Deploy Medusa?
+
+Medusa Cloud is our managed services offering that makes deploying and operating Medusa applications possible without having to worry about configuring, scaling, and maintaining infrastructure. Medusa Cloud hosts your server, Admin dashboard, database, and Redis instance.
+
+With Medusa Cloud, you maintain full customization control as you deploy your own modules and customizations directly from GitHub:
+
+- Push to deploy.
+- Multiple testing environments.
+- Preview environments for new PRs.
+- Test on production-like data.
+
+[Sign up and learn more about Medusa Cloud](https://medusajs.com/contact)
+
+To self-host Medusa, the [next chapter](./general/page.mdx) explains the general steps to deploy your Medusa application. Refer to [this reference](!resources!/deployment) to find how-to deployment guides for general and specific hosting providers.
+
+---
+
+## Deploying the Storefront
+
+The storefront is deployed separately from the Medusa application, and the hosting options depend on the tools and frameworks you use to create the storefront.
+
+If you’re using the Next.js Starter storefront, you may deploy the storefront to any hosting provider that supports frontend frameworks, such as Vercel.
+
+<Note title="Important">
+
+Per Vercel’s [license and plans](https://vercel.com/pricing), their free plan can only be used for personal, non-commercial projects. So, you can deploy the storefront on the free plan for development purposes, but for commercial projects, you must update your Vercel plan.
+
+</Note>
+
+Refer to [this reference](!resources!/deployment) to find how-to deployment guides for specific hosting providers.

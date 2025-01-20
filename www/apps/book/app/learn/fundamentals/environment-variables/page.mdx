@@ -1,0 +1,96 @@
+import { Table } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Environment Variables`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how environment variables are loaded in Medusa.
+
+## System Environment Variables
+
+The Medusa application loads and uses system environment variables.
+
+For example, if you set the `PORT` environment variable to `8000`, the Medusa application runs on that port instead of `9000`.
+
+In production, you should always use system environment variables that you set through your hosting provider.
+
+---
+
+## Environment Variables in .env Files
+
+During development, it's easier to set environment variables in a `.env` file in your repository.
+
+Based on your `NODE_ENV` system environment variable, which is considered as `development` if not set, Medusa will try to load environment variables from the following `.env` files:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>Environment</Table.HeaderCell>
+      <Table.HeaderCell>
+      
+      `.env` File
+      
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+
+      `NODE_ENV` = `development` or not set
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `.env`
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `NODE_ENV` = `production`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `.env.production`
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `NODE_ENV` = `staging`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `.env.staging`
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+      `NODE_ENV` = `test`
+
+      </Table.Cell>
+      <Table.Cell>
+
+      `.env.test`
+
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+### Set Environment in `loadEnv`
+
+In the `medusa-config.ts` file of your Medusa application, you'll find a `loadEnv` function used that accepts `process.env.NODE_ENV` as a first parameter.
+
+This function is responsible for loading the correct `.env` file based on the value of `process.env.NODE_ENV`.
+
+To ensure that the correct `.env` file is loaded as shown in the table above, only specify `development`, `production`, `staging` or `test` as the value of `process.env.NODE_ENV` or as the parameter of `loadEnv`.

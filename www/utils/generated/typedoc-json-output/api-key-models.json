@@ -1,0 +1,523 @@
+{
+	"id": 326,
+	"name": "api-key-models",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 327,
+			"name": "ApiKey",
+			"variant": "declaration",
+			"kind": 32,
+			"flags": {
+				"isConst": true
+			},
+			"sources": [
+				{
+					"fileName": "api-key.ts",
+					"line": 3,
+					"character": 6,
+					"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L3"
+				}
+			],
+			"type": {
+				"type": "reference",
+				"target": {
+					"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+					"qualifiedName": "DmlEntity"
+				},
+				"typeArguments": [
+					{
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../../../packages/core/utils/src/dml/entity.ts",
+							"qualifiedName": "DMLEntitySchemaBuilder"
+						},
+						"typeArguments": [
+							{
+								"type": "reflection",
+								"declaration": {
+									"id": 328,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"children": [
+										{
+											"id": 329,
+											"name": "id",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the API key."
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 5,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L5"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/primary-key.ts",
+													"qualifiedName": "PrimaryKeyModifier"
+												},
+												"typeArguments": [
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../../../packages/core/utils/src/dml/properties/id.ts",
+															"qualifiedName": "IdProperty"
+														},
+														"name": "IdProperty",
+														"package": "@medusajs/utils"
+													}
+												],
+												"name": "PrimaryKeyModifier",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 330,
+											"name": "token",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The token of the API key"
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 6,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L6"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 331,
+											"name": "salt",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Salt used to create the API key token."
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 7,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L7"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 332,
+											"name": "redacted",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The redacted form of the api key's token. this is useful when showing portion of the token."
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 8,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L8"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 333,
+											"name": "title",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The title of the API key"
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 9,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L9"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 334,
+											"name": "type",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The type of the API key. Can be `secret` or `publishable`."
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 10,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L10"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/enum.ts",
+													"qualifiedName": "EnumProperty"
+												},
+												"typeArguments": [
+													{
+														"type": "tuple",
+														"elements": [
+															{
+																"type": "literal",
+																"value": "publishable"
+															},
+															{
+																"type": "literal",
+																"value": "secret"
+															}
+														]
+													}
+												],
+												"name": "EnumProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 335,
+											"name": "last_used_at",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The date the API key was last used."
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 11,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L11"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/date-time.ts",
+													"qualifiedName": "DateTimeProperty"
+												},
+												"name": "DateTimeProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 336,
+											"name": "created_by",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the user that created the API key"
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 12,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L12"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 337,
+											"name": "revoked_by",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the user that revoked the API key"
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 13,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L13"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 338,
+											"name": "revoked_at",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {
+												"isOptional": true
+											},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The date the API key was revoked."
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "api-key.ts",
+													"line": 14,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L14"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/date-time.ts",
+													"qualifiedName": "DateTimeProperty"
+												},
+												"name": "DateTimeProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										}
+									],
+									"groups": [
+										{
+											"title": "Properties",
+											"children": [
+												329,
+												330,
+												331,
+												332,
+												333,
+												334,
+												335,
+												336,
+												337,
+												338
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "api-key.ts",
+											"line": 4,
+											"character": 20,
+											"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/modules/api-key/src/models/api-key.ts#L4"
+										}
+									]
+								}
+							}
+						],
+						"name": "DMLEntitySchemaBuilder",
+						"package": "@medusajs/utils"
+					},
+					{
+						"type": "literal",
+						"value": "ApiKey"
+					}
+				],
+				"name": "DmlEntity",
+				"package": "@medusajs/utils"
+			},
+			"defaultValue": "..."
+		}
+	],
+	"groups": [
+		{
+			"title": "Variables",
+			"children": [
+				327
+			]
+		}
+	],
+	"packageName": "@medusajs/api-key",
+	"symbolIdMap": {
+		"326": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/index.ts",
+			"qualifiedName": ""
+		},
+		"327": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "ApiKey"
+		},
+		"328": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object"
+		},
+		"329": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.id"
+		},
+		"330": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.token"
+		},
+		"331": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.salt"
+		},
+		"332": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.redacted"
+		},
+		"333": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.title"
+		},
+		"334": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.type"
+		},
+		"335": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.last_used_at"
+		},
+		"336": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.created_by"
+		},
+		"337": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.revoked_by"
+		},
+		"338": {
+			"sourceFileName": "../../../../packages/modules/api-key/src/models/api-key.ts",
+			"qualifiedName": "__object.revoked_at"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "../../../../packages/modules/api-key/src/models/index.ts"
+		},
+		"reflections": {
+			"1": 326
+		}
+	}
+}

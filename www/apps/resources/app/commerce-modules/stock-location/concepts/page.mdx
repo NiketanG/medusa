@@ -1,0 +1,19 @@
+export const metadata = {
+  title: `Stock Location Concepts`,
+}
+
+# {metadata.title}
+
+In this document, you’ll learn about the main concepts in the Stock Location Module.
+
+## Stock Location
+
+A stock location, represented by the `StockLocation` data model, represents a location where stock items are kept. For example, a warehouse.
+
+Medusa uses stock locations to provide inventory details, from the Inventory Module, per location.
+
+---
+
+## StockLocationAddress
+
+The `StockLocationAddress` data model belongs to the `StockLocation` data model. It provides more detailed information of the location, such as country code or street address.

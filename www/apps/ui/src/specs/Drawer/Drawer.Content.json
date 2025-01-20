@@ -1,0 +1,33 @@
+{
+  "description": "This component wraps the content of the drawer.\nIt accepts props from the [Radix UI Dialog Content](https://www.radix-ui.com/primitives/docs/components/dialog#content) component.",
+  "methods": [],
+  "displayName": "Drawer.Content",
+  "props": {
+    "overlayProps": {
+      "required": false,
+      "tsType": {
+        "name": "ReactComponentPropsWithoutRef",
+        "raw": "React.ComponentPropsWithoutRef<typeof DrawerOverlay>",
+        "elements": [
+          {
+            "name": "DrawerOverlay"
+          }
+        ]
+      },
+      "description": "Props for the overlay component.\nIt accepts props from the [Radix UI Dialog Overlay](https://www.radix-ui.com/primitives/docs/components/dialog#overlay) component."
+    },
+    "portalProps": {
+      "required": false,
+      "tsType": {
+        "name": "ReactComponentPropsWithoutRef",
+        "raw": "React.ComponentPropsWithoutRef<typeof DrawerPortal>",
+        "elements": [
+          {
+            "name": "DrawerPortal"
+          }
+        ]
+      },
+      "description": "Props for the portal component that wraps the drawer content.\nIt accepts props from the [Radix UI Dialog Portal](https://www.radix-ui.com/primitives/docs/components/dialog#portal) component."
+    }
+  }
+}

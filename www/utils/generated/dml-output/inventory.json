@@ -1,0 +1,55 @@
+{
+	"InventoryLevel": {
+		"filePath": "packages/modules/inventory/src/models/inventory-level.ts",
+		"properties": {
+			"id": "The ID of the inventory level.",
+			"location_id": "The ID of the inventory level's location. When used with the [Stock Location Module](https://docs.medusajs.com/resources/commerce-modules/stock-location), the ID will be a `StockLocation`'s ID.",
+			"stocked_quantity": "The stocked quantity of the inventory level",
+			"reserved_quantity": "The reserved quantity of the inventory level",
+			"incoming_quantity": "The incoming quantity of the inventory level",
+			"metadata": "Holds custom data in key-value pairs.",
+			"inventory_item": "The associated inventory item.\n\n@expandable",
+			"available_quantity": "The available quantity of the inventory level"
+		}
+	},
+	"ReservationItem": {
+		"filePath": "packages/modules/inventory/src/models/reservation-item.ts",
+		"properties": {
+			"id": "The ID of the reservation item.",
+			"line_item_id": "The ID of the reservation item's line item.",
+			"allow_backorder": "Whether the underlying item can still be ordered despite the reserved quantity.",
+			"location_id": "The ID of the location that the quantity is reserved from. When used with the [Stock Location Module](https://docs.medusajs.com/resources/commerce-modules/stock-location), the ID will be a `StockLocation`'s ID.",
+			"quantity": "The reserved quantity.",
+			"raw_quantity": "The raw reserved quantity.",
+			"external_id": "The external ID of the reservation item. Can store an ID from a third-party system.",
+			"description": "The description of the reservation item",
+			"created_by": "The ID of the user that created the reservation item.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"inventory_item": "The associated inventory item.\n\n@expandable"
+		}
+	},
+	"InventoryItem": {
+		"filePath": "packages/modules/inventory/src/models/inventory-item.ts",
+		"properties": {
+			"id": "The ID of the inventory item.",
+			"sku": "The SKU of the inventory item",
+			"origin_country": "The origin country of the inventory item",
+			"hs_code": "The HS code of the inventory item",
+			"mid_code": "The MID code of the inventory item",
+			"material": "The material of the inventory item",
+			"weight": "The weight of the inventory item",
+			"length": "The length of the inventory item",
+			"height": "The height of the inventory item",
+			"width": "The width of the inventory item",
+			"requires_shipping": "Whether the inventory item requires shipping.",
+			"description": "The description of the inventory item",
+			"title": "The title of the inventory item",
+			"thumbnail": "The thumbnail URL of the inventory item",
+			"metadata": "Holds custom data in key-value pairs.",
+			"location_levels": "The associated location levels.\n\n@expandable",
+			"reservation_items": "The associated reservation items.\n\n@expandable",
+			"reserved_quantity": "The reserved quantity of the inventory item",
+			"stocked_quantity": "The stocked quantity of the inventory item"
+		}
+	}
+}

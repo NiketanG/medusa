@@ -1,0 +1,416 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Product Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Product Module and other commerce modules.
+
+## Summary
+
+The Product Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+- [`Product` data model \<\> `Cart` data model of Cart Module](#cart-module). (Read-only).
+- [`ProductVariant` data model \<\> `InventoryItem` data model of Inventory Module](#inventory-module).
+- [`Product` data model \<\> `Order` data model of Order Module](#order-module). (Read-only).
+- [`ProductVariant` data model \<\> `PriceSet` data model of Pricing Module](#pricing-module).
+- [`Product` data model \<\> `SalesChannel` data model of Sales Channel Module](#sales-channel-module).
+
+---
+
+## Cart Module
+
+Medusa defines read-only links between:
+
+- The `Product` data model and the [Cart Module](../../cart/page.mdx)'s `LineItem` data model. This means you can retrieve the details of a line item's product, but you don't manage the links in a pivot table in the database. The product of a line item is determined by the `product_id` property of the `LineItem` data model.
+- The `ProductVariant` data model and the [Cart Module](../../cart/page.mdx)'s `LineItem` data model. This means you can retrieve the details of a line item's variant, but you don't manage the links in a pivot table in the database. The variant of a line item is determined by the `variant_id` property of the `LineItem` data model.
+
+### Retrieve with Query
+
+To retrieve the line items of a variant with [Query](!docs!/learn/fundamentals/module-links/query), pass `line_items.*` in `fields`:
+
+<Note>
+
+To retrieve the line items of a product, pass `line_items.*` in `fields`.
+
+</Note>
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: variants } = await query.graph({
+  entity: "variant",
+  fields: [
+    "line_items.*",
+  ],
+})
+
+// variants.line_items
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: variants } = useQueryGraphStep({
+  entity: "variant",
+  fields: [
+    "line_items.*",
+  ],
+})
+
+// variants.line_items
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Inventory Module
+
+The Inventory Module provides inventory-management features for any stock-kept item.
+
+Medusa defines a link between the `ProductVariant` and `InventoryItem` data models. Each product variant has different inventory details.
+
+![A diagram showcasing an example of how data models from the Product and Inventory modules are linked.](https://res.cloudinary.com/dza7lstvk/image/upload/v1709652779/Medusa%20Resources/product-inventory_kmjnud.jpg)
+
+When the `manage_inventory` property of a product variant is enabled, you can manage the variant's inventory in different locations through this relation.
+
+### Retrieve with Query
+
+To retrieve the inventory items of a product variant with [Query](!docs!/learn/fundamentals/module-links/query), pass `inventory_items.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: variants } = await query.graph({
+  entity: "variant",
+  fields: [
+    "inventory_items.*",
+  ],
+})
+
+// variants.inventory_items
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: variants } = useQueryGraphStep({
+  entity: "variant",
+  fields: [
+    "inventory_items.*",
+  ],
+})
+
+// variants.inventory_items
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the inventory items of a variant, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.PRODUCT]: {
+    variant_id: "variant_123",
+  },
+  [Modules.INVENTORY]: {
+    inventory_item_id: "iitem_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.PRODUCT]: {
+    variant_id: "variant_123",
+  },
+  [Modules.INVENTORY]: {
+    inventory_item_id: "iitem_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Order Module
+
+Medusa defines read-only links between:
+
+- the `Product` data model and the [Order Module](../../order/page.mdx)'s `OrderLineItem` data model. This means you can retrieve the details of a line item's product, but you don't manage the links in a pivot table in the database. The product of a line item is determined by the `product_id` property of the `OrderLineItem` data model.
+- the `ProductVariant` data model and the [Order Module](../../order/page.mdx)'s `OrderLineItem` data model. This means you can retrieve the details of a line item's variant, but you don't manage the links in a pivot table in the database. The variant of a line item is determined by the `variant_id` property of the `OrderLineItem` data model.
+
+### Retrieve with Query
+
+To retrieve the order line items of a variant with [Query](!docs!/learn/fundamentals/module-links/query), pass `order_items.*` in `fields`:
+
+<Note>
+
+To retrieve a product's order line items, pass `order_items.*` in `fields`.
+
+</Note>
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: variants } = await query.graph({
+  entity: "variant",
+  fields: [
+    "order_items.*",
+  ],
+})
+
+// variants.order_items
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: variants } = useQueryGraphStep({
+  entity: "variant",
+  fields: [
+    "order_items.*",
+  ],
+})
+
+// variants.order_items
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Pricing Module
+
+The Product Module doesn't provide pricing-related features.
+
+Instead, Medusa defines a link between the `ProductVariant` and the `PriceSet` data models. A product variant’s prices are stored belonging to a price set.
+
+![A diagram showcasing an example of how data models from the Pricing and Product Module are linked.](https://res.cloudinary.com/dza7lstvk/image/upload/v1709651464/Medusa%20Resources/product-pricing_vlxsiq.jpg)
+
+So, to add prices for a product variant, create a price set and add the prices to it.
+
+### Retrieve with Query
+
+To retrieve the price set of a variant with [Query](!docs!/learn/fundamentals/module-links/query), pass `price_set.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: variants } = await query.graph({
+  entity: "variant",
+  fields: [
+    "price_set.*",
+  ],
+})
+
+// variants.price_set
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: variants } = useQueryGraphStep({
+  entity: "variant",
+  fields: [
+    "price_set.*",
+  ],
+})
+
+// variants.price_set
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the price set of a variant, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.PRODUCT]: {
+    variant_id: "variant_123",
+  },
+  [Modules.PRICING]: {
+    price_set_id: "pset_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.PRODUCT]: {
+    variant_id: "variant_123",
+  },
+  [Modules.PRICING]: {
+    price_set_id: "pset_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Sales Channel Module
+
+The Sales Channel Module provides functionalities to manage multiple selling channels in your store.
+
+Medusa defines a link between the `Product` and `SalesChannel` data models. A product can have different availability in different sales channels.
+
+![A diagram showcasing an example of how data models from the Product and Sales Channel modules are linked.](https://res.cloudinary.com/dza7lstvk/image/upload/v1709651840/Medusa%20Resources/product-sales-channel_t848ik.jpg)
+
+### Retrieve with Query
+
+To retrieve the sales channels of a product with [Query](!docs!/learn/fundamentals/module-links/query), pass `sales_channels.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: products } = await query.graph({
+  entity: "product",
+  fields: [
+    "sales_channels.*",
+  ],
+})
+
+// products.sales_channels
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: products } = useQueryGraphStep({
+  entity: "product",
+  fields: [
+    "sales_channels.*",
+  ],
+})
+
+// products.sales_channels
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the sales channels of a product, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.PRODUCT]: {
+    product_id: "prod_123",
+  },
+  [Modules.SALES_CHANNEL]: {
+    sales_channel_id: "sc_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>

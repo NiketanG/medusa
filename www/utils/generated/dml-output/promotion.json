@@ -1,0 +1,77 @@
+{
+	"CampaignBudget": {
+		"filePath": "packages/modules/promotion/src/models/campaign-budget.ts",
+		"properties": {
+			"id": "The ID of the campaign budget.",
+			"type": "The type of the campaign budget",
+			"currency_code": "The currency code of the campaign budget.\n\n@example usd",
+			"limit": "The limit of the campaign budget",
+			"used": "How much of the budget has been used. if the `limit` is `spend`, this property holds the total amount discounted so far. if the `limit` is `usage`, it holds the number of times the campaign's promotions have been used so far.",
+			"campaign": "The associated campaign.\n\n@expandable"
+		}
+	},
+	"Campaign": {
+		"filePath": "packages/modules/promotion/src/models/campaign.ts",
+		"properties": {
+			"id": "The ID of the campaign.",
+			"name": "The name of the campaign",
+			"description": "The description of the campaign",
+			"campaign_identifier": "The campaign's identifier, such as a Google Tag ID.",
+			"starts_at": "The date that the campaign starts.",
+			"ends_at": "The date that the campaign ends.",
+			"budget": "The associated budget.\n\n@expandable",
+			"promotions": "The associated promotions.\n\n@expandable"
+		}
+	},
+	"PromotionRuleValue": {
+		"filePath": "packages/modules/promotion/src/models/promotion-rule-value.ts",
+		"properties": {
+			"id": "The ID of the promotion rule value.",
+			"value": "The value of the promotion rule.",
+			"promotion_rule": "The associated promotion rule.\n\n@expandable"
+		}
+	},
+	"PromotionRule": {
+		"filePath": "packages/modules/promotion/src/models/promotion-rule.ts",
+		"properties": {
+			"id": "The ID of the promotion rule.",
+			"description": "The description of the promotion rule",
+			"attribute": "The attribute of the promotion rule.\n\n@example customer_group_id",
+			"operator": "The operator of the promotion rule.\n\n@example in",
+			"values": "The associated values.\n\n@expandable",
+			"promotions": "The associated promotions.\n\n@expandable",
+			"method_target_rules": "The associated method target rules.\n\n@expandable",
+			"method_buy_rules": "The associated method buy rules.\n\n@expandable"
+		}
+	},
+	"Promotion": {
+		"filePath": "packages/modules/promotion/src/models/promotion.ts",
+		"properties": {
+			"id": "The ID of the promotion.",
+			"code": "The code of the promotion",
+			"is_automatic": "Whether the promotion is applied automatic. If disabled, the customer must enter the code during checkout.",
+			"type": "The type of the promotion",
+			"campaign": "The associated campaign.\n\n@expandable",
+			"application_method": "The associated application method.\n\n@expandable",
+			"rules": "The associated rules.\n\n@expandable",
+			"status": "The status of the promotion"
+		}
+	},
+	"ApplicationMethod": {
+		"filePath": "packages/modules/promotion/src/models/application-method.ts",
+		"properties": {
+			"id": "The ID of the application method.",
+			"value": "The value of the application method",
+			"currency_code": "The currency code of the application method.\n\n@example usd",
+			"max_quantity": "The max quantity allowed in the cart for the associated promotion to be applied.",
+			"apply_to_quantity": "The quantity that results from matching the `buyget` promotion's condition. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `1`.",
+			"buy_rules_min_quantity": "The minimum quantity required for a `buyget` promotion to be applied. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `2`.",
+			"type": "The application method's type. If it's `fixed`, the promotion discounts a fixed amount. If it's `percentage`, the promotion discounts a percentage.",
+			"target_type": "Which item does the promotion apply to. `items` mean the promotion applies to the cart's items; `shipping_methods` means the promotion applies to the cart's shipping methods; `order` means the promotion applies on the entire order.",
+			"allocation": "How is the promotion amount discounted. `each` means the discounted amount is applied on each applicable item; `across` means the discounted amount is split accross the applicable items.",
+			"promotion": "The associated promotion.\n\n@expandable",
+			"target_rules": "The associated target rules.\n\n@expandable",
+			"buy_rules": "The associated buy rules.\n\n@expandable"
+		}
+	}
+}

@@ -1,0 +1,27 @@
+import { ChildDocs } from "docs-ui"
+
+export const metadata = {
+  title: `Medusa Core Workflows Reference`,
+}
+
+# {metadata.title}
+
+This section of the documentation provides a reference to the core workflows created by Medusa. Medusa uses these workflows in the Store and Admin API routes.
+
+You can use these workflows and steps in your customizations. For example, you can [execute these workflows](!docs!/learn/fundamentals/workflows#3-execute-the-workflow):
+
+- In an [API route](!docs!/learn/fundamentals/api-routes) when a request is received;
+- In a [subscriber](!docs!/learn/fundamentals/events-and-subscribers) when an event is emitted;
+- In a [scheduled jobs](!docs!/learn/fundamentals/scheduled-jobs) at a specified interval during the application's runtime;
+- In a [custom CLI scripts](!docs!learn/fundamentals/custom-cli-scripts) that you can execute from the terminal;
+- Or in a custom workflow that wraps the existing workflows and steps in a custom flow. You can then execute your custom workflow in the same way as the core workflows.
+
+Through this reference, you'll learn about the available workflows and steps in Medusa out-of-the-box. For each workflow, you'll explore its steps, expected input and output, an example of executing that workflow, and how to inject custom functionalities into the workflow, if applicable.
+
+All workflows and steps in this reference are exported by the `@medusajs/medusa/core-flows` package.
+
+<ChildDocs childLevel={2} hideItems={["Overview", "Steps"]} defaultItemsPerRow={2} search={{
+  enable: true,
+  placeholder: "Search workflows...",
+  storageKey: "medusa-workflows-reference",
+}} />

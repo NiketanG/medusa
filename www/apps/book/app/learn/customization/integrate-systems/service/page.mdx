@@ -1,0 +1,181 @@
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Guide: Integrate CMS Brand System`,
+}
+
+# {metadata.title}
+
+In the previous chapters, you've created a [Brand Module](../../custom-features/module/page.mdx) that adds brands to your application. In this chapter, you'll integrate a dummy Content-Management System (CMS) in a new module. The module's service will provide methods to retrieve and manage brands in the CMS. You'll later use this service to sync data from and to the CMS.
+
+<Note>
+
+Learn more about modules in [this chapter](../../../fundamentals/modules/page.mdx).
+
+</Note>
+
+## 1. Create Module Directory
+
+You'll integrate the third-party system in a new CMS Module. So, create the directory `src/modules/cms` that will hold the module's resources.
+
+![Directory structure after adding the directory for the CMS Module](https://res.cloudinary.com/dza7lstvk/image/upload/v1733492447/Medusa%20Book/cms-dir-overview-1_gasguk.jpg)
+
+---
+
+## 2. Create Module Service
+
+Next, you'll create the module's service. It will provide methods to connect and perform actions with the third-party system.
+
+Create the CMS Module's service at `src/modules/cms/service.ts` with the following content:
+
+![Directory structure after adding the CMS Module's service](https://res.cloudinary.com/dza7lstvk/image/upload/v1733492583/Medusa%20Book/cms-dir-overview-2_zwcwh3.jpg)
+
+export const serviceHighlights = [
+  ["3", "ModuleOptions", "The options that the CMS Module receives."],
+  ["7", "InjectedDependencies", "The dependencies injected into the service from the module's container."],
+  ["16", "logger", "Dependencies injected from the module's container"],
+  ["16", "options", "Options passed to the module in the configurations."]
+]
+
+```ts title="src/modules/cms/service.ts" highlights={serviceHighlights}
+import { Logger, ConfigModule } from "@medusajs/framework/types"
+
+export type ModuleOptions = {
+  apiKey: string
+}
+
+type InjectedDependencies = {
+  logger: Logger
+  configModule: ConfigModule
+}
+
+class CmsModuleService {
+  private options_: ModuleOptions
+  private logger_: Logger
+
+  constructor({ logger }: InjectedDependencies, options: ModuleOptions) {
+    this.logger_ = logger
+    this.options_ = options
+
+    // TODO initialize SDK
+  }
+}
+
+export default CmsModuleService
+```
+
+You create a `CmsModuleService` that will hold the methods to connect to the third-party CMS. A service's constructor accepts two parameters:
+
+1. The module's container. Since a module is [isolated](../../../fundamentals/modules/isolation/page.mdx), it has a [local container](../../../fundamentals/modules/container/page.mdx) different than the Medusa container you use in other customizations. This container holds framework tools like the [Logger utility](../../../debugging-and-testing/logging/page.mdx) and resources within the module.
+2. Options passed to the module when it's later added in Medusa's configurations. These options are useful to pass secret keys or configurations that ensure your module is re-usable across applications. For the CMS Module, you accept the API key to connect to the dummy CMS as an option.
+
+When integrating a third-party system that has a Node.js SDK or client, you can initialize that client in the constructor to be used in the service's methods.
+
+### Integration Methods
+
+Next, you'll add methods that simulate sending requests to a third-party CMS. You'll use these methods later to sync brands from and to the CMS.
+
+Add the following methods in the `CmsModuleService`:
+
+export const methodsHighlights = [
+  ["6", "sendRequest", "Since the third-party system isn't real, this method only logs a message."],
+  ["12", "createBrand", "A method that creates a brand in the third-party system."],
+  ["16", "deleteBrand", "A method that deletes a brand in the third-party system."],
+  ["20", "retrieveBrands", "A method that retrieves a brand from a third-party system."]
+]
+
+```ts title="src/modules/cms/service.ts" highlights={methodsHighlights}
+export class CmsModuleService {
+  // ...
+
+  // a dummy method to simulate sending a request,
+  // in a realistic scenario, you'd use an SDK, fetch, or axios clients
+  private async sendRequest(url: string, method: string, data?: any) {
+    this.logger_.info(`Sending a ${method} request to ${url}.`)
+    this.logger_.info(`Request Data: ${JSON.stringify(data, null, 2)}`)
+    this.logger_.info(`API Key: ${JSON.stringify(this.options_.apiKey, null, 2)}`)
+  }
+
+  async createBrand(brand: Record<string, unknown>) {
+    await this.sendRequest("/brands", "POST", brand)
+  }
+
+  async deleteBrand(id: string) {
+    await this.sendRequest(`/brands/${id}`, "DELETE")
+  }
+
+  async retrieveBrands(): Promise<Record<string, unknown>[]> {
+    await this.sendRequest("/brands", "GET")
+
+    return []
+  }
+}
+```
+
+The `sendRequest` method sends requests to the third-party CMS. Since this guide isn't using a real CMS, it only simulates the sending by logging messages in the terminal.
+
+You also add three methods that use the `sendRequest` method:
+
+- `createBrand` that creates a brand in the third-party system.
+- `deleteBrand` that deletes the brand in the third-party system.
+- `retrieveBrands` to retrieve a brand from the third-party system.
+
+---
+
+## 3. Export Module Definition
+
+After creating the module's service, you'll export the module definition indicating the module's name and service.
+
+Create the file `src/modules/cms/index.ts` with the following content:
+
+![Directory structure of the Medusa application after adding the module definition file](https://res.cloudinary.com/dza7lstvk/image/upload/v1733492991/Medusa%20Book/cms-dir-overview-3_b0byks.jpg)
+
+```ts title="src/modules/cms/index.ts"
+import { Module } from "@medusajs/framework/utils"
+import CmsModuleService from "./service"
+
+export const CMS_MODULE = "cms"
+
+export default Module(CMS_MODULE, {
+  service: CmsModuleService,
+})
+```
+
+You use `Module` from the Modules SDK to export the module's defintion, indicating that the module's name is `cms` and its service is `CmsModuleService`.
+
+---
+
+## 4. Add Module to Medusa's Configurations
+
+Finally, add the module to the Medusa configurations at `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    // ...
+    {
+      resolve: "./src/modules/cms",
+      options: {
+        apiKey: process.env.CMS_API_KEY,
+      },
+    },
+  ], 
+})
+```
+
+The object passed in `modules` accept an `options` property, whose value is an object of options to pass to the module. These are the options you receive in the `CmsModuleService`'s constructor.
+
+You can add the `CMS_API_KEY` environment variable to `.env`:
+
+```bash
+CMS_API_KEY=123
+```
+
+---
+
+## Next Steps: Sync Brand From Medusa to CMS
+
+You can now use the CMS Module's service to perform actions on the third-party CMS.
+
+In the next chapter, you'll learn how to emit an event when a brand is created, then handle that event to sync the brand from Medusa to the third-party service.

@@ -1,0 +1,160 @@
+plugins:
+  - ./plugins/medusa/index.js
+decorators:
+  medusa/circular-patch:
+    schemas:
+      GiftCardTransaction:
+        - GiftCard
+        - Order
+      LineItemAdjustment:
+        - LineItem
+      LineItemTaxLine:
+        - LineItem
+      CustomerGroupResponse:
+        - CustomerResponse
+      ProductCategoryResponse:
+        - ProductCategoryResponse
+      AdminShippingOption:
+        - AdminShippingOption
+        - AdminServiceZone
+      AdminProductCategory:
+        - AdminProductCategory
+        - AdminProduct
+      BaseProduct:
+        - BaseProduct
+        - BaseProductVariant
+      StoreProduct:
+        - StoreProductCategory
+        - StoreProduct
+      AdminCollection:
+        - AdminProduct
+      AdminProduct:
+        - AdminProduct
+        - BaseProductOption
+      AdminStockLocation:
+        - AdminFulfillmentSet
+      OrderChange:
+        - Order
+        - Return
+      StoreShippingOption:
+        - StoreShippingOption
+      AdminServiceZone:
+        - AdminFulfillmentSet
+      OrderTransaction:
+        - Order
+      AdminTaxRegion:
+        - AdminTaxRegion
+        - AdminTaxRate
+      AdminInventoryLevel:
+        - AdminInventoryItem
+      AdminCustomerGroup:
+        - AdminCustomer
+      AdminOrderLineItem:
+        - BaseOrderItemDetail
+      AdminProductVariant:
+        - AdminProduct
+      BaseCapture:
+        - BasePayment
+      BaseCartLineItem:
+        - BaseLineItemTaxLine
+      BaseLineItemAdjustment:
+        - BaseCartLineItem
+      BaseOrderChangeAction:
+        - AdminOrderChange
+      BaseOrderLineItemTaxLine:
+        - BaseOrderLineItem
+      BaseOrderShippingMethodTaxLine:
+        - BaseOrderShippingMethod
+      BasePayment:
+        - BasePaymentSession
+        - BasePaymentCollection
+      BasePaymentSession:
+        - BasePaymentCollection
+      BaseProductOptionValue:
+        - BaseProductOption
+      BaseShippingMethodTaxLine:
+        - BaseCartShippingMethod
+      OrderChangeAction:
+        - OrderChange
+      OrderLineItemTaxLine:
+        - OrderLineItem
+      OrderShippingMethodTaxLine:
+        - OrderShippingMethod
+      StoreCartLineItem:
+        - StoreCart
+      StoreCollection:
+        - StoreProduct
+      StoreProductCategory:
+        - StoreProductCategory
+      BaseCart:
+        - BaseCartLineItem
+      BaseOrderLineItemAdjustment:
+        - BaseOrderLineItem
+      BaseOrderShippingMethodAdjustment:
+        - BaseOrderShippingMethod
+      BaseRefund:
+        - BasePayment
+      BaseShippingMethodAdjustment:
+        - BaseCartShippingMethod
+      Order:
+        - OrderChange
+      OrderClaim:
+        - Return
+      OrderLineItemAdjustment:
+        - OrderLineItem
+      OrderShippingMethodAdjustment:
+        - OrderShippingMethod
+      BaseProductOption:
+        - BaseProduct
+      OrderItem:
+        - OrderLineItem
+      AdminOrderChangeAction:
+        - AdminOrderChange
+      AdminPaymentSession:
+        - AdminPaymentCollection
+      AdminProductOption:
+        - AdminProduct
+        - AdminProductOptionValue
+      AdminApplicationMethod:
+        - AdminPromotion
+      BaseOrderItemDetail:
+        - BaseOrderLineItem
+      BaseOrderShippingDetail:
+        - BaseOrderShippingMethod
+      StorePaymentSession:
+        - StorePaymentCollection
+      StoreProductOption:
+        - StoreProduct
+      StoreProductOptionValue:
+        - StoreProductOption
+      AdminPayment:
+        - AdminPaymentCollection
+      StoreProductVariant:
+        - StoreProduct
+      BaseCollection:
+        - BaseProduct
+      BaseProductCategory:
+        - AdminProduct
+      Return:
+        - OrderExchange
+      OrderCreditLine:
+        - Order
+      AdminProductVariantInventoryItemLink:
+        - AdminProductVariant
+theme:
+  openapi:
+    theme:
+      colors:
+        primary:
+          dark: '#242526'
+      sidebar:
+        width: 250px
+    disableSearch: true
+    expandResponses: 200,204
+    generatedPayloadSamplesMaxDepth: 4
+    hideDownloadButton: true
+    hideRequestPayloadSample: true
+    nativeScrollbars: true
+    requiredPropsFirst: true
+    showObjectSchemaExamples: true
+    sortTagsAlphabetically: true

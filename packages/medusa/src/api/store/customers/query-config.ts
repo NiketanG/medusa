@@ -1,0 +1,53 @@
+const defaultStoreCustomersFields = [
+  "id",
+  "email",
+  "company_name",
+  "first_name",
+  "last_name",
+  "phone",
+  "metadata",
+  "has_account",
+  "deleted_at",
+  "created_at",
+  "updated_at",
+  "*addresses",
+]
+
+export const retrieveTransformQueryConfig = {
+  defaults: defaultStoreCustomersFields,
+  allowed: [
+    ...defaultStoreCustomersFields.map((f) => f.replace("*", "")),
+    "orders",
+  ],
+  isList: false,
+}
+
+export const defaultStoreCustomerAddressFields = [
+  "id",
+  "company",
+  "customer_id",
+  "first_name",
+  "last_name",
+  "address_1",
+  "address_2",
+  "city",
+  "province",
+  "postal_code",
+  "country_code",
+  "phone",
+  "metadata",
+  "is_default_shipping",
+  "is_default_billing",
+  "created_at",
+  "updated_at",
+]
+
+export const retrieveAddressTransformQueryConfig = {
+  defaults: defaultStoreCustomerAddressFields,
+  isList: false,
+}
+
+export const listAddressesTransformQueryConfig = {
+  ...retrieveAddressTransformQueryConfig,
+  isList: true,
+}

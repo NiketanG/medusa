@@ -1,0 +1,10 @@
+{
+	"Locking": {
+		"filePath": "packages/modules/providers/locking-postgres/src/models/locking.ts",
+		"properties": {
+			"id": "The ID of the locking.",
+			"owner_id": "The ID of the locking's owner.",
+			"expiration": "The expiration date of the locking"
+		}
+	}
+}

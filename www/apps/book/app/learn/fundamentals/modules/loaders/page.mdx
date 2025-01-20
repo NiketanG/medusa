@@ -1,0 +1,287 @@
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Loaders`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn about loaders and how to use them.
+
+## What is a Loader?
+
+When building a commerce application, you'll often need to execute an action the first time the application starts. For example, if your application needs to connect to databases other than Medusa's PostgreSQL database, you might need to establish a connection on application startup.
+
+In Medusa, you can execute an action when the application starts using a loader. A loader is a function exported by a [module](../page.mdx), which is a package of business logic for a single domain. When the Medusa application starts, it executes all loaders exported by configured modules.
+
+Loaders are useful to register custom resources, such as database connections, in the [module's container](../container/page.mdx), which is similar to the [Medusa container](../../medusa-container/page.mdx) but includes only [resources available to the module](!resources!/medusa-container-resources#module-container-resources). Modules are isolated, so they can't access resources outside of them, such as a service in another module.
+
+<Note title="Why are modules isolated?">
+
+Medusa isolates modules to ensure that they're re-usable across applications, aren't tightly coupled to other resources, and don't have implications when integrated into the Medusa application. Learn more about why modules are isolated in [this chapter](../isolation/page.mdx), and check out [this reference for the list of resources in the module's container](!resources!/medusa-container-resources#module-container-resources).
+
+</Note>
+
+---
+
+## How to Create a Loader?
+
+### 1. Implement Loader Function
+
+You create a loader function in a TypeScript or JavaScript file under a module's `loaders` directory.
+
+For example, consider you have a `hello` module, you can create a loader at `src/modules/hello/loaders/hello-world.ts` with the following content:
+
+![Example of loader file in the application's directory structure](https://res.cloudinary.com/dza7lstvk/image/upload/v1732865671/Medusa%20Book/loader-dir-overview_eg6vtu.jpg)
+
+<Note title="Tip">
+
+Learn how to create a module in [this chapter](../page.mdx).
+
+</Note>
+
+```ts title="src/modules/hello/loaders/hello-world.ts"
+import {
+  LoaderOptions,
+} from "@medusajs/framework/types"
+
+export default async function helloWorldLoader({
+  container,
+}: LoaderOptions) {
+  const logger = container.resolve("logger")
+
+  logger.info("[helloWorldLoader]: Hello, World!")
+}
+```
+
+The loader file exports an async function, which is the function executed when the application loads.
+
+The function receives an object parameter that has a `container` property, which is the module's container that you can use to resolve resources from. In this example, you resolve the Logger utility to log a message in the terminal.
+
+<Note title="Tip">
+
+Find the list of resources in the module's container in [this reference](!resources!/medusa-container-resources#module-container-resources).
+
+</Note>
+
+### 2. Export Loader in Module Definition
+
+After implementing the loader, you must export it in the module's definition in the `index.ts` file at the root of the module's directory. Otherwise, the Medusa application will not run it.
+
+So, to export the loader you implemented above in the `hello` module, add the following to `src/modules/hello/index.ts`:
+
+```ts title="src/modules/hello/index.ts"
+// other imports...
+import helloWorldLoader from "./loaders/hello-world"
+
+export default Module("hello", {
+  // ...
+  loaders: [helloWorldLoader],
+})
+```
+
+The second parameter of the `Module` function accepts a `loaders` property whose value is an array of loader functions. The Medusa application will execute these functions when it starts.
+
+### Test the Loader
+
+Assuming your module is [added to Medusa's configuration](../page.mdx#4-add-module-to-medusas-configurations), you can test the loader by starting the Medusa application:
+
+```bash npm2yarn
+npm run dev
+```
+
+Then, you'll find the following message logged in the terminal:
+
+```plain
+info:   [HELLO MODULE] Just started the Medusa application!
+```
+
+This indicates that the loader in the `hello` module ran and logged this message.
+
+---
+
+## Example: Register Custom MongoDB Connection
+
+As mentioned in this chapter's introduction, loaders are most useful when you need to register a custom resource in the module's container to re-use it in other customizations in the module.
+
+Consider your have a MongoDB module that allows you to perform operations on a MongoDB database.
+
+<Prerequisites
+  items={[
+    {
+      text: "MongoDB database that you can connect to from a local machine.",
+      link: "https://www.mongodb.com"
+    },
+    {
+      text: "Install the MongoDB SDK in your Medusa application.",
+      link: "https://www.mongodb.com/docs/drivers/node/current/quick-start/download-and-install/#install-the-node.js-driver"
+    }
+  ]}
+/>
+
+To connect to the database, you create the following loader in your module:
+
+export const loaderHighlights = [
+  ["5", "ModuleOptions", "Define a type for expected options."],
+  ["13", "ModuleOptions", "Pass the option type as a type argument to `LoaderOptions`."],
+  ["23", "clientDb", "Create a client instance that connects to the specified database."],
+  ["29", "register", "Register custom resource in the container."],
+  ["30", `"mongoClient"`, "The resource's key in the container."],
+  ["31", "asValue(clientDb)", "The resource to register."]
+]
+
+```ts title="src/modules/mongo/loaders/connection.ts" highlights={loaderHighlights}
+import { LoaderOptions } from "@medusajs/framework/types"
+import { asValue } from "awilix"
+import { MongoClient } from "mongodb"
+
+type ModuleOptions = {
+  connection_url?: string
+  db_name?: string
+}
+
+export default async function mongoConnectionLoader({
+  container,
+  options,
+}: LoaderOptions<ModuleOptions>) {
+  if (!options.connection_url) {
+    throw new Error(`[MONGO MDOULE]: connection_url option is required.`)
+  }
+  if (!options.db_name) {
+    throw new Error(`[MONGO MDOULE]: db_name option is required.`)
+  }
+  const logger = container.resolve("logger")
+  
+  try {
+    const clientDb = (
+      await (new MongoClient(options.connection_url)).connect()
+    ).db(options.db_name)
+
+    logger.info("Connected to MongoDB")
+
+    container.register(
+      "mongoClient",
+      asValue(clientDb)
+    )
+  } catch (e) {
+    logger.error(
+      `[MONGO MDOULE]: An error occurred while connecting to MongoDB: ${e}`
+    )
+  }
+}
+```
+
+The loader function accepts in its object parameter an `options` property, which is the options passed to the module in Medusa's configurations. For example:
+
+export const optionHighlights = [
+  ["6", "options", "The options to pass to the module."]
+]
+
+```ts title="medusa-config.ts" highlights={optionHighlights}
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "./src/modules/mongo",
+      options: {
+        connection_url: process.env.MONGO_CONNECTION_URL,
+        db_name: process.env.MONGO_DB_NAME,
+      },
+    },
+  ],
+})
+```
+
+Passing options is useful when your module needs informations like connection URLs or API keys, as it ensures your module can be re-usable across applications. For the MongoDB Module, you expect two options:
+
+- `connection_url`: the URL to connect to the MongoDB database.
+- `db_name`: The name of the database to connect to.
+
+In the loader, you check first that these options are set before proceeding. Then, you create an instance of the MongoDB client and connect to the database specified in the options.
+
+After creating the client, you register it in the module's container using the container's `register` method. The method accepts two parameters:
+
+1. The key to register the resource under, which in this case is `mongoClient`. You'll use this name later to resolve the client.
+2. The resource to register in the container, which is the MongoDB client you created. However, you don't pass the resource as-is. Instead, you need to use an `asValue` function imported from the [awilix package](https://github.com/jeffijoe/awilix), which is the package used to implement the container functionality in Medusa.
+
+### Use Custom Registered Resource in Module's Service
+
+After registering the custom MongoDB client in the module's container, you can now resolve and use it in the module's service.
+
+For example:
+
+export const serviceHighlights = [
+  ["10", "mongoClient", "Resolve the MongoDB client from the container."],
+  ["11", "mongoClient_", "Set the MongoDB client as a class property."],
+  ["14", "createMovie", "Add a method that uses the MongoDB client to create a document."],
+  ["30", "deleteMovie", "Add a method that uses the MongoDB client to delete a document."]
+]
+
+```ts title="src/modules/mongo/service.ts"
+import type { Db } from "mongodb"
+
+type InjectedDependencies = {
+  mongoClient: Db
+}
+
+export default class MongoModuleService {
+  private mongoClient_: Db
+
+  constructor({ mongoClient }: InjectedDependencies) {
+    this.mongoClient_ = mongoClient
+  }
+
+  async createMovie({ title }: {
+    title: string
+  }) {
+    const moviesCol = this.mongoClient_.collection("movie")
+
+    const insertedMovie = await moviesCol.insertOne({
+      title,
+    })
+
+    const movie = await moviesCol.findOne({
+      _id: insertedMovie.insertedId,
+    })
+
+    return movie
+  }
+
+  async deleteMovie(id: string) {
+    const moviesCol = this.mongoClient_.collection("movie")
+
+    await moviesCol.deleteOne({
+      _id: {
+        equals: id,
+      },
+    })
+  }
+}
+```
+
+The service `MongoModuleService` resolves the `mongoClient` resource you registered in the loader and sets it as a class property. You then use it in the `createMovie` and `deleteMovie` methods, which create and delete a document in a `movie` collection in the MongoDB database, respectively.
+
+Make sure to export the loader in the module's definition in the `index.ts` file at the root directory of the module:
+
+```ts title="src/modules/mongo/index.ts" highlights={[["9"]]}
+import { Module } from "@medusajs/framework/utils"
+import MongoModuleService from "./service"
+import mongoConnectionLoader from "./loaders/connection"
+
+export const MONGO_MODULE = "mongo"
+
+export default Module(MONGO_MODULE, {
+  service: MongoModuleService,
+  loaders: [mongoConnectionLoader],
+})
+```
+
+### Test it Out
+
+You can test the connection out by starting the Medusa application. If it's successful, you'll see the following message logged in the terminal:
+
+```bash
+info:    Connected to MongoDB
+```
+
+You can now resolve the MongoDB Module's main service in your customizations to perform operations on the MongoDB database.

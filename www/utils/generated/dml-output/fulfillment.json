@@ -1,0 +1,150 @@
+{
+	"FulfillmentAddress": {
+		"filePath": "packages/modules/fulfillment/src/models/address.ts",
+		"properties": {
+			"id": "The ID of the fulfillment address.",
+			"company": "The company of the fulfillment address",
+			"first_name": "The first name of the fulfillment address",
+			"last_name": "The last name of the fulfillment address",
+			"address_1": "The first line of the fulfillment address",
+			"address_2": "The second line of the fulfillment address",
+			"city": "The city of the fulfillment address",
+			"country_code": "The country code of the fulfillment address.\n\n@example us",
+			"province": "The province of the fulfillment address",
+			"postal_code": "The postal code of the fulfillment address",
+			"phone": "The phone of the fulfillment address",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	},
+	"FulfillmentItem": {
+		"filePath": "packages/modules/fulfillment/src/models/fulfillment-item.ts",
+		"properties": {
+			"id": "The ID of the fulfillment item.",
+			"title": "The title of the fulfillment item",
+			"sku": "The SKU of the fulfillment item",
+			"barcode": "The barcode of the fulfillment item",
+			"quantity": "The quantity of the fulfillment item",
+			"line_item_id": "The ID the line item being fulfilled.",
+			"inventory_item_id": "The ID of the inventory item being fulfilled.",
+			"fulfillment": "The associated fulfillment.\n\n@expandable"
+		}
+	},
+	"FulfillmentLabel": {
+		"filePath": "packages/modules/fulfillment/src/models/fulfillment-label.ts",
+		"properties": {
+			"id": "The ID of the fulfillment label.",
+			"tracking_number": "The tracking number of the fulfillment label",
+			"tracking_url": "The tracking URL of the fulfillment label",
+			"label_url": "The label URL of the fulfillment label",
+			"fulfillment": "The associated fulfillment.\n\n@expandable"
+		}
+	},
+	"FulfillmentProvider": {
+		"filePath": "packages/modules/fulfillment/src/models/fulfillment-provider.ts",
+		"properties": {
+			"id": "The ID of the fulfillment provider.",
+			"is_enabled": "Whether the fulfillment provider is enabled."
+		}
+	},
+	"FulfillmentSet": {
+		"filePath": "packages/modules/fulfillment/src/models/fulfillment-set.ts",
+		"properties": {
+			"id": "The ID of the fulfillment set.",
+			"name": "The name of the fulfillment set",
+			"type": "The type of the fulfillment set",
+			"service_zones": "The associated service zones.\n\n@expandable",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	},
+	"GeoZone": {
+		"filePath": "packages/modules/fulfillment/src/models/geo-zone.ts",
+		"properties": {
+			"id": "The ID of the geo zone.",
+			"type": "The type of the geo zone",
+			"country_code": "The country code of the geo zone.\n\n@example us",
+			"province_code": "The province code of the geo zone",
+			"city": "The city of the geo zone",
+			"postal_expression": "The postal expression of the geo zone",
+			"service_zone": "The associated service zone.\n\n@expandable",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	},
+	"ServiceZone": {
+		"filePath": "packages/modules/fulfillment/src/models/service-zone.ts",
+		"properties": {
+			"id": "The ID of the service zone.",
+			"name": "The name of the service zone",
+			"fulfillment_set": "The associated fulfillment_set.\n\n@expandable",
+			"geo_zones": "The associated geo_zones.\n\n@expandable",
+			"shipping_options": "The associated shipping options.\n\n@expandable",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	},
+	"ShippingOptionRule": {
+		"filePath": "packages/modules/fulfillment/src/models/shipping-option-rule.ts",
+		"properties": {
+			"id": "The ID of the shipping option rule.",
+			"attribute": "The name of a property or table that the rule applies to.\n\n@example customer_group",
+			"operator": "The operator used in the condition.\n\n@example eq",
+			"value": "The value of the shipping option rule",
+			"shipping_option": "The associated shipping option.\n\n@expandable"
+		}
+	},
+	"ShippingOptionType": {
+		"filePath": "packages/modules/fulfillment/src/models/shipping-option-type.ts",
+		"properties": {
+			"id": "The ID of the shipping option type.",
+			"label": "The label of the shipping option type",
+			"description": "The description of the shipping option type",
+			"code": "The code of the shipping option type",
+			"shipping_option": "The associated shipping option.\n\n@expandable"
+		}
+	},
+	"ShippingProfile": {
+		"filePath": "packages/modules/fulfillment/src/models/shipping-profile.ts",
+		"properties": {
+			"id": "The ID of the shipping profile.",
+			"name": "The name of the shipping profile",
+			"type": "The type of the shipping profile",
+			"shipping_options": "The associated shipping options.\n\n@expandable",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	},
+	"ShippingOption": {
+		"filePath": "packages/modules/fulfillment/src/models/shipping-option.ts",
+		"properties": {
+			"id": "The ID of the shipping option.",
+			"name": "The name of the shipping option",
+			"price_type": "The price type of the shipping option",
+			"data": "The data of the shipping option useful for the associated fulfillment provider. Learn more in [this documentation](https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property)",
+			"metadata": "Holds custom data in key-value pairs.",
+			"service_zone": "The associated service zone.\n\n@expandable",
+			"shipping_profile": "The associated shipping profile.\n\n@expandable",
+			"provider": "The associated provider.\n\n@expandable",
+			"type": "The associated type.\n\n@expandable",
+			"rules": "The associated rules.\n\n@expandable",
+			"fulfillments": "The associated fulfillments.\n\n@expandable"
+		}
+	},
+	"Fulfillment": {
+		"filePath": "packages/modules/fulfillment/src/models/fulfillment.ts",
+		"properties": {
+			"id": "The ID of the fulfillment.",
+			"location_id": "The ID of the location to fulfill items from.",
+			"packed_at": "The date the fulfillment items were packed.",
+			"shipped_at": "The date the fulfillment items were shipped.",
+			"marked_shipped_by": "The ID of the user that marked this fulfillment as shipped.",
+			"created_by": "The ID of the user that created this fulfillment.",
+			"delivered_at": "The date the fulfillment items were delivered.",
+			"canceled_at": "The date the fulfillment was canceled.",
+			"data": "The data of the fulfillment useful for the associated fulfillment provider. Learn more in [this documentation](https://docs.medusajs.com/resources/commerce-modules/fulfillment/item-fulfillment#data-property)",
+			"requires_shipping": "Whether the fulfillment item requires shipping.",
+			"items": "The associated items.\n\n@expandable",
+			"labels": "The associated labels.\n\n@expandable",
+			"provider": "The associated provider.\n\n@expandable",
+			"shipping_option": "The associated shipping option.\n\n@expandable",
+			"delivery_address": "The associated delivery address.\n\n@expandable",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	}
+}

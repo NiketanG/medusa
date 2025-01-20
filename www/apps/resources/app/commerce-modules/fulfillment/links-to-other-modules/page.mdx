@@ -1,0 +1,318 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Fulfillment Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Fulfillment Module and other commerce modules.
+
+## Summary
+
+The Fulfillment Module has the following links to other modules:
+
+- [`Order` data model of the Order Module \<\> `Fulfillment` data model](#order-module).
+- [`Return` data model of the Order Module \<\> `Fulfillment` data model](#order-module).
+- [`PriceSet` data model of the Pricing Module \<\> `ShippingOption` data model](#pricing-module).
+- [`StockLocation` data model of the Stock Location Module \<\> `FulfillmentProvider` data model](#stock-location-module).
+- [`StockLocation` data model of the Stock Location Module \<\> `FulfillmentSet` data model](#stock-location-module).
+
+---
+
+## Order Module
+
+The [Order Module](../../order/page.mdx) provides order-management functionalities.
+
+Medusa defines a link between the `Fulfillment` and `Order` data models. A fulfillment is created for an orders' items.
+
+![A diagram showcasing an example of how data models from the Fulfillment and Order modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1716549903/Medusa%20Resources/order-fulfillment_h0vlps.jpg)
+
+A fulfillment is also created for a return's items. So, Medusa defines a link between the `Fulfillment` and `Return` data models.
+
+![A diagram showcasing an example of how data models from the Fulfillment and Order modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1728399052/Medusa%20Resources/Social_Media_Graphics_2024_Order_Return_vetimk.jpg)
+
+### Retrieve with Query
+
+To retrieve the order of a fulfillment with [Query](!docs!/learn/fundamentals/module-links/query), pass `order.*` in `fields`:
+
+<Note>
+
+To retrieve the return, pass `return.*` in `fields`.
+
+</Note>
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: fulfillments } = await query.graph({
+  entity: "fulfillment",
+  fields: [
+    "order.*",
+  ],
+})
+
+// fulfillments.order
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: fulfillments } = useQueryGraphStep({
+  entity: "fulfillment",
+  fields: [
+    "order.*",
+  ],
+})
+
+// fulfillments.order
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the order of a cart, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.FULFILLMENT]: {
+    fulfillment_id: "ful_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.ORDER]: {
+    order_id: "order_123",
+  },
+  [Modules.FULFILLMENT]: {
+    fulfillment_id: "ful_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Pricing Module
+
+The Pricing Module provides features to store, manage, and retrieve the best prices in a specified context.
+
+Medusa defines a link between the `PriceSet` and `ShippingOption` data models. A shipping option's price is stored as a price set.
+
+![A diagram showcasing an example of how data models from the Pricing and Fulfillment modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1716561747/Medusa%20Resources/pricing-fulfillment_spywwa.jpg)
+
+### Retrieve with Query
+
+To retrieve the price set of a shipping option with [Query](!docs!/learn/fundamentals/module-links/query), pass `price_set.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: shippingOptions } = await query.graph({
+  entity: "shipping_option",
+  fields: [
+    "price_set.*",
+  ],
+})
+
+// shippingOptions.price_set
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: shippingOptions } = useQueryGraphStep({
+  entity: "shipping_option",
+  fields: [
+    "price_set.*",
+  ],
+})
+
+// shippingOptions.price_set
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the price set of a shipping option, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.FULFILLMENT]: {
+    shipping_option_id: "so_123",
+  },
+  [Modules.PRICING]: {
+    price_set_id: "pset_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.FULFILLMENT]: {
+    shipping_option_id: "so_123",
+  },
+  [Modules.PRICING]: {
+    price_set_id: "pset_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Stock Location Module
+
+The Stock Location Module provides features to manage stock locations in a store.
+
+Medusa defines a link between the `FulfillmentSet` and `StockLocation` data models. A fulfillment set can be conditioned to a specific stock location.
+
+![A diagram showcasing an example of how data models from the Fulfillment and Stock Location modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1712567101/Medusa%20Resources/fulfillment-stock-location_nlkf7e.jpg)
+
+Medusa also defines a link between the `FulfillmentProvider` and `StockLocation` data models to indicate the providers that can be used in a location.
+
+![A diagram showcasing an example of how data models from the Fulfillment and Stock Location modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1728399492/Medusa%20Resources/fulfillment-provider-stock-location_b0mulo.jpg)
+
+### Retrieve with Query
+
+To retrieve the stock location of a fulfillment set with [Query](!docs!/learn/fundamentals/module-links/query), pass `location.*` in `fields`:
+
+<Note>
+
+To retrieve the stock location of a fulfillment provider, pass `locations.*` in `fields`.
+
+</Note>
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: fulfillmentSets } = await query.graph({
+  entity: "fulfillment_set",
+  fields: [
+    "location.*",
+  ],
+})
+
+// fulfillmentSets.location
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: fulfillmentSets } = useQueryGraphStep({
+  entity: "fulfillment_set",
+  fields: [
+    "location.*",
+  ],
+})
+
+// fulfillmentSets.location
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the stock location of a fulfillment set, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.STOCK_LOCATION]: {
+    stock_location_id: "sloc_123",
+  },
+  [Modules.FULFILLMENT]: {
+    fulfillment_set_id: "fset_123",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.STOCK_LOCATION]: {
+    stock_location_id: "sloc_123",
+  },
+  [Modules.FULFILLMENT]: {
+    fulfillment_set_id: "fset_123",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>

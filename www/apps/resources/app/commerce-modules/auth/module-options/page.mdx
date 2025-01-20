@@ -1,0 +1,78 @@
+---
+sidebar_label: "Module Options"
+---
+
+import { Table } from "docs-ui"
+
+export const metadata = {
+  title: `Auth Module Options`,
+}
+
+# {metadata.title}
+
+In this document, you'll learn about the options of the Auth Module.
+
+## providers
+
+The `providers` option is an array of auth module providers.
+
+When the Medusa application starts, these providers are registered and can be used to handle authentication.
+
+<Note title="Tip">
+
+By default, the `emailpass` provider is registered to authenticate customers and admin users.
+
+</Note>
+
+For example:
+
+```ts title="medusa-config.ts"
+import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
+
+// ...
+
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/auth",
+      dependencies: [Modules.CACHE, ContainerRegistrationKeys.LOGGER],
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/auth-emailpass",
+            id: "emailpass",
+            options: {
+              // provider options...
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+```
+
+The `providers` option is an array of objects that accept the following properties:
+
+- `resolve`: A string indicating the package name of the module provider or the path to it relative to the `src` directory.
+- `id`: A string indicating the provider's unique name or ID.
+- `options`: An optional object of the module provider's options.
+
+---
+
+## Auth CORS
+
+The Medusa application's authentication API routes are defined under the `/auth` prefix that requires setting the `authCors` property of the `http` configuration.
+
+By default, the Medusa application you created will have an `AUTH_CORS` environment variable, which is used as the value of `authCors`.
+
+Refer to [Medusa's configuration guide](/references/medusa-config#authCors) to learn more about the `authCors` configuration.
+
+---
+
+## authMethodsPerActor Configuration
+
+The Medusa application's configuration accept an `authMethodsPerActor` configuration which restricts the allowed auth providers used with an actor type.
+
+Learn more about the `authMethodsPerActor` configuration in [this guide](../auth-providers/page.mdx#configure-allowed-auth-providers-of-actor-types).

@@ -1,0 +1,23 @@
+{
+	"IndexRelation": {
+		"filePath": "packages/modules/index/src/models/index-relation.ts",
+		"properties": {
+			"id": "The ID of the index relation.",
+			"pivot": "The name of the index relation's pivot table.",
+			"parent_name": "The parent name of the index relation",
+			"child_name": "The child name of the index relation",
+			"parent": "The associated parent.\n\n@expandable",
+			"child": "The associated child.\n\n@expandable"
+		}
+	},
+	"IndexData": {
+		"filePath": "packages/modules/index/src/models/index-data.ts",
+		"properties": {
+			"id": "The ID of the index data.",
+			"name": "The name of the index data",
+			"data": "The data of the index data",
+			"parents": "The associated parents.\n\n@expandable",
+			"children": "The associated children.\n\n@expandable"
+		}
+	}
+}

@@ -1,0 +1,9 @@
+extends: existence
+message: Use correct capitalization of tooling.
+level: error
+ignorecase: false
+tokens:
+  - workflows (sdk|SDK)
+  - modules (sdk|SDK)
+  - admin extension (sdk|SDK)
+  - Admin extension (sdk|SDK)

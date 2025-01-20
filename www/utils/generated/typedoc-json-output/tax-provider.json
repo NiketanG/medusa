@@ -1,0 +1,661 @@
+{
+	"id": 42048,
+	"name": "tax-provider",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 42049,
+			"name": "ShippingTaxCalculationLine",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "A shipping method and the tax rates configured to apply to the\nshipping method."
+					}
+				]
+			},
+			"sources": [
+				{
+					"fileName": "provider.ts",
+					"line": 14,
+					"character": 12,
+					"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L14"
+				}
+			],
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 42050,
+					"name": "__type",
+					"variant": "declaration",
+					"kind": 65536,
+					"flags": {},
+					"children": [
+						{
+							"id": 42051,
+							"name": "shipping_line",
+							"variant": "declaration",
+							"kind": 1024,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The shipping method to calculate taxes for."
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "provider.ts",
+									"line": 18,
+									"character": 2,
+									"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L18"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../../../packages/core/types/src/tax/common.ts",
+									"qualifiedName": "TaxableShippingDTO"
+								},
+								"name": "TaxableShippingDTO",
+								"package": "@medusajs/types"
+							}
+						},
+						{
+							"id": 42052,
+							"name": "rates",
+							"variant": "declaration",
+							"kind": 1024,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The rates applicable on the shipping method."
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "provider.ts",
+									"line": 22,
+									"character": 2,
+									"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L22"
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "reference",
+									"target": {
+										"sourceFileName": "../../../../packages/core/types/src/tax/common.ts",
+										"qualifiedName": "TaxRateDTO"
+									},
+									"name": "TaxRateDTO",
+									"package": "@medusajs/types"
+								}
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"children": [
+								42051,
+								42052
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "provider.ts",
+							"line": 14,
+							"character": 41,
+							"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L14"
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": 42053,
+			"name": "ItemTaxCalculationLine",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "A line item and the tax rates configured to apply to the\nproduct contained in the line item."
+					}
+				]
+			},
+			"sources": [
+				{
+					"fileName": "provider.ts",
+					"line": 29,
+					"character": 12,
+					"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L29"
+				}
+			],
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 42054,
+					"name": "__type",
+					"variant": "declaration",
+					"kind": 65536,
+					"flags": {},
+					"children": [
+						{
+							"id": 42055,
+							"name": "line_item",
+							"variant": "declaration",
+							"kind": 1024,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The line item to calculate taxes for."
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "provider.ts",
+									"line": 33,
+									"character": 2,
+									"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L33"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../../../packages/core/types/src/tax/common.ts",
+									"qualifiedName": "TaxableItemDTO"
+								},
+								"name": "TaxableItemDTO",
+								"package": "@medusajs/types"
+							}
+						},
+						{
+							"id": 42056,
+							"name": "rates",
+							"variant": "declaration",
+							"kind": 1024,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The rates applicable on the item."
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "provider.ts",
+									"line": 37,
+									"character": 2,
+									"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L37"
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "reference",
+									"target": {
+										"sourceFileName": "../../../../packages/core/types/src/tax/common.ts",
+										"qualifiedName": "TaxRateDTO"
+									},
+									"name": "TaxRateDTO",
+									"package": "@medusajs/types"
+								}
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"children": [
+								42055,
+								42056
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "provider.ts",
+							"line": 29,
+							"character": 37,
+							"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L29"
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": 42057,
+			"name": "ITaxProvider",
+			"variant": "declaration",
+			"kind": 256,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "## Overview\n\nA tax provider is used to retrieve the tax lines in a provided context. The Tax Module provides a default "
+					},
+					{
+						"kind": "code",
+						"text": "`system`"
+					},
+					{
+						"kind": "text",
+						"text": " provider. You can create your own tax provider,\neither in a plugin, in a provider module, or directly in your Medusa application's codebase, then use it in any tax region.\n\n---\n\n## How to Create a Tax Provider\n\nA tax provider class is defined in a TypeScript or JavaScript file. The class must implement the\n"
+					},
+					{
+						"kind": "code",
+						"text": "`ITaxProvider`"
+					},
+					{
+						"kind": "text",
+						"text": " interface imported from "
+					},
+					{
+						"kind": "code",
+						"text": "`@medusajs/framework/types`"
+					},
+					{
+						"kind": "text",
+						"text": ".\n\nThe file can be defined in a plugin, a provider module, or under the "
+					},
+					{
+						"kind": "code",
+						"text": "`src/services`"
+					},
+					{
+						"kind": "text",
+						"text": " directory of your Medusa application. You can later pass the package's name or the\npath to the file in the "
+					},
+					{
+						"kind": "code",
+						"text": "`providers`"
+					},
+					{
+						"kind": "text",
+						"text": " option of the Tax Module.\n\nFor example:\n\n"
+					},
+					{
+						"kind": "code",
+						"text": "```ts title=\"src/services/my-tax.ts\"\nimport { ITaxProvider } from \"@medusajs/framework/types\"\n\nexport default class MyTaxProvider implements ITaxProvider {\n  // ...\n}\n```"
+					},
+					{
+						"kind": "text",
+						"text": "\n\n---\n\n## Identifier Property\n\nThe "
+					},
+					{
+						"kind": "code",
+						"text": "`identifier`"
+					},
+					{
+						"kind": "text",
+						"text": " property in a tax provider is used when the tax provider is registered in the dependency container or added to the database. A tax provider is represented in the database by the "
+					},
+					{
+						"kind": "code",
+						"text": "`TaxProvider`"
+					},
+					{
+						"kind": "text",
+						"text": " data model.\n\nFor example:\n\n"
+					},
+					{
+						"kind": "code",
+						"text": "```ts title=\"src/services/my-tax.ts\"\nexport default class MyTaxProvider implements ITaxProvider {\n  static identifier = \"my-tax\"\n  // ...\n}\n```"
+					},
+					{
+						"kind": "text",
+						"text": "\n\n---\n\n## Constructor\n\nYou can use the "
+					},
+					{
+						"kind": "code",
+						"text": "`constructor`"
+					},
+					{
+						"kind": "text",
+						"text": " of your tax provider to access the resources registered in the dependency container.\n\nYou can also use the constructor to initialize your integration with the third-party provider. For example, if you use a client to connect to the third-party provider’s APIs, you can initialize it in the constructor and use it in other methods in the service.\n\nAdditionally, if you’re creating your tax provider as a plugin or a provider module to be installed in any Medusa application and you want to access its options, you can access them in the constructor.\n\nFor example:\n\n"
+					},
+					{
+						"kind": "code",
+						"text": "```ts\nexport default class MyTaxProvider implements ITaxProvider {\n  // ...\n  constructor(container, options) {\n    // you can access options here\n\n    // you can also initialize a client that\n    // communicates with a third-party service.\n    this.client = new Client(options)\n  }\n}\n```"
+					},
+					{
+						"kind": "text",
+						"text": "\n\n---"
+					}
+				]
+			},
+			"children": [
+				{
+					"id": 42060,
+					"name": "getTaxLines",
+					"variant": "declaration",
+					"kind": 2048,
+					"flags": {},
+					"sources": [
+						{
+							"fileName": "provider.ts",
+							"line": 171,
+							"character": 2,
+							"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L171"
+						}
+					],
+					"signatures": [
+						{
+							"id": 42061,
+							"name": "getTaxLines",
+							"variant": "signature",
+							"kind": 4096,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "This method is used to retrieve the tax lines of items and shipping methods. It's used\nwhen the "
+									},
+									{
+										"kind": "code",
+										"text": "`getTaxLines`"
+									},
+									{
+										"kind": "text",
+										"text": " method of the Tax Module's main service is called.\n\nThis method is useful during checkout or when calculating the totals of orders or exchanges."
+									}
+								],
+								"blockTags": [
+									{
+										"tag": "@returns",
+										"content": [
+											{
+												"kind": "text",
+												"text": "The list of calculated line item and shipping tax lines.\nIf an item in the array has the "
+											},
+											{
+												"kind": "code",
+												"text": "`shipping_line_id`"
+											},
+											{
+												"kind": "text",
+												"text": " property, then it's a shipping tax line. Otherwise, if it has\nthe "
+											},
+											{
+												"kind": "code",
+												"text": "`line_item_id`"
+											},
+											{
+												"kind": "text",
+												"text": " property, then it's a line item tax line."
+											}
+										]
+									},
+									{
+										"tag": "@example",
+										"content": [
+											{
+												"kind": "text",
+												"text": "An example of how this method is implemented in the "
+											},
+											{
+												"kind": "code",
+												"text": "`system`"
+											},
+											{
+												"kind": "text",
+												"text": " provider:\n\n"
+											},
+											{
+												"kind": "code",
+												"text": "```ts\n// ...\n\nexport default class SystemTaxService implements ITaxProvider {\n  // ...\n\n  async getTaxLines(\n    itemLines: TaxTypes.ItemTaxCalculationLine[],\n    shippingLines: TaxTypes.ShippingTaxCalculationLine[],\n    _: TaxTypes.TaxCalculationContext\n  ): Promise<(TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[]> {\n    let taxLines: (TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[] =\n      itemLines.flatMap((l) => {\n        return l.rates.map((r) => ({\n          rate_id: r.id,\n          rate: r.rate || 0,\n          name: r.name,\n          code: r.code,\n          line_item_id: l.line_item.id,\n          provider_id: this.getIdentifier(),\n        }))\n      })\n\n    taxLines = taxLines.concat(\n      shippingLines.flatMap((l) => {\n        return l.rates.map((r) => ({\n          rate_id: r.id,\n          rate: r.rate || 0,\n          name: r.name,\n          code: r.code,\n          shipping_line_id: l.shipping_line.id,\n          provider_id: this.getIdentifier(),\n        }))\n      })\n    )\n\n    return taxLines\n  }\n}\n```"
+											}
+										]
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "provider.ts",
+									"line": 171,
+									"character": 2,
+									"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L171"
+								}
+							],
+							"parameters": [
+								{
+									"id": 42062,
+									"name": "itemLines",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The line item lines to calculate taxes for."
+											}
+										]
+									},
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "reference",
+											"target": 42053,
+											"name": "ItemTaxCalculationLine",
+											"package": "@medusajs/types"
+										}
+									}
+								},
+								{
+									"id": 42063,
+									"name": "shippingLines",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The shipping method lines to calculate taxes for."
+											}
+										]
+									},
+									"type": {
+										"type": "array",
+										"elementType": {
+											"type": "reference",
+											"target": 42049,
+											"name": "ShippingTaxCalculationLine",
+											"package": "@medusajs/types"
+										}
+									}
+								},
+								{
+									"id": 42064,
+									"name": "context",
+									"variant": "param",
+									"kind": 32768,
+									"flags": {},
+									"comment": {
+										"summary": [
+											{
+												"kind": "text",
+												"text": "The context relevant and useful for the taxes calculation."
+											}
+										]
+									},
+									"type": {
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../../../packages/core/types/src/tax/common.ts",
+											"qualifiedName": "TaxCalculationContext"
+										},
+										"name": "TaxCalculationContext",
+										"package": "@medusajs/types"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"target": {
+									"sourceFileName": "../../node_modules/typescript/lib/lib.es5.d.ts",
+									"qualifiedName": "Promise"
+								},
+								"typeArguments": [
+									{
+										"type": "array",
+										"elementType": {
+											"type": "union",
+											"types": [
+												{
+													"type": "reference",
+													"target": {
+														"sourceFileName": "../../../../packages/core/types/src/tax/common.ts",
+														"qualifiedName": "ItemTaxLineDTO"
+													},
+													"name": "ItemTaxLineDTO",
+													"package": "@medusajs/types"
+												},
+												{
+													"type": "reference",
+													"target": {
+														"sourceFileName": "../../../../packages/core/types/src/tax/common.ts",
+														"qualifiedName": "ShippingTaxLineDTO"
+													},
+													"name": "ShippingTaxLineDTO",
+													"package": "@medusajs/types"
+												}
+											]
+										}
+									}
+								],
+								"name": "Promise",
+								"package": "typescript"
+							}
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Methods",
+					"children": [
+						42060
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "provider.ts",
+					"line": 108,
+					"character": 17,
+					"url": "https://github.com/medusajs/medusa/blob/402a5c3cd48a84bacc35c599da7bcd8ba4d2af27/packages/core/types/src/tax/provider.ts#L108"
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Interfaces",
+			"children": [
+				42057
+			]
+		},
+		{
+			"title": "Type Aliases",
+			"children": [
+				42049,
+				42053
+			]
+		}
+	],
+	"packageName": "@medusajs/types",
+	"symbolIdMap": {
+		"42048": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": ""
+		},
+		"42049": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "ShippingTaxCalculationLine"
+		},
+		"42050": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "__type"
+		},
+		"42051": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "__type.shipping_line"
+		},
+		"42052": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "__type.rates"
+		},
+		"42053": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "ItemTaxCalculationLine"
+		},
+		"42054": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "__type"
+		},
+		"42055": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "__type.line_item"
+		},
+		"42056": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "__type.rates"
+		},
+		"42057": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "ITaxProvider"
+		},
+		"42060": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "ITaxProvider.getTaxLines"
+		},
+		"42061": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "ITaxProvider.getTaxLines"
+		},
+		"42062": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "itemLines"
+		},
+		"42063": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "shippingLines"
+		},
+		"42064": {
+			"sourceFileName": "../../../../packages/core/types/src/tax/provider.ts",
+			"qualifiedName": "context"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "../../../../packages/core/types/src/tax/provider.ts"
+		},
+		"reflections": {
+			"1": 42048
+		}
+	}
+}

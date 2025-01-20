@@ -1,0 +1,58 @@
+export const metadata = {
+  title: `Order Claim`,
+}
+
+# {metadata.title}
+
+In this document, you’ll learn about order claims.
+
+## What is a Claim?
+
+When a customer receives a defective or incorrect item, the merchant can create a claim to refund or replace the item.
+
+The [OrderClaim data model](/references/order/models/OrderClaim) represents a claim.
+
+---
+
+## Claim Type
+
+The `Claim` data model has a `type` property whose value indicates the type of the claim:
+
+- `refund`: the items are returned, and the customer is refunded.
+- `replace`: the items are returned, and the customer receives new items.
+
+---
+
+## Old and Replacement Items
+
+When the claim is created, a return, represented by the [Return data model](/references/order/models/Return), is also created to handle receiving the old items from the customer.
+
+<Note>
+
+Learn more about returns in [this guide](../return/page.mdx).
+
+</Note>
+
+If the claim’s type is `replace`, replacement items are represented by the [ClaimItem data model](/references/order/models/OrderClaimItem).
+
+---
+
+## Claim Shipping Methods
+
+A claim uses shipping methods to send the replacement items to the customer. These methods are represented by the [OrderShippingMethod data model](/references/order/models/OrderShippingMethod).
+
+The shipping methods for the returned items are associated with the claim's return, as explained in [this guide](../return/page.mdx#return-shipping-methods).
+
+---
+
+## Claim Refund
+
+If the claim’s type is `refund`, the amount to be refunded is stored in the `refund_amount` property.
+
+The [Transaction data model](/references/order/models/OrderTransaction) represents the refunds made for the claim.
+
+---
+
+## How Claims Impact an Order’s Version
+
+When a claim is confirmed, the order’s version is incremented.

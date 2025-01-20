@@ -1,0 +1,60 @@
+{
+  "name": "ui",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:monorepo": "yarn dev -p 3002",
+    "contentlayer:build": "contentlayer build",
+    "build": "yarn copy-colors && yarn contentlayer:build && next build",
+    "start": "next start",
+    "start:monorepo": "yarn start -p 3002",
+    "lint": "next lint --fix",
+    "copy-colors": "ts-node ./scripts/copy-colors.ts",
+    "lint:content": "eslint --no-config-lookup -c .content.eslintrc.mjs src/content/docs --fix"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.0.2",
+    "@mdx-js/react": "^3.1.0",
+    "@medusajs/icons": "^2.0.0",
+    "@medusajs/ui": "^4.0.0",
+    "@medusajs/ui-preset": "^1.1.3",
+    "autoprefixer": "10.4.14",
+    "clsx": "^2.0.0",
+    "contentlayer": "^0.3.4",
+    "date-fns": "^3.3.1",
+    "docs-ui": "*",
+    "mdast-util-toc": "^7.0.0",
+    "next": "15.0.4",
+    "next-contentlayer": "^0.3.4",
+    "next-themes": "^0.2.1",
+    "postcss": "8.4.27",
+    "react": "rc",
+    "react-dom": "rc",
+    "rehype-slug": "^6.0.0",
+    "remark": "^14.0.3",
+    "tailwind": "*",
+    "tailwindcss": "3.3.3",
+    "typescript": "5.1.6",
+    "unist-builder": "3.0.0",
+    "unist-util-visit": "4.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "20.4.9",
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react@rc",
+    "eslint": "^9.13.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "react-docgen": "^7.1.0",
+    "ts-node": "^10.9.1",
+    "types": "*"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "overrides": {
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc"
+  }
+}

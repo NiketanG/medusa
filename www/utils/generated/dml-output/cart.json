@@ -1,0 +1,138 @@
+{
+	"Address": {
+		"filePath": "packages/modules/cart/src/models/address.ts",
+		"properties": {
+			"id": "The ID of the address.",
+			"customer_id": "The ID of the customer that the address belongs to.",
+			"company": "The company of the address",
+			"first_name": "The first name of the address",
+			"last_name": "The last name of the address",
+			"address_1": "The first line of the address",
+			"address_2": "The second line of the address",
+			"city": "The city of the address",
+			"country_code": "The ISO 2 country code of the address. For example, `us`.",
+			"province": "The province of the address",
+			"postal_code": "The postal code of the address",
+			"phone": "The phone of the address",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	},
+	"LineItemTaxLine": {
+		"filePath": "packages/modules/cart/src/models/line-item-tax-line.ts",
+		"properties": {
+			"id": "The ID of the line item tax line.",
+			"description": "The description of the line item tax line",
+			"code": "The code of the applied tax rate.",
+			"rate": "The rate of the applied tax rate.",
+			"provider_id": "The ID of the provider used to calculate the tax line.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"tax_rate_id": "The ID of the applied tax rate.",
+			"item": "The associated line item.\n\n@expandable"
+		}
+	},
+	"LineItemAdjustment": {
+		"filePath": "packages/modules/cart/src/models/line-item-adjustment.ts",
+		"properties": {
+			"id": "The ID of the line item adjustment.",
+			"description": "The description of the line item adjustment",
+			"code": "The code of promotion that applied the adjustment",
+			"amount": "The amount of the line item adjustment",
+			"provider_id": "The ID of the external provider that the adjustment is related to.",
+			"promotion_id": "The ID of the applied promotion.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"item": "The associated line item.\n\n@expandable"
+		}
+	},
+	"LineItem": {
+		"filePath": "packages/modules/cart/src/models/line-item.ts",
+		"properties": {
+			"id": "The ID of the line item.",
+			"title": "The title of the line item",
+			"subtitle": "The subtitle of the line item",
+			"thumbnail": "The thumbnail URL of the line item",
+			"quantity": "The quantity of the line item",
+			"variant_id": "The ID of the variant added to the cart.",
+			"product_id": "The ID of the product added to the cart.",
+			"product_title": "The title of the line item's product",
+			"product_description": "The description of the line item's product",
+			"product_subtitle": "The subtitle of the line item's product",
+			"product_type": "The type of the line item's product",
+			"product_type_id": "The ID of the type of the line item's product",
+			"product_collection": "The collection of the line item's product",
+			"product_handle": "The unique handle of the line item's product",
+			"variant_sku": "The SKU of the line item's variant",
+			"variant_barcode": "The barcode of the line item's variant",
+			"variant_title": "The title of the line item's variant",
+			"variant_option_values": "The values of the line item variant's options.",
+			"requires_shipping": "Whether the line item requires shipping.",
+			"is_discountable": "Whether the line item is discountable.",
+			"is_tax_inclusive": "Whether the line item's price is tax inclusive.",
+			"compare_at_unit_price": "The original price of the item before a promotion or sale.",
+			"unit_price": "The unit price of the line item",
+			"metadata": "Holds custom data in key-value pairs.",
+			"adjustments": "The associated adjustments.\n\n@expandable",
+			"tax_lines": "The associated tax_lines.\n\n@expandable",
+			"cart": "The associated cart.\n\n@expandable",
+			"is_custom_price": "Whether the line item's price is custom."
+		}
+	},
+	"ShippingMethodAdjustment": {
+		"filePath": "packages/modules/cart/src/models/shipping-method-adjustment.ts",
+		"properties": {
+			"id": "The ID of the shipping method adjustment.",
+			"description": "The description of the shipping method adjustment",
+			"code": "The code of promotion that applied the adjustment",
+			"amount": "The shipping method adjustment's amount",
+			"provider_id": "The ID of the external provider that the adjustment is related to.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"promotion_id": "The ID of the promotion applied",
+			"shipping_method": "The associated shipping_method.\n\n@expandable"
+		}
+	},
+	"ShippingMethodTaxLine": {
+		"filePath": "packages/modules/cart/src/models/shipping-method-tax-line.ts",
+		"properties": {
+			"id": "The ID of the shipping method tax line.",
+			"description": "The description of the shipping method tax line",
+			"code": "The code of the applied tax rate.",
+			"rate": "The rate of the applied tax rate.",
+			"provider_id": "The ID of the provider used to calculate the tax lines.",
+			"tax_rate_id": "The ID of the applied tax rate.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"shipping_method": "The associated shipping_method.\n\n@expandable"
+		}
+	},
+	"ShippingMethod": {
+		"filePath": "packages/modules/cart/src/models/shipping-method.ts",
+		"properties": {
+			"id": "The ID of the shipping method.",
+			"name": "The name of the shipping method",
+			"description": "The description of the shipping method",
+			"amount": "The amount of the shipping method",
+			"is_tax_inclusive": "Whether the shipping method's amount is tax inclusive.",
+			"shipping_option_id": "The ID of the related shipping option.",
+			"data": "The data of the shipping method, used by the associated fulfillment provider when processing the shipping method.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"cart": "The associated cart.\n\n@expandable",
+			"tax_lines": "The associated tax_lines.\n\n@expandable",
+			"adjustments": "The associated adjustments.\n\n@expandable"
+		}
+	},
+	"Cart": {
+		"filePath": "packages/modules/cart/src/models/cart.ts",
+		"properties": {
+			"id": "The ID of the cart.",
+			"region_id": "The ID of the cart's region.",
+			"customer_id": "The ID of the cart's customer.",
+			"sales_channel_id": "The ID of the cart's sales channel.",
+			"email": "The email of the cart's customer",
+			"currency_code": "The ISO 3 currency code of the cart, such as `usd`.",
+			"metadata": "Holds custom data in key-value pairs.",
+			"completed_at": "The date the cart was completed.",
+			"shipping_address": "The associated shipping_address.\n\n@expandable",
+			"billing_address": "The associated billing_address.\n\n@expandable",
+			"items": "The associated items.\n\n@expandable",
+			"shipping_methods": "The associated shipping_methods.\n\n@expandable"
+		}
+	}
+}

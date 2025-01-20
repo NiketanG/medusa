@@ -1,0 +1,165 @@
+import { DetailsList, Prerequisites } from "docs-ui"
+import CmaOptionTroubleshooting from "../troubleshooting/_sections/nextjs/cma-option.mdx"
+import CorsErrorTroubleshooting from "../troubleshooting/_sections/other/cors-errors.mdx"
+import ModuleXErrorTroubleshooting from "../troubleshooting/_sections/common-installation-errors/module-x-error.mdx"
+
+export const metadata = {
+  title: `Next.js Starter Storefront`,
+}
+
+# {metadata.title}
+
+The Medusa application is made up of a Node.js server and an admin dashboard. The storefront is installed and hosted separately from the Medusa application. You have the flexibility to choose the frontend tech stack that you and your team are proficient in, and implement unique design systems and user experience.
+
+Our Next.js Starter is a good place to start building your storefront. The Next.js Starter storefront provides rich commerce features and a sleek design. Developers and businesses can use it as-is or build on top of it to tailor it for the business's unique use case, design, and customer experience.
+
+## Installation
+
+### Approach 1: Install with Medusa Application
+
+<Prerequisites items={[
+  {
+    text: "Node.js v20+",
+    link: "https://nodejs.org/en/download"
+  },
+  {
+    text: "Git CLI tool",
+    link: "https://git-scm.com/downloads"
+  },
+  {
+    text: "PostgreSQL",
+    link: "https://www.postgresql.org/download/"
+  }
+]} />
+
+If you don't have a Medusa application installed, run the following command to install both the Medusa application and the Next.js Starter storefront:
+
+```bash
+npx create-medusa-app@latest --with-nextjs-starter
+```
+
+You'll be asked for the project's name, then the installation will start. The Medusa application will be installed in the `{project-name}` directory, and the Next.js will be installed in a separate `{project-name}-storefront` directory.
+
+Once the installation is done, the Medusa Admin dashboard will open in your default browser at `http://localhost:9000/app`, and the Next.js Starter storefront will be running at `http://localhost:8000`.
+
+For other information related to the Medusa application's installation, refer to [this documentation](!docs!/learn/installation).
+
+### Approach 2: Install separately
+
+<Prerequisites items={[
+  {
+    text: "Node.js v20+",
+    link: "https://nodejs.org/en/download"
+  },
+  {
+    text: "Git CLI tool",
+    link: "https://git-scm.com/downloads"
+  },
+  {
+    text: "At least one region in the Medusa application.",
+  },
+]} />
+
+If you already have a Medusa application installed with at least one region, you can install the Next.js Starter storefront with the following steps:
+
+1. Clone the [Next.js Starter](https://github.com/medusajs/nextjs-starter-medusa):
+
+```bash
+git clone https://github.com/medusajs/nextjs-starter-medusa my-medusa-storefront
+```
+
+2. Change to the `my-medusa-storefront` directory, install the dependencies, and rename the template environment variable file:
+
+```bash npm2yarn
+cd my-medusa-storefront
+npm install
+mv .env.template .env.local
+```
+
+3. Set the Medusa application's publishable API key in the `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` environment variable. You can retrieve the publishable API key in on the Medusa Admin dashboard by going to Settings -> Publishable API Keys
+
+```bash
+NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_123...
+```
+
+4. While the Medusa application is running, start the Next.js Starter storefront:
+
+```bash npm2yarn
+npm run dev
+```
+
+Your Next.js Starter storefront is now running at `http://localhost:8000`.
+
+---
+
+## Troubleshooting
+
+<DetailsList
+  sections={[
+    {
+      title: "Installing Next.js Starter with create-medusa-app not working",
+      content: <CmaOptionTroubleshooting />
+    },
+    {
+      title: "CORS Error",
+      content: <CorsErrorTroubleshooting />
+    },
+    {
+      title: `Resolve "Cannot find module X" Errors`,
+      content: <ModuleXErrorTroubleshooting />
+    }
+  ]}
+/>
+
+## Payment Providers
+
+### Stripe Integration
+
+The Next.js Starter storefront is compatible with Medusa's Stripe Module Provider.
+
+<Prerequisites items={[
+  {
+    text: "Stripe Module Provider installed in the Medusa application.",
+    link: "../commerce-modules/payment/payment-provider/stripe/page.mdx"
+  },
+]} />
+
+In your Next.js Starter project, set the following environment variables for the Stripe integration:
+
+```bash
+NEXT_PUBLIC_STRIPE_KEY=<YOUR_PUBLISHABLE_KEY>
+```
+
+Where `<YOUR_PUBLISHABLE_KEY>` is your Stripe publishable key. You can retrieve it from your [Stripe dashboard](https://dashboard.stripe.com/) by going to Developers → API Keys.
+
+Then, restart the Next.js Starter storefront. You can now use Stripe during checkout.
+
+<Note title="Tip">
+
+Refer to [this guide](./guides/customize-stripe/page.mdx) to learn how to customize the Stripe integration and components.
+
+</Note>
+
+---
+
+## Change Medusa Application URL
+
+By default, the Medusa application runs at `http://localhost:9000`. This value is defined in your Next.js Starter storefront under the environment variable `MEDUSA_BACKEND_URL`.
+
+To change the URL of the Medusa application in the storefront, set the `MEDUSA_BACKEND_URL` environment variable:
+
+```bash
+MEDUSA_BACKEND_URL=https://example.com
+```
+
+---
+
+## Change Medusa Publishable API Key
+
+All requests made from a storefront must pass a publishable API key in the request's header. This API key is created in the Medusa application. If you've installed the Next.js Starter storefront using `create-medusa-app`, the publishable API key is set in the environment variables automatically.
+
+If you change your Medusa application or its database, or you lose the publishable API key you had before, make sure to change the `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` environment variable to the new publishable API key:
+
+```bash
+NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_123...
+```

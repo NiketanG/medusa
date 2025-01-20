@@ -1,16 +1,21 @@
 // API
+process.chdir(__dirname)
 
-module.exports = {
+const defineJestConfig = require("../../define_jest_config")
+module.exports = defineJestConfig({
   testEnvironment: `node`,
+  rootDir: "./",
   testPathIgnorePatterns: [
     `/examples/`,
     `/www/`,
     `/dist/`,
     `/node_modules/`,
+    `<rootDir>/node_modules/`,
     `__tests__/fixtures`,
     `__testfixtures__`,
     `.cache`,
+    "__fixtures__",
   ],
-  transform: { "^.+\\.[jt]s$": `../../jest-transformer.js` },
+  setupFiles: ["../setup-env.js"],
   setupFilesAfterEnv: ["../setup.js"],
-}
+})

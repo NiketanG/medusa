@@ -1,0 +1,137 @@
+{{#if (sectionEnabled "member_declaration_title")}}
+
+{{{declarationTitle}}}
+
+{{/if}}
+
+{{#if (sectionEnabled "member_declaration_comment")}}
+
+{{> comment}}
+
+{{{version this}}}
+
+{{/if}}
+
+{{#if (sectionEnabled "member_declaration_example")}}
+
+{{{example this}}}
+
+{{/if}}
+
+{{#if (sectionEnabled "member_declaration_typeParameters")}}
+
+{{#if typeParameters}}
+
+{{{titleLevel}}} Type Parameters
+
+{{#with typeParameters}}
+
+{{{typeParameter sectionTitle=../name}}}
+
+{{/with}}
+
+{{/if}}
+
+{{/if}}
+
+{{#if type.declaration}}
+
+{{#if (sectionEnabled "member_declaration_indexSignature")}}
+
+{{#if type.declaration.indexSignature}}
+
+{{#with type.declaration.indexSignature}}
+
+{{titleLevel}} Index signature
+
+{{{indexSignatureTitle}}}
+
+{{> comment}}
+
+{{/with}}
+
+{{/if}}
+
+{{/if}}
+
+{{#if (sectionEnabled "member_declaration_signatures")}}
+
+{{#if type.declaration.signatures}}
+
+{{#each type.declaration.signatures}}
+
+{{> member.signature-wrapper showSources=false parent=../type.declaration }}
+
+{{/each}}
+
+{{/if}}
+
+{{/if}}
+
+{{#if (sectionEnabled "member_declaration_typeDeclaration")}}
+
+{{#if type.declaration.children}}
+
+{{#unless (getFormattingOption "expandMembers")}}
+
+{{{titleLevel}}} Properties
+
+{{incrementCurrentTitleLevel}}
+
+{{/unless}}
+
+{{#if (shouldExpandProperties "Properties")}}
+
+{{#each type.declaration.children}}
+
+{{> member }}
+
+{{/each}}
+
+{{else}}
+
+{{#with type.declaration.children}}
+
+{{{typeDeclarationMembers sectionTitle=../name}}}
+
+{{/with}}
+
+{{/if}}
+
+{{#unless (getFormattingOption "expandMembers")}}
+
+{{decrementCurrentTitleLevel}}
+
+{{/unless}}
+
+{{/if}}
+
+{{/if}}
+
+{{/if}}
+
+{{#if (sectionEnabled "member_declaration_children")}}
+
+{{#if (shouldExpandDeclarationChildren)}}
+
+{{#each (getDeclarationChildren)}}
+
+{{> member }}
+
+{{/each}}
+
+{{else}}
+
+{{#with (getDeclarationChildren)}}
+
+{{{titleLevel}}} Properties
+
+{{{typeDeclarationMembers sectionTitle=../name}}}
+
+{{/with}}
+
+{{/if}}
+
+{{/if}}
+
+{{> member.sources}}

@@ -1,0 +1,38 @@
+import { Table, Prerequisites, ChildDocs } from "docs-ui"
+
+export const metadata = {
+  title: `Medusa CLI Reference`,
+}
+
+# {metadata.title}
+
+The Medusa CLI tool provides commands that facilitate your development.
+
+<Prerequisites items={[
+  {
+    text: "Node.js v20+",
+    link: "https://nodejs.org/en/download"
+  },
+  {
+    text: "Git CLI tool",
+    link: "https://git-scm.com/downloads"
+  },
+  {
+    text: "PostgreSQL",
+    link: "https://www.postgresql.org/download/"
+  }
+]} />
+
+## Usage
+
+In your Medusa application's directory, you can use the Medusa CLI tool using NPX.
+
+For example:
+
+```bash
+npx medusa --help
+```
+
+---
+
+<ChildDocs hideItems={["Overview"]} />

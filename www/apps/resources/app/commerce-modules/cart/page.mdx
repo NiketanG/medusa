@@ -1,0 +1,170 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Cart Module`,
+}
+
+# {metadata.title}
+
+In this section of the documentation, you will find resources to learn more about the Cart Module and how to use it in your application.
+
+Medusa has cart related features available out-of-the-box through the Cart Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in commerce modules, such as this Cart Module.
+
+<Note>
+
+Learn more about why modules are isolated in [this documentation](!docs!/learn/fundamentals/modules/isolation).
+
+</Note>
+
+## Cart Features
+
+- [Cart Management](./concepts/page.mdx): Store and manage carts, including their addresses, line items, shipping methods, and more.
+- [Apply Promotion Adjustments](./promotions/page.mdx): Apply promotions or discounts to line items and shipping methods by adding adjustment lines that are factored into their subtotals.
+- [Apply Tax Lines](./tax-lines/page.mdx): Apply tax lines to line items and shipping methods.
+- [Cart Scoping](./links-to-other-modules/page.mdx): When used in the Medusa application, Medusa creates links to other commerce modules, scoping a cart to a sales channel, region, and a customer.
+
+---
+
+## How to Use the Cart Module
+
+In your Medusa application, you build flows around commerce modules. A flow is built as a [Workflow](!docs!/learn/fundamentals/workflows), which is a special function composed of a series of steps that guarantees data consistency and reliable roll-back mechanism. 
+
+You can build custom workflows and steps. You can also re-use Medusa's workflows and steps, which are provided by the `@medusajs/medusa/core-flows` package.
+
+For example:
+
+export const highlights = [
+  ["12", "Modules.CART", "Resolve the module in a step."]
+]
+
+```ts title="src/workflows/create-cart.ts" highlights={highlights}
+import { 
+  createWorkflow, 
+  WorkflowResponse,
+  createStep,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
+import { Modules } from "@medusajs/framework/utils"
+
+const createCartStep = createStep(
+  "create-cart",
+  async ({}, { container }) => {
+    const cartModuleService = container.resolve(Modules.CART)
+
+    const cart = await cartModuleService.createCarts({
+      currency_code: "usd",
+      shipping_address: {
+        address_1: "1512 Barataria Blvd",
+        country_code: "us",
+      },
+      items: [
+        {
+          title: "Shirt",
+          unit_price: 1000,
+          quantity: 1,
+        },
+      ],
+    })
+
+    return new StepResponse({ cart }, cart.id)
+  },
+  async (cartId, { container }) => {
+    if (!cartId) {
+      return
+    }
+    const cartModuleService = container.resolve(Modules.CART)
+
+    await cartModuleService.deleteCarts([cartId])
+  }
+)
+
+export const createCartWorkflow = createWorkflow(
+  "create-cart",
+  () => {
+    const { cart } = createCartStep()
+
+    return new WorkflowResponse({
+      cart,
+    })
+  }
+)
+```
+
+You can then execute the workflow in your custom API routes, scheduled jobs, or subscribers:
+
+<CodeTabs group="resource-types">
+  <CodeTab label="API Route" value="api-route">
+    
+```ts title="src/api/workflow/route.ts" highlights={[["11"], ["12"]]} collapsibleLines="1-6" expandButtonLabel="Show Imports"
+import type {
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/framework/http"
+import { createCartWorkflow } from "../../workflows/create-cart"
+
+export async function GET(
+  req: MedusaRequest,
+  res: MedusaResponse
+) {
+  const { result } = await createCartWorkflow(req.scope)
+    .run()
+
+  res.send(result)
+}
+```
+
+  </CodeTab>
+  <CodeTab label="Subscriber" value="subscriber">
+    
+```ts title="src/subscribers/user-created.ts" highlights={[["11"], ["12"]]} collapsibleLines="1-6" expandButtonLabel="Show Imports"
+import {
+  type SubscriberConfig,
+  type SubscriberArgs,
+} from "@medusajs/framework"
+import { createCartWorkflow } from "../workflows/create-cart"
+
+export default async function handleUserCreated({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  const { result } = await createCartWorkflow(container)
+    .run()
+
+  console.log(result)
+}
+
+export const config: SubscriberConfig = {
+  event: "user.created",
+}
+```
+
+  </CodeTab>
+  <CodeTab label="Scheduled Job" value="scheduled-job">
+    
+```ts title="src/jobs/run-daily.ts" highlights={[["7"], ["8"]]}
+import { MedusaContainer } from "@medusajs/framework/types"
+import { createCartWorkflow } from "../workflows/create-cart"
+
+export default async function myCustomJob(
+  container: MedusaContainer
+) {
+  const { result } = await createCartWorkflow(container)
+    .run()
+
+  console.log(result)
+}
+
+export const config = {
+  name: "run-once-a-day",
+  schedule: `0 0 * * *`,
+}
+```
+
+  </CodeTab>
+</CodeTabs>
+
+Learn more about workflows in [this documentation](!docs!/learn/fundamentals/workflows).
+
+---
+
+<CommerceModuleSections />

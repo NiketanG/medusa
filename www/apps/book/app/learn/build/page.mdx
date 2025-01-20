@@ -1,0 +1,80 @@
+export const metadata = {
+  title: `${pageNumber} Build Medusa Application`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to create a production build of your Medusa application to be deployed to a hosting provider.
+
+Next chapters explain how to deploy the Medusa application.
+
+## build Command
+
+The Medusa CLI tool has a [build](!resources!/medusa-cli/commands/build) command which creates a standalone build of the Medusa application that:
+
+- Doesn't rely on the source TypeScript files.
+- Can be copied to a production server reliably.
+
+So, to create the production build, run the following command in the root of your Medusa application:
+
+```bash
+npx medusa build
+```
+
+---
+
+## Build Output
+
+The `build` command outputs the production build in the `.medusa/server` directory, and the admin dashboard build in the `.medusa/server/public/admin`.
+
+### Separate Admin Build
+
+The `build` command accepts a `--admin-only` option that outputs the admin to the `.medusa/admin` directory. This is useful when deploying the admin dashboard separately, such as on Vercel:
+
+```bash
+npx medusa build --admin-only
+```
+
+---
+
+## Start Built Medusa Application
+
+To start the Medusa application after running the `build` command:
+
+- Change to the `.medusa/server` directory and install the dependencies:
+
+```bash npm2yarn
+cd .medusa/server && npm install
+```
+
+- When running the application locally, make sure to copy the `.env` file from the root project's directory. In production, use system environment variables instead.
+
+```bash title=".medusa/server"
+cp ../../.env .env.production
+```
+
+<Note>
+
+When `NODE_ENV=production`, the Medusa application loads the environment variables from `.env.production`. Learn more about environment variables in [this guide](../fundamentals/environment-variables/page.mdx).
+
+</Note>
+
+- In the system environment variables, set `NODE_ENV` to `production`:
+
+```bash
+NODE_ENV=production
+```
+
+- Use the `start` command in the `.medusa/server` directory to run the application:
+
+```bash npm2yarn title=".medusa/server"
+npm run start
+```
+
+---
+
+## Deploying Production Build
+
+The next chapter covers how you generally deploy the production build.
+
+You can also refer to the [deployment how-to guides](!resources!/deployment) for platform-specific how-to guides.

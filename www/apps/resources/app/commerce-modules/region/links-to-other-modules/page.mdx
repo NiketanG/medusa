@@ -1,0 +1,206 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Region Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Region Module and other commerce modules.
+
+## Summary
+
+The Region Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+- [`Region` data model \<\> `Cart` data model of the Cart Module](#cart-module). (Read-only)
+- [`Region` data model \<\> `Order` data model of the Order Module](#order-module). (Read-only)
+- [`Region` data model \<\> `PaymentProvider` data model of the Payment Module](#payment-module).
+
+---
+
+## Cart Module
+
+Medusa defines a read-only link between the `Region` data model and the [Cart Module](../../cart/page.mdx)'s `Cart` data model. This means you can retrieve the details of a region's carts, but you don't manage the links in a pivot table in the database. The region of a cart is determined by the `region_id` property of the `Cart` data model.
+
+### Retrieve with Query
+
+To retrieve the carts of a region with [Query](!docs!/learn/fundamentals/module-links/query), pass `carts.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: regions } = await query.graph({
+  entity: "region",
+  fields: [
+    "carts.*",
+  ],
+})
+
+// regions.carts
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: regions } = useQueryGraphStep({
+  entity: "region",
+  fields: [
+    "carts.*",
+  ],
+})
+
+// regions.carts
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Order Module
+
+Medusa defines a read-only link between the `Region` data model and the [Cart Module](../../cart/page.mdx)'s `Cart` data model. This means you can retrieve the details of a region's orders, but you don't manage the links in a pivot table in the database. The region of an order is determined by the `region_id` property of the `Order` data model.
+
+### Retrieve with Query
+
+To retrieve the orders of a region with [Query](!docs!/learn/fundamentals/module-links/query), pass `orders.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: regions } = await query.graph({
+  entity: "region",
+  fields: [
+    "orders.*",
+  ],
+})
+
+// regions.orders
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: regions } = useQueryGraphStep({
+  entity: "region",
+  fields: [
+    "orders.*",
+  ],
+})
+
+// regions.orders
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Payment Module
+
+You can specify for each region which payment providers are available for use.
+
+Medusa defines a module link between the `PaymentProvider` and the `Region` data models.
+
+![A diagram showcasing an example of how resources from the Payment and Region modules are linked](https://res.cloudinary.com/dza7lstvk/image/upload/v1711569520/Medusa%20Resources/payment-region_jyo2dz.jpg)
+
+### Retrieve with Query
+
+To retrieve the payment providers of a region with [Query](!docs!/learn/fundamentals/module-links/query), pass `payment_providers.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: regions } = await query.graph({
+  entity: "region",
+  fields: [
+    "payment_providers.*",
+  ],
+})
+
+// regions.payment_providers
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: regions } = useQueryGraphStep({
+  entity: "region",
+  fields: [
+    "payment_providers.*",
+  ],
+})
+
+// regions.payment_providers
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Manage with Link
+
+To manage the payment providers in a region, use [Link](!docs!/learn/fundamentals/module-links/link):
+
+<CodeTabs group="relation-link">
+  <CodeTab label="link.create" value="method">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+
+// ...
+
+await link.create({
+  [Modules.REGION]: {
+    region_id: "reg_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_provider_id: "pp_stripe_stripe",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="createRemoteLinkStep" value="step">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { createRemoteLinkStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+createRemoteLinkStep({
+  [Modules.REGION]: {
+    region_id: "reg_123",
+  },
+  [Modules.PAYMENT]: {
+    payment_provider_id: "pp_stripe_stripe",
+  },
+})
+```
+
+  </CodeTab>
+</CodeTabs>

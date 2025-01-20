@@ -1,0 +1,24 @@
+{
+	"User": {
+		"filePath": "packages/modules/user/src/models/user.ts",
+		"properties": {
+			"id": "The ID of the user.",
+			"first_name": "The first name of the user.",
+			"last_name": "The last name of the user.",
+			"email": "The email of the user.",
+			"avatar_url": "The image URL of the user's avatar.",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	},
+	"Invite": {
+		"filePath": "packages/modules/user/src/models/invite.ts",
+		"properties": {
+			"id": "The ID of the invite.",
+			"email": "The email of the invited user.",
+			"accepted": "Whether the invite is accepted.",
+			"token": "The token of the invite.",
+			"expires_at": "When the invite expires.",
+			"metadata": "Holds custom data in key-value pairs."
+		}
+	}
+}

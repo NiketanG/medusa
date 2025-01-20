@@ -1,0 +1,12 @@
+extends: substitution
+message: "Use '%s' instead of '%s'."
+level: error
+action:
+  name: replace
+swap:
+  "Workflow SDK": Workflows SDK
+  "Admin Extensions SDK": Admin Extension SDK
+  "Module SDK": Modules SDK
+  "Data Modeling Language": "Data Model Language"
+  "Medusa's Framework": "Medusa Framework"
+  

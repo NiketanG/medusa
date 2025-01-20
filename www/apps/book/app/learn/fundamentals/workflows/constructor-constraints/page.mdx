@@ -1,0 +1,374 @@
+export const metadata = {
+  title: `${pageNumber} Workflow Constraints`,
+}
+
+# {metadata.title}
+
+This chapter lists constraints of defining a workflow or its steps.
+
+## Workflow Constraints
+
+### No Async Functions
+
+The function passed to `createWorkflow` can’t be an async function:
+
+```ts highlights={[["4", "async", "Function can't be async."], ["11", "", "Correct way of defining the function."]]}
+// Don't
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  async function (input: WorkflowInput) {
+  // ...
+})
+
+// Do
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+  // ...
+})
+```
+
+### No Direct Variable Manipulation
+
+You can’t directly manipulate variables within the workflow's constructor function.
+
+<Note>
+
+Learn more about why you can't manipulate variables [in this chapter](../variable-manipulation/page.mdx)
+
+</Note>
+
+Instead, use `transform` from the Workflows SDK:
+
+export const highlights = [
+  ["9", "", "Don't manipulate variables directly."],
+  ["20", "transform", "Use the `transform` function to manipulate variables."]
+]
+
+```ts  highlights={highlights}
+// Don't
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+  const str1 = step1(input)
+  const str2 = step2(input)
+
+  return new WorkflowResponse({
+    message: `${str1}${str2}`,
+  })
+})
+
+// Do
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+  const str1 = step1(input)
+  const str2 = step2(input)
+
+  const result = transform(
+    {
+      str1,
+      str2,
+    },
+    (input) => ({
+      message: `${input.str1}${input.str2}`,
+    })
+  )
+
+  return new WorkflowResponse(result)
+})
+```
+
+### Create Dates in transform
+
+When you use `new Date()` in a workflow's constructor function, the date is evaluated when Medusa creates the internal representation of the workflow, not during execution.
+
+Instead, create the date using `transform`.
+
+<Note>
+
+Learn more about how Medusa creates an internal representation of a workflow [in this chapter](../variable-manipulation/page.mdx).
+
+</Note>
+
+For example:
+
+export const dateHighlights = [
+  ["5", "new Date()", "Don't create a date directly in the constructor function."],
+  ["16", "transform", "Use the `transform` function to create a date variable."]
+]
+
+```ts highlights={dateHighlights}
+// Don't
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+  const today = new Date()
+
+  return new WorkflowResponse({
+    today,
+  })
+})
+
+// Do
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+  const today = transform({}, () => new Date())
+
+  return new WorkflowResponse({
+    today,
+  })
+})
+```
+
+### No If Conditions
+
+You can't use if-conditions in a workflow.
+
+<Note>
+
+Learn more about why you can't use if-conditions [in this chapter](../conditions/page.mdx#why-if-conditions-arent-allowed-in-workflows)
+
+</Note>
+
+Instead, use when-then from the Workflows SDK:
+
+```ts
+// Don't
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+  if (input.is_active) {
+    // perform an action
+  }
+})
+
+// Do (explained in the next chapter)
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+  when(input, (input) => {
+    return input.is_active
+  })
+  .then(() => {
+    // perform an action
+  })
+})
+```
+
+You can also pair multiple `when-then` blocks to implement an `if-else` condition as explained in [this chapter](../conditions/page.mdx).
+
+### No Conditional Operators
+
+You can't use conditional operators in a workflow, such as `??` or `||`.
+
+<Note>
+
+Learn more about why you can't use conditional operators [in this chapter](../conditions/page.mdx#why-if-conditions-arent-allowed-in-workflows)
+
+</Note>
+
+Instead, use `transform` to store the desired value in a variable.
+
+### Logical Or (||) Alternative
+
+```ts
+// Don't
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    const message = input.message || "Hello"
+})
+
+// Do
+// other imports...
+import { transform } from "@medusajs/framework/workflows-sdk"
+
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    const message = transform(
+      {
+        input,
+      },
+      (data) => data.input.message || "hello"
+    )
+})
+```
+
+### Nullish Coalescing (??) Alternative
+
+```ts
+// Don't
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    const message = input.message ?? "Hello"
+})
+
+// Do
+// other imports...
+import { transform } from "@medusajs/framework/workflows-sdk"
+
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    const message = transform(
+      {
+        input,
+      },
+      (data) => data.input.message ?? "hello"
+    )
+})
+```
+
+### Double Not (!!) Alternative
+
+```ts
+// Don't
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    step1({
+      isActive: !!input.is_active,
+    })
+})
+
+// Do
+// other imports...
+import { transform } from "@medusajs/framework/workflows-sdk"
+
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    const isActive = transform(
+      {
+        input,
+      },
+      (data) => !!data.input.is_active
+    )
+    
+    step1({
+      isActive,
+    })
+})
+```
+
+### Ternary Alternative
+
+```ts
+// Don't
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    step1({
+      message: input.is_active ? "active" : "inactive",
+    })
+})
+
+// Do
+// other imports...
+import { transform } from "@medusajs/framework/workflows-sdk"
+
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    const message = transform(
+      {
+        input,
+      },
+      (data) => {
+        return data.input.is_active ? "active" : "inactive"
+      }
+    )
+    
+    step1({
+      message,
+    })
+})
+```
+
+### Optional Chaining (?.) Alternative
+
+```ts
+// Don't
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    step1({
+      name: input.customer?.name,
+    })
+})
+
+// Do
+// other imports...
+import { transform } from "@medusajs/framework/workflows-sdk"
+
+const myWorkflow = createWorkflow(
+  "hello-world", 
+  function (input: WorkflowInput) {
+    const name = transform(
+      {
+        input,
+      },
+      (data) => data.input.customer?.name
+    )
+    
+    step1({
+      name,
+    })
+})
+```
+
+
+
+---
+
+## Step Constraints
+
+### Returned Values
+
+A step must only return serializable values, such as [primitive values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#primitive_values) or an object.
+
+Values of other types, such as Maps, aren't allowed.
+
+```ts
+// Don't
+import { 
+  createStep,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  (input, { container }) => {
+    const myMap = new Map()
+
+    // ...
+
+    return new StepResponse({
+      myMap,
+    })
+  }
+)
+
+// Do
+import { 
+  createStep,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
+
+const step1 = createStep(
+  "step-1",
+  (input, { container }) => {
+    const myObj: Record<string, unknown> = {}
+
+    // ...
+
+    return new StepResponse({
+      myObj,
+    })
+  }
+)
+```

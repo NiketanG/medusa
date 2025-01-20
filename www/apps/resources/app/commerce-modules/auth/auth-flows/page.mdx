@@ -1,0 +1,216 @@
+---
+sidebar_label: "Authentication Flows"
+---
+
+export const metadata = {
+  title: `Authentication Flows with the Auth Main Service`,
+}
+
+# {metadata.title}
+
+In this document, you'll learn how to use the Auth Module's main service's methods to implement authentication flows and reset a user's password.
+
+## Authentication Methods
+
+### Register
+
+The [register method of the Auth Module's main service](/references/auth/register) creates an auth identity that can be authenticated later.
+
+For example:
+
+```ts
+const data = await authModuleService.register(
+  "emailpass",
+  // passed to auth provider
+  {
+    // ...
+  }
+)
+```
+
+This method calls the `register` method of the provider specified in the first parameter and returns its data.
+
+### Authenticate
+
+To authenticate a user, you use the [authenticate method of the Auth Module's main service](/references/auth/authenticate). For example:
+
+```ts
+const data = await authModuleService.authenticate(
+  "emailpass",
+  // passed to auth provider
+  {
+    // ...
+  }
+)
+```
+
+This method calls the `authenticate` method of the provider specified in the first parameter and returns its data.
+
+---
+
+## Auth Flow 1: Basic Authentication
+
+The basic authentication flow requires first using the `register` method, then the `authenticate` method:
+
+```ts
+const { success, authIdentity, error } = await authModuleService.register(
+  "emailpass",
+  // passed to auth provider
+  {
+    // ...
+  }
+)
+
+if (error) {
+  // registration failed
+  // TODO return an error
+  return
+}
+
+// later (can be another route for log-in)
+const { success, authIdentity, location } = await authModuleService.authenticate(
+  "emailpass",
+  // passed to auth provider
+  {
+    // ...
+  }
+)
+
+if (success && !location) {
+  // user is authenticated
+}
+```
+
+If `success` is true and `location` isn't set, the user is authenticated successfully, and their authentication details are available within the `authIdentity` object.
+
+The next section explains the flow if `location` is set.
+
+<Note>
+
+Check out the [AuthIdentity](/references/auth/models/AuthIdentity) reference for the received properties in `authIdentity`.
+
+</Note>
+
+![Diagram showcasing the basic authentication flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1711373749/Medusa%20Resources/basic-auth_lgpqsj.jpg)
+
+### Auth Identity with Same Identifier
+
+If an auth identity, such as a `customer`, tries to register with an email of another auth identity, the `register` method returns an error. This can happen either if another customer is using the same email, or an admin user has the same email.
+
+There are two ways to handle this:
+
+- Consider the customer authenticated if the `authenticate` method validates that the email and password are correct. This allows admin users, for example, to authenticate as customers.
+- Return an error message to the customer, informing them that the email is already in use.
+
+---
+
+## Auth Flow 2: Third-Party Service Authentication
+
+The third-party service authentication method requires using the `authenticate` method first:
+
+```ts
+const { success, authIdentity, location } = await authModuleService.authenticate(
+  "google",
+  // passed to auth provider
+  {
+    // ...
+  }
+)
+
+if (location) {
+  // return the location for the front-end to redirect to
+}
+
+if (!success) {
+  // authentication failed
+}
+
+// authentication successful
+```
+
+If the `authenticate` method returns a `location` property, the authentication process requires the user to perform an action with a third-party service. So, you return the `location` to the front-end or client to redirect to that URL.
+
+For example, when using the `google` provider, the `location` is the URL that the user is navigated to login.
+
+![Diagram showcasing the first part of the third-party authentication flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1711374847/Medusa%20Resources/third-party-auth-1_enyedy.jpg)
+
+### Overriding Callback URL
+
+The Google and GitHub providers allow you to override their `callbackUrl` option during authentication. This is useful when you redirect the user after authentication to a URL based on its actor type. For example, you redirect admin users and customers to different pages.
+
+```ts
+const { success, authIdentity, location } = await authModuleService.authenticate(
+  "google",
+  // passed to auth provider
+  {
+    // ...
+    callback_url: "example.com",
+  }
+)
+```
+
+### validateCallback
+
+Providers handling this authentication flow must implement the `validateCallback` method. It implements the logic to validate the authentication with the third-party service.
+
+So, once the user performs the required action with the third-party service (for example, log-in with Google), the frontend must redirect to an API route that uses the [validateCallback method of the Auth Module's main service](/references/auth/validateCallback).
+
+The method calls the specified provider’s `validateCallback` method passing it the authentication details it received in the second parameter:
+
+```ts
+const { success, authIdentity } = await authModuleService.validateCallback(
+  "google",
+  // passed to auth provider
+  {
+    // request data, such as
+    url,
+    headers,
+    query,
+    body,
+    protocol,
+  }
+)
+
+if (success) {
+  // authentication succeeded
+}
+```
+
+<Note title="Tip">
+
+For providers like Google, the `query` object contains the query parameters from the original callback URL, such as the `code` and `state` parameters.
+
+</Note>
+
+If the returned `success` property is `true`, the authentication with the third-party provider was successful.
+
+![Diagram showcasing the second part of the third-party authentication flow](https://res.cloudinary.com/dza7lstvk/image/upload/v1711375123/Medusa%20Resources/third-party-auth-2_kmjxju.jpg)
+
+---
+
+## Reset Password
+
+To update a user's password or other authentication details, use the `updateProvider` method of the Auth Module's main service. It calls the `update` method of the specified authentication provider.
+
+For example:
+
+```ts
+const { success } = await authModuleService.updateProvider(
+  "emailpass",
+  // passed to the auth provider
+  {
+    entity_id: "user@example.com",
+    password: "supersecret",
+  }
+)
+
+if (success) {
+  // password reset successfully
+}
+```
+
+The method accepts as a first parameter the ID of the provider, and as a second parameter the data necessary to reset the password.
+
+In the example above, you use the `emailpass` provider, so you have to pass an object having an `email` and `password` properties.
+
+If the returned `success` property is `true`, the password has reset successfully.

@@ -1,0 +1,27 @@
+import { ChildDocs } from "docs-ui"
+
+export const metadata = {
+  title: `Commerce Modules`,
+}
+
+# {metadata.title}
+
+In this section of the documentation, you'll find guides and references related to Medusa's commerce modules.
+
+A commerce module provides features for a commerce domain within its service. The Medusa application exposes these features in its API routes to clients.
+
+A commerce module also defines data models, representing tables in the database. Medusa's framework and tools allow you to extend these data models to add custom fields.
+
+## Commerce Modules List
+
+<ChildDocs onlyTopLevel={true} type="item" />
+
+---
+
+## How to Use Modules
+
+The Commerce Modules can be used in many use cases, including:
+
+- Medusa Application: The Medusa application uses the Commerce Modules to expose commerce features through the REST APIs.
+- Serverless Application: Use the Commerce Modules in a serverless application, such as a Next.js application, without having to manage a fully-fledged ecommerce system. You can use it by installing it in your Node.js project as an NPM package.
+- Node.js Application: Use the Commerce Modules in any Node.js application by installing it with NPM.

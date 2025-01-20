@@ -1,0 +1,80 @@
+export const metadata = {
+  title: `User Creation Flows`,
+}
+
+# {metadata.title}
+
+In this document, learn the different ways to create a user using the User Module.
+
+## Straightforward User Creation
+
+To create a user, use the [create method of the User Module’s main service](/references/user/create):
+
+```ts
+const user = await userModuleService.createUsers({
+  email: "user@example.com",
+})
+```
+
+You can pair this with the Auth Module to allow the user to authenticate, as explained in a [later section](#create-identity-with-the-auth-module).
+
+---
+
+## Invite Users
+
+To create a user, you can create an invite for them using the [createInvites method](/references/user/createInvites) of the User Module's main service:
+
+```ts
+const invite = await userModuleService.createInvites({
+  email: "user@example.com",
+})
+```
+
+Later, you can accept the invite and create a new user for them:
+
+```ts
+const invite =
+  await userModuleService.validateInviteToken("secret_123")
+
+await userModuleService.updateInvites({
+  id: invite.id,
+  accepted: true,
+})
+
+const user = await userModuleService.createUsers({
+  email: invite.email,
+})
+```
+
+### Invite Expiry
+
+An invite has an expiry date. You can renew the expiry date and refresh the token using the [refreshInviteTokens method](/references/user/refreshInviteTokens):
+
+```ts
+await userModuleService.refreshInviteTokens(["invite_123"])
+```
+
+---
+
+## Create Identity with the Auth Module
+
+By combining the User and Auth Modules, you can use the Auth Module for authenticating users, and the User Module to manage those users.
+
+So, when a user is authenticated, and you receive the `AuthIdentity` object, you can use it to create a user if it doesn’t exist:
+
+```ts
+const { success, authIdentity } =
+  await authModuleService.authenticate("emailpass", {
+    // ...
+  })
+
+const [, count] = await userModuleService.listAndCountUsers({
+  email: authIdentity.entity_id,
+})
+
+if (!count) {
+  const user = await userModuleService.createUsers({
+    email: authIdentity.entity_id,
+  })
+}
+```

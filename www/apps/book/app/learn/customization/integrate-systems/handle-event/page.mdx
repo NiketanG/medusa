@@ -1,0 +1,339 @@
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `${pageNumber} Guide: Sync Brands from Medusa to CMS`,
+}
+
+# {metadata.title}
+
+In the [previous chapter](../service/page.mdx), you created a CMS Module that integrates a dummy third-party system. You can now perform actions using that module within your custom flows.
+
+In another previous chapter, you [added a workflow](../../custom-features/workflow/page.mdx) that creates a brand. After integrating the CMS, you want to sync that brand to the third-party system as well.
+
+Medusa has an event system that emits events when an operation is performed. It allows you to listen to those events and perform an asynchronous action in a function called a [subscriber](../../../fundamentals/events-and-subscribers/page.mdx). This is useful to perform actions that aren't integral to the original flow, such as syncing data to a third-party system.
+
+<Note>
+
+Learn more about Medusa's event system and subscribers in [this chapter](../../../fundamentals/events-and-subscribers/page.mdx).
+
+</Note>
+
+In this chapter, you'll modify the `createBrandWorkflow` you created before to emit a custom event that indicates a brand was created. Then, you'll listen to that event in a subscriber to sync the brand to the third-party CMS. You'll implement the sync logic within a workflow that you execute in the subscriber.
+
+<Prerequisites
+  items={[
+    {
+      text: "createBrandWorkflow",
+      link: "/learn/customization/custom-features/workflow"
+    },
+    {
+      text: "CMS Module",
+      link: "/learn/customization/integrate-systems/service"
+    }
+  ]}
+/>
+
+## 1. Emit Event in createBrandWorkflow
+
+Since syncing the brand to the third-party system isn't integral to creating a brand, you'll emit a custom event indicating that a brand was created.
+
+Medusa provides an `emitEventStep` that allows you to emit an event in your workflows. So, in the `createBrandWorkflow` defined in `src/workflows/create-brand.ts`, use the `emitEventStep` helper step after the `createBrandStep`:
+
+export const eventHighlights = [
+  ["13", "emitEventStep", "Emit an event."],
+  ["14", "eventName", "The event's name."],
+  ["15", "data", "The data to pass in the payload."]
+]
+
+```ts title="src/workflows/create-brand.ts" highlights={eventHighlights}
+// other imports...
+import { 
+  emitEventStep,
+} from "@medusajs/medusa/core-flows"
+
+// ...
+
+export const createBrandWorkflow = createWorkflow(
+  "create-brand",
+  (input: CreateBrandInput) => {
+    // ...
+
+    emitEventStep({
+      eventName: "brand.created",
+      data: {
+        id: brand.id,
+      },
+    })
+
+    return new WorkflowResponse(brand)
+  }
+)
+```
+
+The `emitEventStep` accepts an object parameter having two properties:
+
+- `eventName`: The name of the event to emit. You'll use this name later to listen to the event in a subscriber.
+- `data`: The data payload to emit with the event. This data is passed to subscribers that listen to the event. You add the brand's ID to the data payload, informing the subscribers which brand was created.
+
+You'll learn how to handle this event in a later step.
+
+---
+
+## 2. Create Sync to Third-Party System Workflow
+
+The subscriber that will listen to the `brand.created` event will sync the created brand to the third-party CMS. So, you'll implement the syncing logic in a workflow, then execute the workflow in the subscriber.
+
+Workflows have a built-in durable execution engine that helps you complete tasks spanning multiple systems. Also, their rollback mechanism ensures that data is consistent across systems even when errors occur during execution.
+
+<Note>
+
+Learn more about workflows in [this chapter](../../../fundamentals/workflows/page.mdx).
+
+</Note>
+
+You'll create a `syncBrandToSystemWorkflow` that has two steps:
+
+- `useQueryGraphStep`: a step that Medusa provides to retrieve data using [Query](../../../fundamentals/module-links/query/page.mdx). You'll use this to retrieve the brand's details using its ID.
+- `syncBrandToCmsStep`: a step that you'll create to sync the brand to the CMS.
+
+### syncBrandToCmsStep
+
+To implement the step that syncs the brand to the CMS, create the file `src/workflows/sync-brands-to-cms.ts` with the following content:
+
+![Directory structure of the Medusa application after adding the file](https://res.cloudinary.com/dza7lstvk/image/upload/v1733493547/Medusa%20Book/cms-dir-overview-4_u5t0ug.jpg)
+
+export const syncStepHighlights = [
+  ["8", "InferTypeOf", "Get the `Brand` data model as a type."],
+  ["14", "cmsModuleService", "Resolve the CMS Module's service from the container."],
+  ["16", "createBrand", "Create the brand in the third-party CMS."],
+  ["18", "brand.id", "Pass the brand's ID to the compensation function."],
+  ["27", "deleteBrand", "Delete the brand in the third-party CMS if an error occurs."]
+]
+
+```ts title="src/workflows/sync-brands-to-cms.ts" highlights={syncStepHighlights} collapsibleLines="1-6" expandButtonLabel="Show Imports"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { InferTypeOf } from "@medusajs/framework/types"
+import { Brand } from "../modules/brand/models/brand"
+import { CMS_MODULE } from "../modules/cms"
+import CmsModuleService from "../modules/cms/service"
+
+type SyncBrandToCmsStepInput = {
+  brand: InferTypeOf<typeof Brand>
+}
+
+const syncBrandToCmsStep = createStep(
+  "sync-brand-to-cms",
+  async ({ brand }: SyncBrandToCmsStepInput, { container }) => {
+    const cmsModuleService: CmsModuleService = container.resolve(CMS_MODULE)
+
+    await cmsModuleService.createBrand(brand)
+
+    return new StepResponse(null, brand.id)
+  },
+  async (id, { container }) => {
+    if (!id) {
+      return
+    }
+
+    const cmsModuleService: CmsModuleService = container.resolve(CMS_MODULE)
+
+    await cmsModuleService.deleteBrand(id)
+  }
+)
+```
+
+You create the `syncBrandToCmsStep` that accepts a brand as an input. In the step, you resolve the CMS Module's service from the [Medusa container](../../../fundamentals/medusa-container/page.mdx) and use its `createBrand` method. This method will create the brand in the third-party CMS.
+
+You also pass the brand's ID to the step's compensation function. In this function, you delete the brand in the third-party CMS if an error occurs during the workflow's execution.
+
+<Note>
+
+Learn more about compensation functions in [this chapter](../../../fundamentals/workflows/compensation-function/page.mdx).
+
+</Note>
+
+### Create Workflow
+
+You can now create the workflow that uses the above step. Add the workflow to the same `src/workflows/sync-brands-to-cms.ts` file:
+
+export const syncWorkflowHighlights = [
+  ["19", "useQueryGraphStep", "Retrieve the brand's details."],
+  ["23", "id", "Filter by the brand's ID."],
+  ["26", "throwIfKeyNotFound", "Throw an error if a brand with the specified ID doesn't exist."],
+  ["30", "syncBrandToCmsStep", "Create the brand in the third-party CMS."]
+]
+
+```ts title="src/workflows/sync-brands-to-cms.ts" highlights={syncWorkflowHighlights}
+// other imports...
+import { 
+  // ...
+  createWorkflow, 
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+type SyncBrandToCmsWorkflowInput = {
+  id: string
+}
+
+export const syncBrandToCmsWorkflow = createWorkflow(
+  "sync-brand-to-cms",
+  (input: SyncBrandToCmsWorkflowInput) => {
+    // @ts-ignore
+    const { data: brands } = useQueryGraphStep({
+      entity: "brand",
+      fields: ["*"],
+      filters: {
+        id: input.id,
+      },
+      options: {
+        throwIfKeyNotFound: true,
+      },
+    })
+
+    syncBrandToCmsStep({
+      brand: brands[0],
+    } as SyncBrandToCmsStepInput)
+
+    return new WorkflowResponse({})
+  }
+)
+```
+
+You create a `syncBrandToCmsWorkflow` that accepts the brand's ID as input. The workflow has the following steps:
+
+- `useQueryGraphStep`: Retrieve the brand's details using Query. You pass the brand's ID as a filter, and set the `throwIfKeyNotFound` option to true so that the step throws an error if a brand with the specified ID doesn't exist.
+- `syncBrandToCmsStep`: Create the brand in the third-party CMS.
+
+You'll execute this workflow in the subscriber next.
+
+<Note>
+
+Learn more about `useQueryGraphStep` in [this reference](!resources!/references/helper-steps/useQueryGraphStep).
+
+</Note>
+
+---
+
+## 3. Handle brand.created Event
+
+You now have a workflow with the logic to sync a brand to the CMS. You need to execute this workflow whenever the `brand.created` event is emitted. So, you'll create a subscriber that listens to and handle the event.
+
+Subscribers are created in a TypeScript or JavaScript file under the `src/subscribers` directory. So, create the file `src/subscribers/brand-created.ts` with the following content:
+
+![Directory structure of the Medusa application after adding the subscriber](https://res.cloudinary.com/dza7lstvk/image/upload/v1733493774/Medusa%20Book/cms-dir-overview-5_iqqwvg.jpg)
+
+export const subscriberHighlights = [
+  ["7", "brandCreatedHandler", "The function to execute when the event is emitted."],
+  ["8", "data", "The event's data payload."],
+  ["9", "container", "The Medusa container used to resolve resources."],
+  ["10", "id: string", "The expected data payload's type."],
+  ["11", "syncBrandToCmsWorkflow", "Execute the workflow to sync the brand to the CMS."],
+  ["16", "config", "Export the subscriber's configurations."],
+  ["17", "event", "The event that the subscriber is listening to."]
+]
+
+```ts title="src/subscribers/brand-created.ts" highlights={subscriberHighlights}
+import type {
+  SubscriberConfig,
+  SubscriberArgs,
+} from "@medusajs/framework"
+import { syncBrandToCmsWorkflow } from "../workflows/sync-brands-to-cms"
+
+export default async function brandCreatedHandler({
+  event: { data },
+  container,
+}: SubscriberArgs<{ id: string }>) {
+  await syncBrandToCmsWorkflow(container).run({
+    input: data,
+  })
+}
+
+export const config: SubscriberConfig = {
+  event: "brand.created",
+}
+```
+
+A subscriber file must export:
+
+- The asynchronous function that's executed when the event is emitted. This must be the file's default export.
+- An object that holds the subscriber's configurations. It has an `event` property that indicates the name of the event that the subscriber is listening to.
+
+The subscriber function accepts an object parameter that has two properties:
+
+- `event`: An object of event details. Its `data` property holds the event's data payload, which is the brand's ID.
+- `container`: The Medusa container used to resolve framework and commerce tools.
+
+In the function, you execute the `syncBrandToCmsWorkflow`, passing it the data payload as an input. So, everytime a brand is created, Medusa will execute this function, which in turn executes the workflow to sync the brand to the CMS.
+
+<Note>
+
+Learn more about subscribers in [this chapter](../../../fundamentals/events-and-subscribers/page.mdx).
+
+</Note>
+
+---
+
+## Test it Out
+
+To test the subscriber and workflow out, you'll use the [Create Brand API route](../../custom-features/api-route/page.mdx) you created in a previous chapter.
+
+First, start the Medusa application:
+
+```bash npm2yarn
+npm run dev
+```
+
+Since the `/admin/brands` API route has a `/admin` prefix, it's only accessible by authenticated admin users. So, to retrieve an authenticated token of your admin user, send a `POST` request to the `/auth/user/emailpass` API Route:
+
+```bash
+curl -X POST 'http://localhost:9000/auth/user/emailpass' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+    "email": "admin@medusa-test.com",
+    "password": "supersecret"
+}'
+```
+
+Make sure to replace the email and password with your admin user's credentials.
+
+<Note title="Tip">
+
+Don't have an admin user? Refer to [this guide](../../../installation/page.mdx#create-medusa-admin-user).
+
+</Note>
+
+Then, send a `POST` request to `/admin/brands`, passing the token received from the previous request in the `Authorization` header:
+
+```bash
+curl -X POST 'http://localhost:9000/admin/brands' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer {token}' \
+--data '{
+    "name": "Acme"
+}'
+```
+
+This request returns the created brand. If you check the logs, you'll find the `brand.created` event was emitted, and that the request to the third-party system was simulated:
+
+```plain
+info:    Processing brand.created which has 1 subscribers
+http:    POST /admin/brands ← - (200) - 16.418 ms
+info:    Sending a POST request to /brands.
+info:    Request Data: {
+  "id": "01JEDWENYD361P664WRQPMC3J8",
+  "name": "Acme",
+  "created_at": "2024-12-06T11:42:32.909Z",
+  "updated_at": "2024-12-06T11:42:32.909Z",
+  "deleted_at": null
+}
+info:    API Key: "123"
+```
+
+---
+
+## Next Chapter: Sync Brand from Third-Party CMS to Medusa
+
+You can also automate syncing data from a third-party system to Medusa at a regular interval. In the next chapter, you'll learn how to sync brands from the third-party CMS to Medusa once a day.
